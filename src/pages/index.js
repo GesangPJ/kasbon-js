@@ -50,39 +50,60 @@ const SignPage = () => {
     username: '', // Change 'name' to 'username'
     password: '',
     showPassword: false,
-  })
+  });
+
+  const router = useRouter(); // Use the router to navigate
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
-  }
+  };
 
   const handleLogin = async () => {
-    const response = await signIn('credentials', {
-      redirect: false,
-      ...values,
-    })
+    // Send a POST request to your Express server for user authentication
+    try {
+      const response = await fetch('http://localhost:3001/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
 
-    if (response.error) {
-      console.error('Login error:', response.error);
+      if (response.status === 200) {
+        // Login successful
+        const data = await response.json();
+
+        // Redirect to the appropriate page based on the role (user or admin)
+        if (data.role === 'admin') {
+          router.push('/admin-dashboard'); // Replace with the admin dashboard URL
+        } else {
+          router.push('/dashboard'); // Replace with the user dashboard URL
+        }
+      } else {
+        // Handle login failure (e.g., show an error message)
+        console.error('Login error:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
     }
-  }
+  };
 
-  const theme = useTheme()
+  const theme = useTheme();
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword })
-  }
+    setValues({ ...values, showPassword: !values.showPassword });
+  };
 
-  const handleMouseDownPassword = event => {
-    event.preventDefault()
-  }
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   return (
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>
-        <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
+        <CardContent sx={{ padding: (theme) => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ReceiptLongOutlinedIcon color="primary" />
+            <ReceiptLongOutlinedIcon color='primary' />
             <Typography
               variant='h6'
               sx={{
@@ -90,24 +111,26 @@ const SignPage = () => {
                 lineHeight: 1,
                 fontWeight: 600,
                 textTransform: 'uppercase',
-                fontSize: '1.5rem !important'
+                fontSize: '1.5rem !important',
               }}
             >
               {themeConfig.templateName}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='body2' align="center">Masuk Ke Akun Anda Untuk Melanjutkan</Typography>
+            <Typography variant='body2' align='center'>
+              Masuk Ke Akun Anda Untuk Melanjutkan
+            </Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
+          <form noValidate autoComplete='off' onSubmit={(e) => e.preventDefault()}>
             <TextField
               autoFocus
               fullWidth
-              id='name'
-              label='Nama'
+              id='username'
+              label='Username' // Change 'Nama' to 'Username'
               sx={{ marginBottom: 4 }}
-              value={values.username} // Change 'name' to 'username'
-              onChange={handleChange('username')} // Change 'name' to 'username'
+              value={values.username}
+              onChange={handleChange('username')}
             />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
@@ -133,16 +156,8 @@ const SignPage = () => {
             </FormControl>
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
-            >
-
-            </Box>
-            <Button
-              fullWidth
-              size='large'
-              variant='contained'
-              sx={{ marginBottom: 7 }}
-              onClick={handleLogin}
-            >
+            ></Box>
+            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
               Masuk
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
