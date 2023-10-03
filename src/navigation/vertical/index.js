@@ -1,15 +1,11 @@
 // ** Icon imports
 import Login from 'mdi-material-ui/Login'
 import Table from 'mdi-material-ui/Table'
-import CubeOutline from 'mdi-material-ui/CubeOutline'
-import FormatLetterCase from 'mdi-material-ui/FormatLetterCase'
-import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
-import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
-import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import { MonitorHeart } from '@mui/icons-material'
 import { AddCircle } from '@mui/icons-material'
 import { ModeEdit } from '@mui/icons-material'
-import { AdminPanelSettings } from '@mui/icons-material'
+import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
+import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined'
 
 const navigation = () => {
   return [
@@ -18,12 +14,12 @@ const navigation = () => {
     },
     {
       title: 'Dashboard',
-      icon: Table,
+      icon: SpaceDashboardOutlinedIcon,
       path: '/'
     },
     {
-      title: 'Obat Herbal',
-      icon: Table,
+      title: 'Kasbon',
+      icon: AccountBalanceWalletOutlinedIcon,
       path: '/obat-herbal'
     },
     {
