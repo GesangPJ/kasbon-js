@@ -80,65 +80,50 @@ app.get('/api/mongodb-status', async (req, res) => {
 // Kirim status server
 app.get('/api/server-status', (req, res) => {
   res.json({ status: 'Online' });
-});
-
-// Kirim (POST) data obat_generik ke MongoDB
-app.post('/api/add-obat-generik', async (req, res) => {
-
-  const { namaObat, komposisi, kegunaanUtama, deskripsi, formula } = req.body;
-
-  try {
-    const db = await connectToKatalogObatDB();
-    const obatGenerikCollection = db.collection('obat_generik');
-
-    // Masukkan data obat generik ke collection MongoDB
-    await obatGenerikCollection.insertOne({ namaObat, komposisi, kegunaanUtama, deskripsi, formula });
-
-    res.status(201).json({ message: 'Obat added successfully' });
-  } catch (error) {
-    console.error('Error adding obat:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Kirim (POST) data admin ke MongoDB
-app.post('/api/add-akun', async (req, res) => {
-
-  const { nama, email, password, roles } = req.body;
-
-  try {
-    const db = await connectToKasbonDB();
-    const AkunCollection = db.collection('akun');
-
-    // Masukkan data admin ke koleksi
-    await AkunCollection.insertOne({ nama, email, password, roles });
-
-    res.status(201).json({ message: `Akun ${nama} sebagai ${roles} berhasil ditambahkan.` });
-  } catch (error) {
-    console.error('Error menambahkan akun:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
 })
 
 // Kirim (POST) data admin ke Postgres
-app.post('/api/tambah-akun', async (req, res) => {
-  const { nama, email, password, roles } = req.body;
+app.post('/api/tambah-admin', async (req, res) => {
+  const { nama, email, password } = req.body;
+  const roles = 'admin'; // Manually set roles to 'admin'
+
+  try {
+    const client = await pool.connect()
+    const result = await client.query('INSERT INTO admin (nama, email, password, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
+    client.release()
+
+    if (result.rowCount === 1) {
+      res.status(201).json({ message: `Admin ${nama} berhasil ditambahkan.` })
+    } else {
+      res.status(500).json({ error: 'Failed to add the account.' })
+    }
+  } catch (error) {
+    console.error('Error menambahkan admin:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
+// Kirim (POST) data user ke Postgres
+app.post('/api/tambah-user', async (req, res) => {
+  const { nama, email, password } = req.body
+  const roles = 'user'
 
   try {
     const client = await pool.connect();
-    const result = await client.query('INSERT INTO akun (nama, email, password, roles, tanggal) VALUES ($1, $2, $3, $4, NOW())', [nama, email, password, roles]);
-    client.release();
+    const result = await client.query('INSERT INTO user (nama, email, password, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
+    client.release()
 
     if (result.rowCount === 1) {
-      res.status(201).json({ message: `Akun ${nama} sebagai ${roles} berhasil ditambahkan.` });
+      res.status(201).json({ message: `Admin ${nama} berhasil ditambahkan.` })
     } else {
-      res.status(500).json({ error: 'Failed to add the account.' });
+      res.status(500).json({ error: 'Failed to add the account.' })
     }
   } catch (error) {
-    console.error('Error adding akun:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error menambahkan admin:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
   }
 })
+
 
 
 
