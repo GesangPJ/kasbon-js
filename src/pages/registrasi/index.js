@@ -66,7 +66,10 @@ const SignPage = () => {
     // Validate the form fields
     if (!nama || !email || !password) {
       // Display an error message if any field is empty
-      setErrorMessage('Semua kolom harus diisi!');
+      setErrorMessage('Semua kolom harus diisi!')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
 
       return;
     }
@@ -98,7 +101,10 @@ const SignPage = () => {
         const data = await response.json();
         if (response.status === 400) {
           // User dengan nama yang sama sudah ada
-          setErrorMessage(data.error);
+          setErrorMessage(data.error)
+          setTimeout(() => {
+            setErrorMessage('')
+          }, 5000)
         } else {
           console.error('Error menambahkan User.');
         }
