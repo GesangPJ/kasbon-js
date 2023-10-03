@@ -4,6 +4,7 @@ const { connectToKasbonDB } = require('./mongoDB')
 const cors = require('cors')
 const session = require('express-session')
 const { pool, PostgresStatus } = require('./postgres')
+const generateSecretKey = require('./secret_generator')
 
 const app = express()
 
@@ -21,7 +22,7 @@ app.use(cors())
 // Configure express-session for session management
 app.use(
   session({
-    secret: 'secret', // Change this to a more secure secret key
+    secret: generateSecretKey(), // Change this to a more secure secret key
     resave: false,
     saveUninitialized: true,
   })
@@ -32,29 +33,36 @@ app.post('/api/login', async (req, res) => {
   const { name, password } = req.body;
 
   try {
-    const db = await connectToKasbonDB();
-    const adminCollection = db.collection('admin');
-    const userCollection = db.collection('user');
+    const client = await pool.connect();
 
-    // Check if the provided credentials match any user in the 'admin' collection
-    const admin = await adminCollection.findOne({ name, password });
-    if (admin) {
-      req.session.user = admin; // Simpan informasi admin di session
+    // Check if the provided credentials match any user in the 'admin' table
+    const adminQuery = 'SELECT * FROM admin WHERE nama = $1 AND password = $2';
+    const adminResult = await client.query(adminQuery, [name, password]);
+
+    if (adminResult.rows.length > 0) {
+      const admin = adminResult.rows[0];
+      req.session.user = admin; // Store admin information in the session
+      client.release();
       res.status(200).json({ role: 'admin' });
 
       return;
     }
 
-    // Check if the provided credentials match any user in the 'user' collection
-    const user = await userCollection.findOne({ name, password });
-    if (user) {
-      req.session.user = user; // Simpan informasi user di session
+    // Check if the provided credentials match any user in the 'user' table
+    const userQuery = 'SELECT * FROM user WHERE nama = $1 AND password = $2';
+    const userResult = await client.query(userQuery, [name, password]);
+
+    if (userResult.rows.length > 0) {
+      const user = userResult.rows[0];
+      req.session.user = user; // Store user information in the session
+      client.release();
       res.status(200).json({ role: 'user' });
 
       return;
     }
 
     // Invalid credentials
+    client.release();
     res.status(401).json({ error: 'Invalid credentials' });
   } catch (error) {
     console.error('Error during login:', error);
