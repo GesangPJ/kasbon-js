@@ -49,7 +49,7 @@ const FormAdmin = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3001/api/add-akun', {
+      const response = await fetch('http://localhost:3001/api/tambah-akun', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ const FormAdmin = () => {
                   </MenuItem>
                   <MenuItem value="admin">Admin</MenuItem>
                   <MenuItem value="user">User</MenuItem>
-                  <MenuItem value="superadmin">Super Admin</MenuItem>
+                  <MenuItem value="super-admin">Super Admin</MenuItem>
                 </Select>
                 <FormHelperText>Pilih jenis akun</FormHelperText>
               </FormControl>
