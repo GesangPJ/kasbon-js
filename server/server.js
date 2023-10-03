@@ -3,7 +3,7 @@ const { connectToKatalogObatDB } = require('./mongoDB')
 const { connectToKasbonDB } = require('./mongoDB')
 const cors = require('cors')
 const session = require('express-session')
-const pool = require('./postgres')
+const { pool, PostgresStatus } = require('./postgres')
 
 const app = express()
 
@@ -75,7 +75,21 @@ app.get('/api/mongodb-status', async (req, res) => {
     console.error('Error checking MongoDB status:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-});
+})
+
+app.get('/api/postgres-status', async (req, res) => {
+  try {
+    // Check PostgreSQL status using the PostgresStatus function
+    await PostgresStatus();
+
+    // Respond with a JSON status
+    res.json({ isConnected: true });
+  } catch (error) {
+    console.error('Error checking PostgreSQL status:', error);
+    res.json({ isConnected: false });
+  }
+})
+
 
 // Kirim status server
 app.get('/api/server-status', (req, res) => {
@@ -89,7 +103,7 @@ app.post('/api/tambah-admin', async (req, res) => {
 
   try {
     const client = await pool.connect()
-    const result = await client.query('INSERT INTO admin (nama, email, password, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
+    const result = await client.query('INSERT INTO "admin" (nama, email, password, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
     client.release()
 
     if (result.rowCount === 1) {
@@ -105,57 +119,36 @@ app.post('/api/tambah-admin', async (req, res) => {
 
 // Kirim (POST) data user ke Postgres
 app.post('/api/tambah-user', async (req, res) => {
-  const { nama, email, password } = req.body
-  const roles = 'user'
+  const { nama, email, password } = req.body;
+  const roles = 'user';
 
   try {
     const client = await pool.connect();
-    const result = await client.query('INSERT INTO user (nama, email, password, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
-    client.release()
 
-    if (result.rowCount === 1) {
-      res.status(201).json({ message: `Admin ${nama} berhasil ditambahkan.` })
+    // Cek apakah ada user dengan nama yang sama
+    const checkQuery = 'SELECT COUNT(*) FROM "user" WHERE nama = $1';
+    const checkResult = await client.query(checkQuery, [nama]);
+
+    if (checkResult.rows[0].count > 0) {
+      // user dengan nama yang sama sudah ada
+      client.release();
+
+      return res.status(400).json({ error: 'User with the same name already exists.' });
+    }
+
+    // Jika tidak ada maka lanjut masukkan data
+    const insertQuery = 'INSERT INTO "user" (nama, email, password, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)';
+    const insertResult = await client.query(insertQuery, [nama, email, password, roles]);
+
+    client.release();
+
+    if (insertResult.rowCount === 1) {
+      res.status(201).json({ message: `User ${nama} berhasil ditambahkan.` });
     } else {
-      res.status(500).json({ error: 'Failed to add the account.' })
+      res.status(500).json({ error: 'Gagal menambahkan akun user' });
     }
   } catch (error) {
-    console.error('Error menambahkan admin:', error)
-    res.status(500).json({ error: 'Internal Server Error' })
-  }
-})
-
-
-
-
-
-// Kirim (POST) data user ke MongoDB
-app.post('/api/add-user', async (req, res) => {
-
-  const { nama, email, password } = req.body;
-
-  try {
-    const db = await connectToKasbonDB();
-    const obatGenerikCollection = db.collection('user');
-
-    // Masukkan data admin ke koleksi
-    await obatGenerikCollection.insertOne({ nama, email, password });
-
-    res.status(201).json({ message: `User ${nama} berhasil ditambahkan.` });
-  } catch (error) {
     console.error('Error menambahkan user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-})
-
-// Ambil data obat generik dari MongoDB
-app.get('/api/obat-generik', async (req, res) => {
-  try {
-    const db = await connectToKatalogObatDB();
-    const obatGenerikCollection = db.collection('obat_generik');
-    const data = await obatGenerikCollection.find({}).toArray();
-    res.json(data);
-  } catch (error) {
-    console.error('Error fetching obat generik data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -180,61 +173,7 @@ app.get('/api/obat-generik/:namaObat', async (req, res) => {
     console.error('Error fetching obat generik data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-});
-
-// Kirim (POST) data obat_herbal ke MongoDB
-app.post('/api/add-obat-herbal', async (req, res) => {
-
-  const { namaObat, komposisi, kegunaanUtama, deskripsi, latin } = req.body;
-
-  try {
-    const db = await connectToKatalogObatDB();
-    const obatHerbalCollection = db.collection('obat_herbal');
-
-    // memasukkan data Obat Herbal ke Collection MongoDB
-    await obatHerbalCollection.insertOne({ namaObat, komposisi, kegunaanUtama, deskripsi, latin });
-
-    res.status(201).json({ message: 'Obat herbal berhasil ditambahkan' });
-  } catch (error) {
-    console.error('Error adding obat herbal:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Ambil data obat herbal dari MongoDB
-app.get('/api/obat-herbal', async (req, res) => {
-  try {
-    const db = await connectToKatalogObatDB();
-    const obatHerbalCollection = db.collection('obat_herbal');
-    const data = await obatHerbalCollection.find({}).toArray();
-    res.json(data);
-  } catch (error) {
-    console.error('Error fetching obat herbal data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Ambil Detail Data Obat Herbal berdasarkan row yang dipilih user
-app.get('/api/obat-herbal/:namaObat', async (req, res) => {
-  const { namaObat } = req.params;
-
-  try {
-    const db = await connectToKatalogObatDB();
-    const obatGenerikCollection = db.collection('obat_herbal');
-
-    // Nemuin obat pake nama obat
-    const obat = await obatGenerikCollection.findOne({ namaObat });
-
-    if (!obat) {
-      return res.status(404).json({ error: 'Nama Obat Tidak Ditemukan' });
-    }
-
-    res.json(obat);
-  } catch (error) {
-    console.error('Error fetching obat generik data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+})
 
 // Set Port buat server
 const port = process.env.PORT || 3001;
@@ -242,7 +181,7 @@ app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
 
   // Mulai Koneksi ke MongoDB saat server start
-  await connectToKasbonDB()
+  // await connectToKasbonDB()
 
 })
 
