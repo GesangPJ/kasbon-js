@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
@@ -75,6 +75,45 @@ const SignPage = () => {
   const handleMouseDownPassword = event => {
     event.preventDefault()
   }
+  const [PostgreStatus, setPostgreStatus] = useState('Loading'); // Default status
+  const [serverStatus, setServerStatus] = useState('Loading');
+
+  useEffect(() => {
+
+    // Ambil status PostgreSQL
+    fetch('http://localhost:3001/api/postgres-status')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        setPostgreStatus(data.isConnected ? 'Online' : 'Offline');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setPostgreStatus('Error');
+      })
+
+    fetch('http://localhost:3001/api/server-status')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        setServerStatus(data.status)
+      })
+      .catch((error) => {
+        console.error('Error:', error)
+        setServerStatus('Error');
+      })
+
+  })
 
   return (
     <Box className='content-center'>
@@ -132,7 +171,7 @@ const SignPage = () => {
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-              <FormControlLabel control={<Checkbox />} label='Remember Me' />
+
             </Box>
             <Button
               fullWidth
@@ -147,13 +186,25 @@ const SignPage = () => {
               <Typography variant='body2' sx={{ marginRight: 2 }}>
                 Tidak ada akun?
               </Typography>
-              <Link passHref href='/'>
+              <Link passHref href='/registrasi'>
                 <LinkStyled>Buat Akun</LinkStyled>
+              </Link>
+            </Box><br></br>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Typography variant='body2' sx={{ marginRight: 2 }}>
+                Admin?
+              </Typography>
+              <Link passHref href='/admin-masuk'>
+                <LinkStyled>Akses Admin</LinkStyled>
               </Link>
             </Box>
           </form>
         </CardContent>
+        <Typography variant="caption" display="block" gutterBottom>
+          PostgreSQL :
+        </Typography>
       </Card>
+
       <FooterIllustrationsV1 />
     </Box>
   )
