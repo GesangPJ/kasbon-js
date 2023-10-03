@@ -1,46 +1,55 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import InputAdornment from '@mui/material/InputAdornment';
-import Alert from '@mui/material/Alert'; // Import the Alert component for displaying success message
+import React, { useState } from 'react'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Alert from '@mui/material/Alert'
 
 const FormUser = () => {
-  const [nama, setnama] = useState('');
-  const [email, setemail] = useState('');
-  const [password, setpassword] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); // State variable for success message
+  const [nama, setnama] = useState('')
+  const [email, setemail] = useState('')
+  const [password, setpassword] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const handlepasswordChange = (e) => setpassword(e.target.value);
-  const handlenamaChange = (e) => setnama(e.target.value);
-  const handleemailChange = (e) => setemail(e.target.value);
+  const handlepasswordChange = (e) => setpassword(e.target.value)
+  const handlenamaChange = (e) => setnama(e.target.value)
+  const handleemailChange = (e) => setemail(e.target.value)
+
+  const handleChange = (event) => {
+    setRoles(event.target.value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Create an object with all the input data
-    const obatData = {
+    // Validate the form fields
+    if (!nama || !email || !password) {
+      // Display an error message if any field is empty
+      setErrorMessage('Semua kolom harus diisi!');
+
+      return;
+    }
+
+    const AkunData = {
       nama,
       email,
       password
     };
 
     try {
-      const response = await fetch('http://localhost:3001/api/add-user', {
+      const response = await fetch('http://localhost:3001/api/tambah-user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(obatData),
+        body: JSON.stringify(AkunData),
       });
 
       if (response.ok) {
-        // Data sukses ditambah ke MongoDB
-        // Popup sukses dan hapus input field
         setSuccessMessage(`User ${nama} berhasil ditambahkan.`);
         setnama('');
         setemail('');
@@ -49,8 +58,7 @@ const FormUser = () => {
           setSuccessMessage('');
         }, 5000);
       } else {
-        // Kalo Error
-        console.error('Error menambahkan user.');
+        console.error('Error menambahkan User.');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -61,6 +69,9 @@ const FormUser = () => {
     <Card>
       <CardHeader title='Form Tambah User' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
+        {errorMessage && (
+          <Alert severity="error">{errorMessage}</Alert>
+        )}
         {successMessage && (
           <Alert severity="success">{successMessage}</Alert>
         )}
