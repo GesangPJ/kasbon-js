@@ -6,6 +6,7 @@ import { AddCircle } from '@mui/icons-material'
 import { ModeEdit } from '@mui/icons-material'
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined'
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 
 const navigation = () => {
   return [
@@ -13,100 +14,23 @@ const navigation = () => {
       sectionTitle: 'Data'
     },
     {
-      title: 'Dashboard',
+      title: 'Dashboard User',
       icon: SpaceDashboardOutlinedIcon,
       path: '/'
     },
     {
-      title: 'Kasbon',
+      title: 'Input Kasbon',
       icon: AccountBalanceWalletOutlinedIcon,
-      path: '/obat-herbal'
+      path: '/input-kasbon'
     },
     {
-      sectionTitle: 'Admin'
+      sectionTitle: 'Lainnya'
     },
     {
-      title: 'Web Status',
-      icon: MonitorHeart,
-      path: '/status'
-    },
-    {
-      title: 'Tambah Obat Generik',
-      icon: AddCircle,
-      path: '/tambah-obat-generik',
-      openInNewTab: false
-    },
-    {
-      title: 'Tambah Obat Herbal',
-      icon: AddCircle,
-      path: '/tambah-obat-herbal',
-      openInNewTab: false
-    },
-    {
-      title: 'Edit Obat Generik',
-      icon: ModeEdit,
-      path: '/edit-obat-generik',
-      openInNewTab: false
-    },
-    {
-      title: 'Edit Obat Herbal',
-      icon: ModeEdit,
-      path: '/edit-obat-herbal',
-      openInNewTab: false
+      title: 'Akun User',
+      icon: ManageAccountsOutlinedIcon,
+      path: '/akun-user'
     }
-
-
-    /*
-    {
-      title: 'Admin Settings',
-      icon: AdminPanelSettings,
-      path: '/'
-    }
-
-
-        {
-          title: 'Login',
-          icon: Login,
-          path: '/pages/login',
-          openInNewTab: true
-        },
-        {
-          title: 'Register',
-          icon: AccountPlusOutline,
-          path: '/pages/register',
-          openInNewTab: true
-        },
-
-    {
-      sectionTitle: ''
-    }
-
-
-    {
-      title: 'Typography',
-      icon: FormatLetterCase,
-      path: '/typography'
-    },
-    {
-      title: 'Icons',
-      path: '/icons',
-      icon: GoogleCirclesExtended
-    },
-    {
-      title: 'Cards',
-      icon: CreditCardOutline,
-      path: '/cards'
-    },
-    {
-      title: 'Tables',
-      icon: Table,
-      path: '/tables'
-    },
-    {
-      icon: CubeOutline,
-      title: 'Form Layouts',
-      path: '/form-layouts'
-    }*/
   ]
 }
 
