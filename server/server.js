@@ -3,6 +3,7 @@ const { connectToKatalogObatDB } = require('./mongoDB')
 const { connectToKasbonDB } = require('./mongoDB')
 const cors = require('cors')
 const session = require('express-session')
+const pool = require('./postgres')
 
 const app = express()
 
@@ -119,6 +120,29 @@ app.post('/api/add-akun', async (req, res) => {
   }
 })
 
+// Kirim (POST) data admin ke Postgres
+app.post('/api/tambah-akun', async (req, res) => {
+  const { nama, email, password, roles } = req.body;
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query('INSERT INTO akun (nama, email, password, roles, tanggal) VALUES ($1, $2, $3, $4, NOW())', [nama, email, password, roles]);
+    client.release();
+
+    if (result.rowCount === 1) {
+      res.status(201).json({ message: `Akun ${nama} sebagai ${roles} berhasil ditambahkan.` });
+    } else {
+      res.status(500).json({ error: 'Failed to add the account.' });
+    }
+  } catch (error) {
+    console.error('Error adding akun:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
+
+
+
 // Kirim (POST) data user ke MongoDB
 app.post('/api/add-user', async (req, res) => {
 
@@ -233,7 +257,6 @@ app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
 
   // Mulai Koneksi ke MongoDB saat server start
-  await connectToKatalogObatDB()
   await connectToKasbonDB()
 
 })
