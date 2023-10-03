@@ -1,30 +1,148 @@
-// ** MUI Imports
-import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
-import Card from '@mui/material/Card'
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import Link from 'next/dist/client/link'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import TextField from '@mui/material/TextField'
+import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
-import CardHeader from '@mui/material/CardHeader'
+import IconButton from '@mui/material/IconButton'
+import FormControl from '@mui/material/FormControl'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import { styled, useTheme } from '@mui/material/styles'
+import MuiCard from '@mui/material/Card'
+import InputAdornment from '@mui/material/InputAdornment'
+import MuiFormControlLabel from '@mui/material/FormControlLabel'
 
-import TableObatGenerik from 'src/pages/tableobatgenerik'
+import EyeOutline from 'mdi-material-ui/EyeOutline'
+import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 
-const ObatGenerik = () => {
+import themeConfig from 'src/configs/themeConfig'
+
+import BlankLayout from 'src/@core/layouts/BlankLayout'
+import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+
+const Card = styled(MuiCard)(({ theme }) => ({
+  [theme.breakpoints.up('sm')]: { width: '28rem' }
+}))
+
+const SignPage = () => {
+  const [values, setValues] = useState({
+    name: '',
+    password: '',
+    showPassword: false
+  })
+
+  const handleChange = prop => event => {
+    setValues({ ...values, [prop]: event.target.value })
+  }
+
+  const handleLogin = async () => {
+    const response = await signIn('credentials', { // Use signIn from next-auth/react
+      redirect: false, // Prevent auto-redirect
+      ...values, // Pass the name and password
+    })
+
+    if (response.error) {
+      console.error('Login error:', response.error)
+    }
+  }
+
+  const theme = useTheme()
+
+  const handleClickShowPassword = () => {
+    setValues({ ...values, showPassword: !values.showPassword })
+  }
+
+  const handleMouseDownPassword = event => {
+    event.preventDefault()
+  }
+
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
-        <Typography variant='h5'>
-          <Link href='' target='_blank'>
-            Tabel Obat Generik
-          </Link>
-        </Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title='Obat Generik' titleTypographyProps={{ variant: 'h6' }} />
-          <TableObatGenerik />
-        </Card>
-      </Grid>
-    </Grid>
+    <Box className='content-center'>
+      <Card sx={{ zIndex: 1 }}>
+        <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
+          <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ReceiptLongOutlinedIcon color="primary" />
+            <Typography
+              variant='h6'
+              sx={{
+                ml: 3,
+                lineHeight: 1,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                fontSize: '1.5rem !important'
+              }}
+            >
+              {themeConfig.templateName}
+            </Typography>
+          </Box>
+          <Box sx={{ mb: 6 }}>
+            <Typography variant='body2' align="center">Masuk Ke Akun Anda Untuk Melanjutkan</Typography>
+          </Box>
+          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
+            <TextField
+              autoFocus fullWidth
+              id='name'
+              label='Nama'
+              sx={{ marginBottom: 4 }}
+              value={values.name}
+              onChange={handleChange('name')}
+            />
+            <FormControl fullWidth>
+              <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
+              <OutlinedInput
+                label='Password'
+                value={values.password}
+                id='auth-login-password'
+                onChange={handleChange('password')}
+                type={values.showPassword ? 'text' : 'password'}
+                endAdornment={
+                  <InputAdornment position='end'>
+                    <IconButton
+                      edge='end'
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      aria-label='toggle password visibility'
+                    >
+                      {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+            <Box
+              sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
+            >
+              <FormControlLabel control={<Checkbox />} label='Remember Me' />
+            </Box>
+            <Button
+              fullWidth
+              size='large'
+              variant='contained'
+              sx={{ marginBottom: 7 }}
+              onClick={handleLogin}
+            >
+              Masuk
+            </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Typography variant='body2' sx={{ marginRight: 2 }}>
+                Tidak ada akun?
+              </Typography>
+              <Link passHref href='/'>
+                <LinkStyled>Buat Akun</LinkStyled>
+              </Link>
+            </Box>
+          </form>
+        </CardContent>
+      </Card>
+      <FooterIllustrationsV1 />
+    </Box>
   )
 }
 
-export default ObatGenerik
+SignPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
+
+export default SignPage
