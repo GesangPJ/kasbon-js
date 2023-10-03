@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
@@ -46,23 +47,23 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
 
 const SignPage = () => {
   const [values, setValues] = useState({
-    name: '',
+    username: '', // Change 'name' to 'username'
     password: '',
-    showPassword: false
+    showPassword: false,
   })
 
-  const handleChange = prop => event => {
-    setValues({ ...values, [prop]: event.target.value })
+  const handleChange = (prop) => (event) => {
+    setValues({ ...values, [prop]: event.target.value });
   }
 
   const handleLogin = async () => {
-    const response = await signIn('credentials', { // Use signIn from next-auth/react
-      redirect: false, // Prevent auto-redirect
-      ...values, // Pass the name and password
+    const response = await signIn('credentials', {
+      redirect: false,
+      ...values,
     })
 
     if (response.error) {
-      console.error('Login error:', response.error)
+      console.error('Login error:', response.error);
     }
   }
 
@@ -139,12 +140,13 @@ const SignPage = () => {
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
             <TextField
-              autoFocus fullWidth
+              autoFocus
+              fullWidth
               id='name'
               label='Nama'
               sx={{ marginBottom: 4 }}
-              value={values.name}
-              onChange={handleChange('name')}
+              value={values.username} // Change 'name' to 'username'
+              onChange={handleChange('username')} // Change 'name' to 'username'
             />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
@@ -201,10 +203,12 @@ const SignPage = () => {
           </form>
         </CardContent>
         <Typography variant="caption" display="block" gutterBottom>
-          PostgreSQL :
+          PostgreSQL : {PostgreStatus}
+        </Typography>
+        <Typography variant="caption" display="block" gutterBottom>
+          Server     : {serverStatus}
         </Typography>
       </Card>
-
       <FooterIllustrationsV1 />
     </Box>
   )
