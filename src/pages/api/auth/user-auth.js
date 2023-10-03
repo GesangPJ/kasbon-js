@@ -37,6 +37,15 @@ export default NextAuth({
     async session(session, user) {
       // Add custom properties to the session
       session.user = user;
+      if (user.id_user) {
+        session.id_user = user.id_user;
+      }
+      if (user.nama) {
+        session.nama = user.nama;
+      }
+      if (user.roles) {
+        session.roles = user.roles;
+      }
 
       return session;
     },
