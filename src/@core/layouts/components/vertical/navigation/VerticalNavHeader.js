@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Box from '@mui/material/Box'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -47,12 +48,7 @@ const VerticalNavHeader = props => {
       ) : (
         <Link href='/' passHref>
           <StyledLink>
-            <img
-              alt="Icon Website Kasbon"
-              src="/images/bill-icon.png"
-              width={30}
-              height={25}
-            />
+            <ReceiptLongOutlinedIcon color="primary" />
             <HeaderTitle variant='h6' sx={{ ml: 3 }}>
               {themeConfig.templateName}
             </HeaderTitle>
