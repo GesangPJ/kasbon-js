@@ -38,7 +38,7 @@ app.post('/api/login', async (req, res) => {
     // Check if the provided credentials match any user in the 'user' table
     //const userQuery = 'SELECT * FROM "user" WHERE nama = $1 AND password = $2';
     //const userResult = await client.query(userQuery, [name, password]);
-    const userQuery = 'SELECT * FROM "user" WHERE email = $1 ';
+    const userQuery = 'SELECT * FROM "user" WHERE nama = $1 ';
     const userResult = await client.query(userQuery, [name]);
 
     if (userResult.rows.length > 0) {
