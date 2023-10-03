@@ -34,8 +34,8 @@ export default NextAuth({
   callbacks: {
     async session(session, admin) {
       session.admin = admin;
-      if (admin.id_user) {
-        session.id_user = admin.id_user;
+      if (admin.id_admin) {
+        session.id_admin = admin.id_admin;
       }
       if (admin.nama) {
         session.nama = admin.nama;
