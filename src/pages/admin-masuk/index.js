@@ -102,7 +102,7 @@ const SignPage = () => {
             <TextField
               autoFocus fullWidth
               id='name'
-              label='Nama Admin'
+              label='Nama'
               sx={{ marginBottom: 4 }}
               value={values.name}
               onChange={handleChange('name')}
@@ -110,7 +110,7 @@ const SignPage = () => {
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password Admin</InputLabel>
               <OutlinedInput
-                label='Password Admin'
+                label='Password'
                 value={values.password}
                 id='auth-login-password'
                 onChange={handleChange('password')}
