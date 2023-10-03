@@ -28,35 +28,24 @@ app.use(
   })
 );
 
-// Define an API endpoint for authentication
+// Define an API endpoint for user authentication
 app.post('/api/login', async (req, res) => {
   const { name, password } = req.body;
 
   try {
     const client = await pool.connect();
 
-    // Check if the provided credentials match any user in the 'admin' table
-    const adminQuery = 'SELECT * FROM admin WHERE nama = $1 AND password = $2';
-    const adminResult = await client.query(adminQuery, [name, password]);
-
-    if (adminResult.rows.length > 0) {
-      const admin = adminResult.rows[0];
-      req.session.user = admin; // Store admin information in the session
-      client.release();
-      res.status(200).json({ role: 'admin' });
-
-      return;
-    }
-
     // Check if the provided credentials match any user in the 'user' table
-    const userQuery = 'SELECT * FROM user WHERE nama = $1 AND password = $2';
-    const userResult = await client.query(userQuery, [name, password]);
+    //const userQuery = 'SELECT * FROM "user" WHERE nama = $1 AND password = $2';
+    //const userResult = await client.query(userQuery, [name, password]);
+    const userQuery = 'SELECT * FROM "user" WHERE email = $1 ';
+    const userResult = await client.query(userQuery, [name]);
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
       req.session.user = user; // Store user information in the session
       client.release();
-      res.status(200).json({ role: 'user' });
+      res.status(200).json({ roles: 'user' });
 
       return;
     }
@@ -65,10 +54,39 @@ app.post('/api/login', async (req, res) => {
     client.release();
     res.status(401).json({ error: 'Invalid credentials' });
   } catch (error) {
-    console.error('Error during login:', error);
+    console.error('Error during user login:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-})
+});
+
+// Define an API endpoint for admin authentication
+app.post('/api/login-admin', async (req, res) => {
+  const { name, password } = req.body;
+
+  try {
+    const client = await pool.connect();
+
+    // Check if the provided credentials match any user in the 'admin' table
+    const adminQuery = 'SELECT * FROM "admin" WHERE nama = $1 AND password = $2';
+    const adminResult = await client.query(adminQuery, [name, password]);
+
+    if (adminResult.rows.length > 0) {
+      const admin = adminResult.rows[0];
+      req.session.user = admin; // Store admin information in the session
+      client.release();
+      res.status(200).json({ roles: 'admin' });
+
+      return;
+    }
+
+    // Invalid credentials
+    client.release();
+    res.status(401).json({ error: 'Invalid credentials' });
+  } catch (error) {
+    console.error('Error during admin login:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 // Cek Status koneksi MongoDB
@@ -190,6 +208,7 @@ app.listen(port, async () => {
 
   // Mulai Koneksi ke MongoDB saat server start
   // await connectToKasbonDB()
+  await PostgresStatus()
 
 })
 

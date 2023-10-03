@@ -74,10 +74,10 @@ const SignPage = () => {
         const data = await response.json();
 
         // Redirect to the appropriate page based on the role (user or admin)
-        if (data.role === 'admin') {
-          router.push('/admin-dashboard'); // Replace with the admin dashboard URL
+        if (data.roles === 'admin') {
+          router.push('/dashbaord-admin'); // Replace with the admin dashboard URL
         } else {
-          router.push('/dashboard'); // Replace with the user dashboard URL
+          router.push('/dashboard-user'); // Replace with the user dashboard URL
         }
       } else {
         // Handle login failure (e.g., show an error message)
