@@ -13,9 +13,6 @@ const dbConfig = {
 // Create a new PostgreSQL pool
 const pool = new Pool(dbConfig);
 
-// Export the pool to use it in other parts of your application
-module.exports = pool, PostgresStatus;
-
 // Function to check the database connection status
 async function PostgresStatus() {
   try {
@@ -27,5 +24,5 @@ async function PostgresStatus() {
   }
 }
 
-// Call the PostgresStatus function when your application starts
-PostgresStatus();
+// Export the pool to use it in other parts of your application
+module.exports = { pool, PostgresStatus };
