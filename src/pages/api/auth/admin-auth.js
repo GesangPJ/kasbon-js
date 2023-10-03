@@ -51,6 +51,6 @@ export default NextAuth({
     jwt: true,
   },
   pages: {
-    signIn: '/admin-masuk', // Adjust this based on your Next.js routes for admin login
+    signIn: '/dashboard-admin', // Adjust this based on your Next.js routes for admin login
   },
 });

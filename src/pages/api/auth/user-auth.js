@@ -17,7 +17,7 @@ export default NextAuth({
         const client = await pool.connect();
 
         try {
-          const query = 'SELECT id_user, nama, roles FROM user WHERE username = $1 AND password = $2';
+          const query = 'SELECT id_user, nama, roles FROM user WHERE nama = $1 AND password = $2';
           const { rows } = await client.query(query, [username, password]);
 
           if (rows.length === 1) {
@@ -54,6 +54,6 @@ export default NextAuth({
     jwt: true,
   },
   pages: {
-    signIn: '/', // Adjust this based on your Next.js routes
+    signIn: '/dashboard-user', // Adjust this based on your Next.js routes
   },
 })
