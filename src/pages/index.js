@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
-import Link from 'next/dist/client/link'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -8,13 +8,13 @@ import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import { styled, useTheme } from '@mui/material/styles'
 import MuiCard from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel from '@mui/material/FormControlLabel'
-
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
@@ -22,10 +22,26 @@ import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 import themeConfig from 'src/configs/themeConfig'
 
 import BlankLayout from 'src/@core/layouts/BlankLayout'
-import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
+import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import { Receipt } from '@mui/icons-material'
+
+// ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '28rem' }
+}))
+
+const LinkStyled = styled('a')(({ theme }) => ({
+  fontSize: '0.875rem',
+  textDecoration: 'none',
+  color: theme.palette.primary.main
+}))
+
+const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
+  '& .MuiFormControlLabel-label': {
+    fontSize: '0.875rem',
+    color: theme.palette.text.secondary
+  }
 }))
 
 const SignPage = () => {
