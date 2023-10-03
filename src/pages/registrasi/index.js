@@ -18,6 +18,7 @@ import MuiFormControlLabel from '@mui/material/FormControlLabel'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
+import Alert from '@mui/material/Alert'
 
 import themeConfig from 'src/configs/themeConfig'
 
@@ -73,7 +74,7 @@ const SignPage = () => {
     const AkunData = {
       nama,
       email,
-      password
+      password,
     };
 
     try {
@@ -86,7 +87,7 @@ const SignPage = () => {
       });
 
       if (response.ok) {
-        setSuccessMessage(`Admin ${nama} berhasil ditambahkan.`);
+        setSuccessMessage(`User ${nama} berhasil ditambahkan.`);
         setnama('');
         setemail('');
         setpassword('');
@@ -94,7 +95,13 @@ const SignPage = () => {
           setSuccessMessage('');
         }, 5000);
       } else {
-        console.error('Error menambahkan Admin.');
+        const data = await response.json();
+        if (response.status === 400) {
+          // User dengan nama yang sama sudah ada
+          setErrorMessage(data.error);
+        } else {
+          console.error('Error menambahkan User.');
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -115,6 +122,12 @@ const SignPage = () => {
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
+          {errorMessage && (
+            <Alert severity="error">{errorMessage}</Alert>
+          )}
+          {successMessage && (
+            <Alert severity="success">{successMessage}</Alert>
+          )}
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <ReceiptLongOutlinedIcon color="primary" />
             <Typography
