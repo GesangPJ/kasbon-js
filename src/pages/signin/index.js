@@ -24,6 +24,7 @@ import MuiFormControlLabel from '@mui/material/FormControlLabel'
 // ** Icons Imports
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
@@ -33,6 +34,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import { Receipt } from '@mui/icons-material'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -111,12 +113,7 @@ const SignPage = () => {
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img
-              alt="Icon Website Kasbon"
-              src="/images/bill-icon.png"
-              width={30}
-              height={25}
-            />
+            <ReceiptLongOutlinedIcon color="primary" />
             <Typography
               variant='h6'
               sx={{
