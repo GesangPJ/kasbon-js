@@ -131,9 +131,9 @@ app.post('/api/tambah-user', async (req, res) => {
 
     if (checkResult.rows[0].count > 0) {
       // user dengan nama yang sama sudah ada
-      client.release();
+      client.release()
 
-      return res.status(400).json({ error: 'User with the same name already exists.' });
+      return res.status(400).json({ error: `User ini ${nama} sudah ada` });
     }
 
     // Jika tidak ada maka lanjut masukkan data
