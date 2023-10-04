@@ -1,6 +1,7 @@
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { getIsAdminFromSessionStorage } from './sessionStorageUtils'
 
 // ** Layout Imports
 // !Do not remove this Layout import
@@ -31,45 +32,12 @@ const UserLayout = ({ children }) => {
    */
   const hidden = useMediaQuery(theme => theme.breakpoints.down('lg'))
 
-  // Fetch user role from the session
-  const useLoginStatus = () => {
-    const [isAdmin, setIsAdmin] = useState(false);
+  // Retrieve the user's role from sessionStorage
+  const isAdmin = getIsAdminFromSessionStorage();
 
-    useEffect(() => {
-      async function fetchSessionData() {
-        try {
-          const response = await fetch('http://localhost:3001/api/get-session', {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-          });
-          if (response.status === 200) {
-            const sessionData = await response.json();
+  // Determine which navigation items to use based on the user's role
+  const navigationItems = isAdmin ? AdminNavigation() : VerticalNavItems();
 
-            if (sessionData.roles === 'admin') {
-              setIsAdmin(true);
-            } else {
-              setIsAdmin(false);
-            }
-          } else {
-            console.error('Failed to fetch session data');
-          }
-        } catch (error) {
-          console.error('Error fetching session data:', error);
-        }
-      }
-
-      fetchSessionData();
-    }, []);
-
-    return isAdmin;
-  };
-
-  const isAdmin = useLoginStatus();
-
-  const navigationItems = isAdmin ? AdminNavigation() : VerticalNavItems(); // Mengubah sidebar sesuai session
 
   return (
     <VerticalLayout
