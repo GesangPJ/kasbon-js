@@ -20,7 +20,7 @@ app.use(
 )
 
 const corsOptions = {
-  origin: '*', // Be cautious when using '*' in a production environment.
+  origin: 'http://localhost:3000', // Be cautious when using '*' in a production environment.
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: false,
@@ -37,8 +37,8 @@ app.get('/api/logout', (req, res) => {
       console.error('Error during logout:', err);
       res.status(500).json({ error: 'Internal Server Error' })
     } else {
-      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
-      res.redirect('/')
+      // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+      //res.redirect('/')
     }
   })
 })
@@ -56,7 +56,7 @@ app.post('/api/login', async (req, res) => {
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
-
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
       req.session.user = {
         nama_user: user.nama_user,
         email_user: user.email_user,
