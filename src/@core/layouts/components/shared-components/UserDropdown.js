@@ -56,6 +56,9 @@ const UserDropdown = () => {
         credentials: 'include',
       });
 
+      // Clear all items in local session storage
+      localStorage.clear();
+
       // Redirect to the login page after successful logout
       router.push('/'); // Replace with your login page URL
     } catch (error) {
@@ -66,6 +69,7 @@ const UserDropdown = () => {
 
     setAnchorEl(null); // Close the dropdown
   };
+
 
   const styles = {
     py: 2,
@@ -84,33 +88,12 @@ const UserDropdown = () => {
   const [sessionData, setSessionData] = useState(null);
 
   useEffect(() => {
-    async function fetchSessionData() {
-      try {
-        const response = await fetch('http://localhost:3001/api/get-session', {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        });
-        if (response.status === 200) {
-          const sessionData = await response.json();
-
-          if (sessionData && sessionData.username) {
-            // Session data contains 'username' field
-            setSessionData(sessionData);
-          } else {
-            console.error('Session data not found');
-          }
-        } else {
-          console.error('Failed to fetch session data');
-        }
-      } catch (error) {
-        console.error('Error fetching session data:', error);
-      }
+    // Retrieve the session data from session storage
+    const sessionDataStr = sessionStorage.getItem('sessionData');
+    if (sessionDataStr) {
+      const sessionData = JSON.parse(sessionDataStr);
+      setSessionData(sessionData);
     }
-
-    fetchSessionData();
   }, []);
 
   return (
