@@ -92,6 +92,15 @@ const SignPage = () => {
 
           // Redirect to the appropriate dashboard page
           router.push(`/dashboard-${role}`);
+
+          // Use the following code to wait for the session data to be set
+          await fetch('http://localhost:3001/api/get-session', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
         } else {
           console.error('Role tidak dapat diambil');
         }
@@ -102,6 +111,7 @@ const SignPage = () => {
       console.error('Login error:', error);
     }
   };
+
 
   const theme = useTheme();
 
