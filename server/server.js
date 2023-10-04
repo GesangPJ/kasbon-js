@@ -40,6 +40,20 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
+// Clear semua session data
+app.get('/api/clear-sessions', async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const clearSessionsQuery = 'DELETE FROM sessions';
+    await client.query(clearSessionsQuery);
+    client.release();
+    res.send('Session data cleared');
+  } catch (error) {
+    console.error('Error clearing session data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // Logout
 app.get('/api/logout', (req, res) => {
   req.session.destroy((err) => {
@@ -134,21 +148,20 @@ app.post('/api/masuk', async (req, res) => {
 });
 
 app.get('/api/get-session', async (req, res) => {
-  // Check if the session data exists and retrieve it
-  let sessionData;
+  // Log the session ID for debugging
+  console.log('Session ID:', req.sessionID);
 
+  // Check the user's role and retrieve the session data from the corresponding session object
   if (req.session.user) {
-    sessionData = req.session.user;
-  } else if (req.session.admin) {
-    sessionData = req.session.admin;
-  }
+    sessionUser = req.session.user;
 
-  if (sessionData) {
-    // If session data exists, send it in the response
-    res.json(sessionData);
-    console.log('Current Session get and send:', sessionData);
+    res.json(sessionUser);
+  } else if (req.session.admin) {
+    sessionAdmin = req.session.admin;
+
+    res.json(sessionAdmin);
   } else {
-    // If session data is not found, return an error
+
     res.json({ error: 'Session data not found' });
   }
 });
