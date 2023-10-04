@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -6,47 +6,31 @@ import Menu from 'mdi-material-ui/Menu';
 import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler';
 import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown';
 import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown';
-import SearchBar from './SearchBar'; // Import the SearchBar component
-import Typography from '@mui/material/Typography'
-import { useState, useEffect, Fragment } from 'react'
+import SearchBar from './SearchBar';
+import Typography from '@mui/material/Typography';
 
+async function fetchSessionData() {
+  try {
+    const response = await fetch('/api/session');
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching session data:', error);
+  }
+}
 
 const AppBarContent = (props) => {
-  // ** Props
   const { hidden, settings, saveSettings, toggleNavVisibility } = props;
-
-  // ** Hook
   const hiddenSm = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
-  const [user, setUser] = useState({ nama: '' });
-  const [admin, setAdmin] = useState({ nama: '' });
+  const [sessionData, setSessionData] = useState(null);
 
   useEffect(() => {
-    // Fetch user information from the session when the component mounts
-    async function fetchUserInfo() {
-      try {
-        const response = await fetch('http://localhost:3001/api/session', {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.user && data.user.nama) {
-            setUser({ nama: data.user.nama });
-          }
-          if (data.admin && data.admin.nama) {
-            setAdmin({ nama: data.admin.nama });
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      }
-    }
-
-    fetchUserInfo();
+    fetchSessionData().then(data => {
+      setSessionData(data);
+    });
   }, []);
-
 
 
   return (
@@ -61,18 +45,19 @@ const AppBarContent = (props) => {
             <Menu />
           </IconButton>
         ) : null}
-
       </Box>
       <Box className="actions-right" sx={{ display: 'flex', justifyContent: 'flex-end', flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <ModeToggler settings={settings} saveSettings={saveSettings} />
           <NotificationDropdown />
           <UserDropdown />
-          <Typography variant="body1" sx={{ fontWeight: 600 }}>{user.nama || admin.nama || 'User'}</Typography>
+          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+            {sessionData && sessionData.nama}
+          </Typography>
         </div>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default AppBarContent
+export default AppBarContent;
