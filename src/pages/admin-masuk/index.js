@@ -44,37 +44,58 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
   }
 }))
 
-const SignPage = () => {
+const AdminSignIn = () => {
   const [values, setValues] = useState({
-    name: '',
+    username: '', // Change 'name' to 'username'
     password: '',
-    showPassword: false
-  })
+    showPassword: false,
+  });
 
-  const handleChange = prop => event => {
-    setValues({ ...values, [prop]: event.target.value })
-  }
+  const router = useRouter(); // Use the router to navigate
+
+  const handleChange = (prop) => (event) => {
+    setValues({ ...values, [prop]: event.target.value });
+  };
 
   const handleLogin = async () => {
-    const response = await signIn('credentials', { // Use signIn from next-auth/react
-      redirect: false, // Prevent auto-redirect
-      ...values, // Pass the name and password
-    })
+    // Send a POST request to your Express server for user authentication
+    try {
+      const response = await fetch('http://localhost:3001/api/login-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
 
-    if (response.error) {
-      console.error('Login error:', response.error)
+      if (response.status === 200) {
+        // Login successful
+        const data = await response.json();
+
+        // Redirect to the appropriate page based on the role (user or admin)
+        if (data.roles === 'admin') {
+          router.push('/dashbaord-admin'); // Replace with the admin dashboard URL
+        } else {
+          router.push('/dashboard-user'); // Replace with the user dashboard URL
+        }
+      } else {
+        // Handle login failure (e.g., show an error message)
+        console.error('Login error:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
     }
-  }
+  };
 
-  const theme = useTheme()
+  const theme = useTheme();
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword })
-  }
+    setValues({ ...values, showPassword: !values.showPassword });
+  };
 
-  const handleMouseDownPassword = event => {
-    event.preventDefault()
-  }
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   const [PostgreStatus, setPostgreStatus] = useState('Loading'); // Default status
   const [serverStatus, setServerStatus] = useState('Loading');
 
@@ -118,9 +139,9 @@ const SignPage = () => {
   return (
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>
-        <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
+        <CardContent sx={{ padding: (theme) => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ReceiptLongOutlinedIcon color="primary" />
+            <ReceiptLongOutlinedIcon color='primary' />
             <Typography
               variant='h6'
               sx={{
@@ -128,26 +149,29 @@ const SignPage = () => {
                 lineHeight: 1,
                 fontWeight: 600,
                 textTransform: 'uppercase',
-                fontSize: '1.5rem !important'
+                fontSize: '1.5rem !important',
               }}
             >
               {themeConfig.templateName}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='body2' align="center">Akses Admin</Typography>
+            <Typography variant='body2' align='center'>
+              Akses Admin
+            </Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
+          <form noValidate autoComplete='off' onSubmit={(e) => e.preventDefault()}>
             <TextField
-              autoFocus fullWidth
-              id='name'
-              label='Nama'
+              autoFocus
+              fullWidth
+              id='username'
+              label='Username' // Change 'Nama' to 'Username'
               sx={{ marginBottom: 4 }}
-              value={values.name}
-              onChange={handleChange('name')}
+              value={values.username}
+              onChange={handleChange('username')}
             />
             <FormControl fullWidth>
-              <InputLabel htmlFor='auth-login-password'>Password Admin</InputLabel>
+              <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
                 value={values.password}
@@ -170,24 +194,16 @@ const SignPage = () => {
             </FormControl>
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
-            >
-
-            </Box>
-            <Button
-              fullWidth
-              size='large'
-              variant='contained'
-              sx={{ marginBottom: 7 }}
-              onClick={handleLogin}
-            >
-              Masuk Admin
+            ></Box>
+            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
+              Masuk
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>
                 Bukan Admin?
               </Typography>
               <Link passHref href='/'>
-                <LinkStyled>Akses User</LinkStyled>
+                <LinkStyled>Kembali</LinkStyled>
               </Link>
             </Box>
           </form>
@@ -204,6 +220,6 @@ const SignPage = () => {
   )
 }
 
-SignPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
+AdminSignIn.getLayout = page => <BlankLayout>{page}</BlankLayout>
 
-export default SignPage
+export default AdminSignIn
