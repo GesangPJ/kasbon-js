@@ -146,19 +146,24 @@ app.get('/api/set-session', (req, res) => {
 });*/
 
 app.get('/api/get-session', async (req, res) => {
-  // Check the user's role and retrieve the session data from the corresponding session object
+  // Check if the session data exists and retrieve it
+  let sessionData;
+
   if (req.session.user) {
-    sessionUser = req.session.user
-    res.json(sessionUser)
-    console.log('Current Sesseion get and send :', sessionUser)
+    sessionData = req.session.user;
   } else if (req.session.admin) {
-    sessionAdmin = req.session.admin
-    res.json(sessionAdmin)
-    console.log('Current Sesseion get and send :', sessionAdmin)
+    sessionData = req.session.admin;
+  }
+
+  if (sessionData) {
+    // If session data exists, send it in the response
+    res.json(sessionData);
+    console.log('Current Session get and send:', sessionData);
   } else {
+    // If session data is not found, return an error
     res.json({ error: 'Session data not found' });
   }
-})
+});
 
 
 // Cek Status koneksi MongoDB
