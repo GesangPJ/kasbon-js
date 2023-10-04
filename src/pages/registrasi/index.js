@@ -45,7 +45,7 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
   }
 }))
 
-const SignPage = () => {
+const UserRegistrasi = () => {
   const [nama, setnama] = useState('')
   const [email, setemail] = useState('')
   const [password, setpassword] = useState('')
@@ -211,6 +211,6 @@ const SignPage = () => {
   )
 }
 
-SignPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
+UserRegistrasi.getLayout = page => <BlankLayout>{page}</BlankLayout>
 
-export default SignPage
+export default UserRegistrasi
