@@ -133,18 +133,6 @@ app.post('/api/masuk', async (req, res) => {
   }
 });
 
-// Debug Session
-/*
-app.get('/api/set-session', (req, res) => {
-  // Set session data
-  req.session.user = {
-    id: 1,
-    username: 'example_user',
-    email: 'user@example.com',
-  };
-  res.json({ message: 'Session data set' });
-});*/
-
 app.get('/api/get-session', async (req, res) => {
   // Check if the session data exists and retrieve it
   let sessionData;
