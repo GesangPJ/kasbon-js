@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import Menu from 'mdi-material-ui/Menu'
-import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler'
-import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
-import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown'
-import Typography from '@mui/material/Typography'
+import React, { useState, useEffect } from 'react';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Menu from 'mdi-material-ui/Menu';
+import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler';
+import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown';
+import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown';
+import Typography from '@mui/material/Typography';
 
 const AppBarContent = (props) => {
-  const { hidden, settings, saveSettings, toggleNavVisibility } = props
-  const hiddenSm = useMediaQuery((theme) => theme.breakpoints.down('sm'))
+  const { hidden, settings, saveSettings, toggleNavVisibility } = props;
+  const hiddenSm = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
-  const [sessionData, setSessionData] = useState(null)
+  const [sessionData, setSessionData] = useState(null);
 
   useEffect(() => {
     async function fetchSessionData() {
@@ -20,6 +20,9 @@ const AppBarContent = (props) => {
         const response = await fetch('http://localhost:3001/api/get-session', {
           method: 'GET',
           credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
         if (response.status === 200) {
           const sessionData = await response.json();

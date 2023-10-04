@@ -41,15 +41,17 @@ const UserLayout = ({ children }) => {
           const response = await fetch('http://localhost:3001/api/get-session', {
             method: 'GET',
             credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json'
+            },
           });
           if (response.status === 200) {
             const sessionData = await response.json();
 
-            if (sessionData && sessionData.username) {
-              // Session data contains 'username' field
-              setSessionData(sessionData);
+            if (sessionData.roles === 'admin') {
+              setIsAdmin(true);
             } else {
-              console.error('Session data not found');
+              setIsAdmin(false);
             }
           } else {
             console.error('Failed to fetch session data');
@@ -65,11 +67,9 @@ const UserLayout = ({ children }) => {
     return isAdmin;
   };
 
-  //const isAdmin = useLoginStatus();
-  //console.log('isAdmin:', isAdmin);
+  const isAdmin = useLoginStatus();
 
-  const navigationItems = AdminNavigation()
-
+  const navigationItems = isAdmin ? AdminNavigation() : VerticalNavItems(); // Mengubah sidebar sesuai session
 
   return (
     <VerticalLayout

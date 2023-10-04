@@ -89,6 +89,9 @@ const UserDropdown = () => {
         const response = await fetch('http://localhost:3001/api/get-session', {
           method: 'GET',
           credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
         });
         if (response.status === 200) {
           const sessionData = await response.json();
