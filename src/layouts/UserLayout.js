@@ -30,46 +30,33 @@ const UserLayout = ({ children }) => {
    *  ! Do not change this value unless you know what you are doing. It can break the template.
    */
   const hidden = useMediaQuery(theme => theme.breakpoints.down('lg'))
-  const [userRole, setUserRole] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Fetch user role from the session
   useEffect(() => {
-    async function fetchUserRole() {
-      try {
-        const response = await fetch('http://localhost:3001/api/session', {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUserRole(data.user ? 'user' : data.admin ? 'admin' : null);
+    // Fetch user/admin session data from your API endpoint
+    fetch('http://localhost:3001/api/session')
+      .then((response) => response.json())
+      .then((data) => {
+        // Check if there's an admin session
+        if (data.admin && data.admin.nama) {
+          setIsAdmin(true);
         }
-      } catch (error) {
-        console.error('Error fetching user role:', error);
-      }
-    }
+      })
+      .catch((error) => {
+        console.error('Error fetching session data:', error);
+      });
+  }, []);
+  console.log('isAdmin:', isAdmin);
 
-    fetchUserRole();
-  }, [])
-
-  const getNavigationItems = () => {
-    if (userRole === 'admin') {
-      return AdminNavigation();
-    } else if (userRole === 'user') {
-      return VerticalNavItems();
-    } else {
-      // Return empty navigation items if the user is not logged in.
-      return [];
-    }
-  };
+  const navigationItems = isAdmin ? AdminNavigation() : VerticalNavItems();
 
   return (
     <VerticalLayout
       hidden={hidden}
       settings={settings}
       saveSettings={saveSettings}
-      verticalNavItems={getNavigationItems()} // Mengubah sidebar sesuai session
+      verticalNavItems={navigationItems} // Mengubah sidebar sesuai session
 
       verticalAppBarContent={(
         props // AppBar Content
