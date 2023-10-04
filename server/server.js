@@ -3,11 +3,13 @@ const { connectToKatalogObatDB } = require('./mongoDB')
 const cors = require('cors')
 const session = require('express-session')
 const { pool, PostgresStatus } = require('./postgres')
+const cookieParser = require('cookie-parser')
 
 const app = express()
 
 // Express JS
 app.use(express.json())
+app.use(cookieParser())
 
 
 // Configure express-session for session management
@@ -18,6 +20,7 @@ app.use(
     saveUninitialized: true,
   })
 )
+
 
 const corsOptions = {
   origin: 'http://localhost:3000', // Be cautious when using '*' in a production environment.
@@ -58,6 +61,7 @@ app.post('/api/login', async (req, res) => {
         nama_user: user.nama_user,
         email_user: user.email_user,
         roles: user.roles_user,
+        isAdmin: false,
       };
 
       client.release();
@@ -69,6 +73,7 @@ app.post('/api/login', async (req, res) => {
           nama_user: user.nama_user,
           email_user: user.email_user,
           roles: user.roles_user,
+          isAdmin: false,
         },
       });
 
@@ -83,6 +88,72 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// API Masuk, semua jadi satu
+app.post('/api/masuk', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const client = await pool.connect();
+
+    // Check user credentials in the user_kasbon table
+    const userQuery = 'SELECT id_user, nama_user, email_user, roles_user FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
+    const userResult = await client.query(userQuery, [username, password]);
+
+    if (userResult.rows.length > 0) {
+      const user = userResult.rows[0];
+      req.session.user = {
+        id: user.id_user,
+        nama_user: user.nama_user,
+        email_user: user.email_user,
+        roles: user.roles_user,
+        isAdmin: false,
+      };
+
+      client.release();
+
+      res.status(200).json({
+        roles: user.roles_user,
+        isAdmin: false,
+      });
+
+      return;
+    }
+
+    // Check admin credentials in the admin_kasbon table
+    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, roles_admin FROM admin_kasbon WHERE nama_admin = $1 AND password_admin = $2';
+    const adminResult = await client.query(adminQuery, [username, password]);
+
+    if (adminResult.rows.length > 0) {
+      const admin = adminResult.rows[0];
+      req.session.admin = {
+        id: admin.id_admin,
+        nama_admin: admin.nama_admin,
+        email_admin: admin.email_admin,
+        roles: admin.roles_admin,
+        isAdmin: true,
+      };
+
+      client.release();
+
+      res.status(200).json({
+        roles: admin.roles_admin,
+        isAdmin: true,
+      });
+
+      return;
+    }
+
+    // Invalid credentials
+    client.release();
+    res.status(401).json({ error: 'Invalid credentials' });
+    console.log('Session Data:', req.session);
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
 
 // Login API
 app.post('/api/login-admin', async (req, res) => {
@@ -100,6 +171,7 @@ app.post('/api/login-admin', async (req, res) => {
         nama_admin: admin.nama_admin,
         email_admin: admin.email_admin,
         roles: admin.roles_admin,
+        isAdmin: true,
       }
 
       client.release()
@@ -110,6 +182,7 @@ app.post('/api/login-admin', async (req, res) => {
           nama_admin: admin.nama_admin,
           email_admin: admin.email_admin,
           roles: admin.roles_admin,
+          isAdmin: true,
         },
       })
 
@@ -141,9 +214,15 @@ app.get('/api/session', (req, res) => {
       email: adminData.email_admin,
       roles: adminData.roles_admin,
     },
-  }
+  };
 
-  res.status(200).json(sessionData);
+  // Set the isAdmin flag
+  const isAdmin = req.session.admin && req.session.admin.isAdmin;
+
+  res.status(200).json({
+    sessionData,
+    isAdmin,
+  });
 });
 
 
