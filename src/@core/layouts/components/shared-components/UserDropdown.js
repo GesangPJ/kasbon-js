@@ -81,30 +81,21 @@ const UserDropdown = () => {
     }
   }
 
-  useEffect(() => {
-    // Fetch user information from the session when the component mounts
-    async function fetchUserInfo() {
-      try {
-        const response = await fetch('http://localhost:3001/api/session', {
-          method: 'GET',
-          credentials: 'include',
-        });
+  const [sessionData, setSessionData] = useState(null);
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.user && data.user.nama) {
-            setUser({ nama: data.user.nama });
-          }
-          if (data.admin && data.admin.nama) {
-            setAdmin({ nama: data.admin.nama });
-          }
-        }
+  useEffect(() => {
+    async function fetchSessionData() {
+      try {
+        const response = await fetch('/api/session');
+        const data = await response.json();
+
+        setSessionData(data);
       } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error('Error fetching session data:', error);
       }
     }
 
-    fetchUserInfo();
+    fetchSessionData();
   }, []);
 
   return (
@@ -145,7 +136,7 @@ const UserDropdown = () => {
               />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>{user.nama || admin.nama || 'User'}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{sessionData.nama}</Typography>
               <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Akun
               </Typography>
