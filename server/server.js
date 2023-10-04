@@ -49,7 +49,7 @@ app.post('/api/login', async (req, res) => {
   try {
     const client = await pool.connect();
 
-    const userQuery = 'SELECT nama_user, email_user, roles FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
+    const userQuery = 'SELECT nama_user, email_user, roles_user FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
     const userResult = await client.query(userQuery, [username, password]);
 
     if (userResult.rows.length > 0) {
@@ -57,7 +57,7 @@ app.post('/api/login', async (req, res) => {
       req.session.user = {
         nama_user: user.nama_user,
         email_user: user.email_user,
-        roles: user.roles,
+        roles: user.roles_user,
       };
 
       client.release();
@@ -68,7 +68,7 @@ app.post('/api/login', async (req, res) => {
         user: {
           nama_user: user.nama_user,
           email_user: user.email_user,
-          roles: user.roles,
+          roles: user.roles_user,
         },
       });
 
@@ -91,7 +91,7 @@ app.post('/api/login-admin', async (req, res) => {
   try {
     const client = await pool.connect();
 
-    const adminQuery = 'SELECT nama_admin, email_admin, roles FROM admin_kasbon WHERE nama_admin = $1 AND password_admin = $2'
+    const adminQuery = 'SELECT nama_admin, email_admin, roles_admin FROM admin_kasbon WHERE nama_admin = $1 AND password_admin = $2'
     const adminResult = await client.query(adminQuery, [username, password])
 
     if (adminResult.rows.length > 0) {
@@ -99,7 +99,7 @@ app.post('/api/login-admin', async (req, res) => {
       req.session.admin = {
         nama_admin: admin.nama_admin,
         email_admin: admin.email_admin,
-        roles: admin.roles,
+        roles: admin.roles_admin,
       }
 
       client.release()
@@ -109,7 +109,7 @@ app.post('/api/login-admin', async (req, res) => {
         admin: {
           nama_admin: admin.nama_admin,
           email_admin: admin.email_admin,
-          roles: admin.roles,
+          roles: admin.roles_admin,
         },
       })
 
@@ -134,12 +134,12 @@ app.get('/api/session', (req, res) => {
     user: {
       nama: userData.nama_user,
       email: userData.email_user,
-      roles: userData.roles,
+      roles: userData.roles_user,
     },
     admin: {
       nama: adminData.nama_admin,
       email: adminData.email_admin,
-      roles: adminData.roles,
+      roles: adminData.roles_admin,
     },
   }
 
@@ -187,7 +187,7 @@ app.post('/api/tambah-admin', async (req, res) => {
 
   try {
     const client = await pool.connect()
-    const result = await client.query('INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
+    const result = await client.query('INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
     client.release()
 
     if (result.rowCount === 1) {
@@ -221,7 +221,7 @@ app.post('/api/tambah-user', async (req, res) => {
     }
 
     // Jika tidak ada maka lanjut masukkan data
-    const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)';
+    const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles_user) VALUES ($1, $2, $3, NOW(), $4)';
     const insertResult = await client.query(insertQuery, [nama, email, password, roles]);
 
     client.release();
