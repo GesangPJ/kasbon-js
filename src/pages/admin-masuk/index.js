@@ -69,17 +69,13 @@ const AdminSignIn = () => {
       });
 
       if (response.status === 200) {
-        // Login successful
         const data = await response.json();
-
-        // Redirect to the appropriate page based on the role (user or admin)
-        if (data.roles === 'admin') {
-          router.push('/dashbaord-admin'); // Replace with the admin dashboard URL
+        if (data.admin === 'admin') {
+          router.push('/dashboard-admin')
         } else {
-          router.push('/dashboard-user'); // Replace with the user dashboard URL
+          router.push('/dashboard-admin')
         }
       } else {
-        // Handle login failure (e.g., show an error message)
         console.error('Login error:', response.statusText);
       }
     } catch (error) {
