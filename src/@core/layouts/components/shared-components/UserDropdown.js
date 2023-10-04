@@ -55,7 +55,8 @@ const UserDropdown = () => {
         credentials: 'include',
       });
 
-      router.push('/'); // Redirect user/admin to the login page
+      // Redirect to the login page after successful logout
+      router.push('/'); // Replace with your login page URL
     } catch (error) {
       console.error('Error during logout:', error);
 
