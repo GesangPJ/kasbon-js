@@ -30,26 +30,31 @@ const UserLayout = ({ children }) => {
    *  ! Do not change this value unless you know what you are doing. It can break the template.
    */
   const hidden = useMediaQuery(theme => theme.breakpoints.down('lg'))
-  const [isAdmin, setIsAdmin] = useState(false);
 
   // Fetch user role from the session
-  useEffect(() => {
-    // Fetch user/admin session data from your API endpoint
-    fetch('http://localhost:3001/api/session')
-      .then((response) => response.json())
-      .then((data) => {
-        // Check if there's an admin session
-        if (data.admin && data.admin.nama) {
+  const useLoginStatus = () => {
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+      const fetchLoginStatus = async () => {
+        const response = await fetch('http://localhost:3001/api/session');
+        const data = await response.json();
+
+        if (data.admin && data.admin.isAdmin) {
           setIsAdmin(true);
         }
-      })
-      .catch((error) => {
-        console.error('Error fetching session data:', error);
-      });
-  }, []);
+      };
+
+      fetchLoginStatus();
+    }, []);
+
+    return isAdmin;
+  };
+  const isAdmin = useLoginStatus();
   console.log('isAdmin:', isAdmin);
 
-  const navigationItems = isAdmin ? AdminNavigation() : VerticalNavItems();
+  const navigationItems = isAdmin ? AdminNavigation() : VerticalNavItems()
+
 
   return (
     <VerticalLayout
