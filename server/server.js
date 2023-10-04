@@ -78,6 +78,7 @@ app.post('/api/masuk', async (req, res) => {
         roles: user.roles_user,
         isAdmin: false,
       });
+      console.log('Session User Data:', req.session.user);
 
       return;
     }
@@ -108,6 +109,7 @@ app.post('/api/masuk', async (req, res) => {
         roles: admin.roles_admin,
         isAdmin: true,
       });
+      console.log('Session Admin Data:', req.session.admin);
 
       return;
     }
