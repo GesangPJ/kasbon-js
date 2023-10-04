@@ -1,27 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import Menu from 'mdi-material-ui/Menu';
-import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler';
-import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown';
-import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown';
-import SearchBar from './SearchBar';
-import Typography from '@mui/material/Typography';
+import React, { useState, useEffect } from 'react'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import Menu from 'mdi-material-ui/Menu'
+import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler'
+import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
+import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown'
+import Typography from '@mui/material/Typography'
 
 const AppBarContent = (props) => {
-  const { hidden, settings, saveSettings, toggleNavVisibility } = props;
-  const hiddenSm = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+  const { hidden, settings, saveSettings, toggleNavVisibility } = props
+  const hiddenSm = useMediaQuery((theme) => theme.breakpoints.down('sm'))
 
-  const [sessionData, setSessionData] = useState(null);
+  const [sessionData, setSessionData] = useState(null)
 
   useEffect(() => {
     async function fetchSessionData() {
       try {
-        const response = await fetch('http://localhost:3001/api/get-session');
+        const response = await fetch('http://localhost:3001/api/get-session', {
+          method: 'GET',
+          credentials: 'include',
+        });
         if (response.status === 200) {
-          const data = await response.json();
-          setSessionData(data);
+          const sessionData = await response.json();
+
+          if (sessionData && sessionData.username) {
+            // Session data contains 'username' field
+            setSessionData(sessionData);
+          } else {
+            console.error('Session data not found');
+          }
         } else {
           console.error('Failed to fetch session data');
         }
@@ -31,7 +39,7 @@ const AppBarContent = (props) => {
     }
 
     fetchSessionData();
-  }, []);
+  }, []); // The empty array as the second argument means this effect runs only on component mount.
 
   return (
     <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space between' }}>
@@ -52,7 +60,7 @@ const AppBarContent = (props) => {
           <NotificationDropdown />
           <UserDropdown />
           <Typography variant="body1" sx={{ fontWeight: 600 }}>
-            {sessionData ? sessionData.nama_user || sessionData.nama_admin : 'User'}
+            {sessionData ? sessionData.username : 'User'}
           </Typography>
         </div>
       </Box>

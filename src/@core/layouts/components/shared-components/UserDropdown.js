@@ -23,17 +23,6 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
-async function fetchSessionData() {
-  try {
-    const response = await fetch('/api/session');
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching session data:', error);
-  }
-}
-
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
   width: 8,
@@ -97,10 +86,19 @@ const UserDropdown = () => {
   useEffect(() => {
     async function fetchSessionData() {
       try {
-        const response = await fetch('http://localhost:3001/api/get-session');
+        const response = await fetch('http://localhost:3001/api/get-session', {
+          method: 'GET',
+          credentials: 'include',
+        });
         if (response.status === 200) {
-          const data = await response.json();
-          setSessionData(data);
+          const sessionData = await response.json();
+
+          if (sessionData && sessionData.username) {
+            // Session data contains 'username' field
+            setSessionData(sessionData);
+          } else {
+            console.error('Session data not found');
+          }
         } else {
           console.error('Failed to fetch session data');
         }
@@ -150,7 +148,7 @@ const UserDropdown = () => {
               />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>{sessionData ? sessionData.nama_user || sessionData.nama_admin : 'User'}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{sessionData ? sessionData.username : 'User'}</Typography>
               <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Akun
               </Typography>

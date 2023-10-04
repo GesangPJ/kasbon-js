@@ -36,16 +36,20 @@ const UserLayout = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-      const fetchLoginStatus = async () => {
+      async function fetchSessionData() {
         try {
-          const response = await fetch('http://localhost:3001/api/get-session');
+          const response = await fetch('http://localhost:3001/api/get-session', {
+            method: 'GET',
+            credentials: 'include',
+          });
           if (response.status === 200) {
-            const data = await response.json();
+            const sessionData = await response.json();
 
-            if (data && data.user && data.user.roles === 'user') {
-              setIsAdmin(false);
-            } else if (data && data.admin && data.admin.roles === 'admin') {
-              setIsAdmin(true);
+            if (sessionData && sessionData.username) {
+              // Session data contains 'username' field
+              setSessionData(sessionData);
+            } else {
+              console.error('Session data not found');
             }
           } else {
             console.error('Failed to fetch session data');
@@ -53,18 +57,18 @@ const UserLayout = ({ children }) => {
         } catch (error) {
           console.error('Error fetching session data:', error);
         }
-      };
+      }
 
-      fetchLoginStatus();
+      fetchSessionData();
     }, []);
 
     return isAdmin;
   };
 
-  const isAdmin = useLoginStatus();
-  console.log('isAdmin:', isAdmin);
+  //const isAdmin = useLoginStatus();
+  //console.log('isAdmin:', isAdmin);
 
-  const navigationItems = isAdmin ? AdminNavigation() : VerticalNavItems()
+  const navigationItems = AdminNavigation()
 
 
   return (
