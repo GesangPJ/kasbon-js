@@ -5,10 +5,6 @@ import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 
-import TableSpanning from 'src/views/tables/TableSpanning'
-import TableCustomized from 'src/views/tables/TableCustomized'
-import TableCollapsible from 'src/views/tables/TableCollapsible'
-import TableObatHerbal from './TableObatHerbal'
 import TableDataUser from './TableUser'
 
 const DataUser = () => {
