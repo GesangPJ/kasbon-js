@@ -4,6 +4,7 @@ const cors = require('cors')
 const session = require('express-session')
 const { pool, PostgresStatus } = require('./postgres')
 const cookieParser = require('cookie-parser')
+const pgSession = require('connect-pg-simple')(session)
 
 const app = express()
 
@@ -68,10 +69,10 @@ app.post('/api/masuk', async (req, res) => {
         req.session.user = {};
       }
 
-      req.session.user = {
+      const sessionData = {
         id: user.id_user,
-        nama_user: user.nama_user,
-        email_user: user.email_user,
+        username: user.nama_user, // Add the 'username' field
+        email: user.email_user,
         roles: user.roles_user,
         isAdmin: false,
       };
@@ -82,7 +83,8 @@ app.post('/api/masuk', async (req, res) => {
         roles: user.roles_user,
         isAdmin: false,
       });
-      console.log('Session User Data:', req.session.user);
+      req.session.sessionData = sessionData
+      console.log('Session User Data:', req.session.sessionData);
 
       return;
     }
@@ -99,7 +101,7 @@ app.post('/api/masuk', async (req, res) => {
         req.session.admin = {};
       }
 
-      req.session.admin = {
+      const sessionData = {
         id: admin.id_admin,
         nama_admin: admin.nama_admin,
         email_admin: admin.email_admin,
@@ -113,7 +115,8 @@ app.post('/api/masuk', async (req, res) => {
         roles: admin.roles_admin,
         isAdmin: true,
       });
-      console.log('Session Admin Data:', req.session.admin);
+      req.session.sessionData = sessionData
+      console.log('Session Admin Data:', req.session.sessionData);
 
       return;
     }
@@ -128,7 +131,7 @@ app.post('/api/masuk', async (req, res) => {
 });
 
 app.get('/api/get-session', (req, res) => {
-  const sessionData = req.session.user || req.session.admin || null;
+  const sessionData = req.session.sessionData || null; // Update to 'sessionData'
   res.status(200).json(sessionData);
 });
 
