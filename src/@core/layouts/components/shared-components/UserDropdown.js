@@ -34,7 +34,7 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 
 const UserDropdown = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [user, setUser] = useState(null); // State to store user information
+  const [user, setUser] = useState({ nama: '' }); // State to store user information
   const router = useRouter();
 
   const handleDropdownOpen = (event) => {
@@ -81,24 +81,24 @@ const UserDropdown = () => {
   }
 
   useEffect(() => {
-    // Fetch user information from the session when the component mounts
-    async function fetchUserInfo() {
+    // Fetch session information from the server when the component mounts
+    async function fetchSessionInfo() {
       try {
-        const response = await fetch('http://localhost:3001/api/login', {
-          method: 'POST',
+        const response = await fetch('http://localhost:3001/api/session', {
+          method: 'GET',
           credentials: 'include',
         });
 
         if (response.ok) {
           const data = await response.json();
-          setUser(data.user);
+          setUser(data); // This will update the user state with user or admin information
         }
       } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error('Error fetching session info:', error);
       }
     }
 
-    fetchUserInfo();
+    fetchSessionInfo();
   }, []);
 
   return (
@@ -111,7 +111,7 @@ const UserDropdown = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <Avatar
-          alt="User"
+          alt="User Icon"
           onClick={handleDropdownOpen}
           sx={{ width: 40, height: 40 }}
           src="/images/avatars/user-icon.png"
@@ -139,7 +139,7 @@ const UserDropdown = () => {
               />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>{user ? user.nama_user : 'User'}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{user.nama || (admin.nama ? admin.nama : 'User')}</Typography>
               <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Akun
               </Typography>
