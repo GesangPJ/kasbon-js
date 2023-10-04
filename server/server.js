@@ -15,6 +15,10 @@ app.use(cookieParser())
 // Configure express-session for session management
 app.use(
   session({
+    store: new pgSession({
+      pool: pool, // Your PostgreSQL pool
+      tableName: 'sessions', // Name of the table to store sessions
+    }),
     secret: 'zXBVUQI0XCO24vcOc7leDCRJDI26QvSN', // Change this to a more secure secret key
     resave: false,
     saveUninitialized: true,
