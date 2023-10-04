@@ -105,7 +105,7 @@ const TableDataAdmin = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api');
+        const response = await fetch('');
         if (response.ok) {
           const result = await response.json();
           setData(result); // Update data state
