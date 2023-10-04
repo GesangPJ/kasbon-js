@@ -71,16 +71,20 @@ const SignPage = () => {
       if (response.status === 200) {
         const data = await response.json();
 
-        // Determine the role (user or admin) based on the response data
-        const role = data.isAdmin ? 'admin' : 'user';
-        sessionStorage.setItem('username', values.username);
+        // Check if data contains role information
+        if (data && data.roles) {
+          const role = data.roles; // Assuming the role is directly available in data
 
-        // Store the user or admin data in sessionStorage
-        sessionStorage.setItem('user', JSON.stringify(data.user));
-        sessionStorage.setItem('admin', JSON.stringify(data.admin));
+          // Store the user or admin data in sessionStorage
+          sessionStorage.setItem('user', JSON.stringify(role === 'user'));
+          sessionStorage.setItem('admin', JSON.stringify(role === 'admin'));
+          sessionStorage.setItem('username', values.username);
 
-        // Redirect to the appropriate dashboard page
-        router.push(`/dashboard-${role}`);
+          // Redirect to the appropriate dashboard page
+          router.push(`/dashboard-${role}`);
+        } else {
+          console.error('Role data not found in response');
+        }
       } else {
         console.error('Login error:', response.statusText);
       }
