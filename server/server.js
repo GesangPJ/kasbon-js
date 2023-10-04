@@ -121,31 +121,9 @@ app.post('/api/masuk', async (req, res) => {
   }
 });
 
-// Ambil dan simpan info session
-app.get('/api/session', (req, res) => {
-  const userData = req.session.user || {};
-  const adminData = req.session.admin || {};
-
-  const sessionData = {
-    user: {
-      nama: userData.nama_user,
-      email: userData.email_user,
-      roles: userData.roles_user,
-    },
-    admin: {
-      nama: adminData.nama_admin,
-      email: adminData.email_admin,
-      roles: adminData.roles_admin,
-    },
-  };
-
-  // Set the isAdmin flag
-  const isAdmin = req.session.admin && req.session.admin.isAdmin;
-
-  res.status(200).json({
-    sessionData,
-    isAdmin,
-  });
+app.get('/api/get-session', (req, res) => {
+  const sessionData = req.session.user || req.session.admin || null;
+  res.status(200).json(sessionData);
 });
 
 
