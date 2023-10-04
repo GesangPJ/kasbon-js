@@ -141,7 +141,7 @@ app.get('/api/session', (req, res) => {
       email: adminData.email_admin,
       roles: adminData.roles,
     },
-  };
+  }
 
   res.status(200).json(sessionData);
 });
