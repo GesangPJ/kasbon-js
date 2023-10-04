@@ -1,10 +1,8 @@
 const express = require('express')
 const { connectToKatalogObatDB } = require('./mongoDB')
-const { connectToKasbonDB } = require('./mongoDB')
 const cors = require('cors')
 const session = require('express-session')
 const { pool, PostgresStatus } = require('./postgres')
-const generateSecretKey = require('./secret_generator')
 
 const app = express()
 
@@ -22,7 +20,7 @@ app.use(cors())
 // Configure express-session for session management
 app.use(
   session({
-    secret: generateSecretKey(), // Change this to a more secure secret key
+    secret: 'zXBVUQI0XCO24vcOc7leDCRJDI26QvSN', // Change this to a more secure secret key
     resave: false,
     saveUninitialized: true,
   })
@@ -38,8 +36,8 @@ app.post('/api/login', async (req, res) => {
     // Check if the provided credentials match any user in the 'user' table
     //const userQuery = 'SELECT * FROM "user" WHERE nama = $1 AND password = $2';
     //const userResult = await client.query(userQuery, [name, password]);
-    const userQuery = 'SELECT * FROM "user" WHERE nama = $1 ';
-    const userResult = await client.query(userQuery, [name]);
+    const userQuery = 'SELECT * FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
+    const userResult = await client.query(userQuery, [name, password]);
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
@@ -67,7 +65,7 @@ app.post('/api/login-admin', async (req, res) => {
     const client = await pool.connect();
 
     // Check if the provided credentials match any user in the 'admin' table
-    const adminQuery = 'SELECT * FROM "admin" WHERE nama = $1 AND password = $2';
+    const adminQuery = 'SELECT * FROM "admin_kasbon" WHERE nama_admin = $1 AND password_admin = $2';
     const adminResult = await client.query(adminQuery, [name, password]);
 
     if (adminResult.rows.length > 0) {
@@ -129,7 +127,7 @@ app.post('/api/tambah-admin', async (req, res) => {
 
   try {
     const client = await pool.connect()
-    const result = await client.query('INSERT INTO "admin" (nama, email, password, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
+    const result = await client.query('INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
     client.release()
 
     if (result.rowCount === 1) {
@@ -152,7 +150,7 @@ app.post('/api/tambah-user', async (req, res) => {
     const client = await pool.connect();
 
     // Cek apakah ada user dengan nama yang sama
-    const checkQuery = 'SELECT COUNT(*) FROM "user" WHERE nama = $1';
+    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE nama_user = $1';
     const checkResult = await client.query(checkQuery, [nama]);
 
     if (checkResult.rows[0].count > 0) {
@@ -163,7 +161,7 @@ app.post('/api/tambah-user', async (req, res) => {
     }
 
     // Jika tidak ada maka lanjut masukkan data
-    const insertQuery = 'INSERT INTO "user" (nama, email, password, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)';
+    const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles) VALUES ($1, $2, $3, NOW(), $4)';
     const insertResult = await client.query(insertQuery, [nama, email, password, roles]);
 
     client.release();
