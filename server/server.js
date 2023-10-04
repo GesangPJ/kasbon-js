@@ -56,7 +56,6 @@ app.post('/api/login', async (req, res) => {
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
-      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
       req.session.user = {
         nama_user: user.nama_user,
         email_user: user.email_user,
