@@ -34,7 +34,8 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 
 const UserDropdown = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [user, setUser] = useState({ nama: '' }); // State to store user information
+  const [user, setUser] = useState({ nama: '' });
+  const [admin, setAdmin] = useState({ nama: '' }); // State to store user information
   const router = useRouter();
 
   const handleDropdownOpen = (event) => {
@@ -81,24 +82,45 @@ const UserDropdown = () => {
   }
 
   useEffect(() => {
-    // Fetch session information from the server when the component mounts
-    async function fetchSessionInfo() {
+    // Ambil User Session
+    async function fetchUserInfo() {
       try {
-        const response = await fetch('http://localhost:3001/api/session', {
-          method: 'GET',
+        const userResponse = await fetch('http://localhost:3001/api/login', {
+          method: 'POST',
           credentials: 'include',
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data); // This will update the user state with user or admin information
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData.user);
         }
       } catch (error) {
-        console.error('Error fetching session info:', error);
+        console.error('Error fetching user info:', error);
       }
     }
 
-    fetchSessionInfo();
+    fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    // Ambil admin session
+    async function fetchAdminInfo() {
+      try {
+        const adminResponse = await fetch('http://localhost:3001/api/login-admin', {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        if (adminResponse.ok) {
+          const adminData = await adminResponse.json();
+          setAdmin(adminData.admin);
+        }
+      } catch (error) {
+        console.error('Error fetching admin info:', error);
+      }
+    }
+
+    fetchAdminInfo();
   }, []);
 
   return (
