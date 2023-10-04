@@ -2,4 +2,4 @@
 
 Website untuk manajemen Kasbon
 
-Menggunakan NextJS, ExpressJS, MongoDB/PostgreSQL (database belum final)
+Menggunakan NextJS, ExpressJS, PostgreSQL
