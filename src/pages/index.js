@@ -81,7 +81,7 @@ const SignPage = () => {
             username: values.username,
             email: data.email,
             nama: data.nama,
-            roles: role,
+            role,
             isAdmin: role === 'admin',
 
             // Add other attributes from your session data if needed
@@ -89,15 +89,6 @@ const SignPage = () => {
 
           // Store the session data as a JSON string
           sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
-
-          // Wait for the session data to be set
-          await fetch('http://localhost:3001/api/get-session', {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
 
           // Once session data is available, perform routing
           router.push(`/dashboard-${role}`);
@@ -185,22 +176,6 @@ const SignPage = () => {
             <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
               Masuk
             </Button>
-            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography variant='body2' sx={{ marginRight: 2 }}>
-                Tidak ada akun?
-              </Typography>
-              <Link passHref href='/registrasi'>
-                <LinkStyled>Buat Akun</LinkStyled>
-              </Link>
-            </Box><br></br>
-            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography variant='body2' sx={{ marginRight: 2 }}>
-                Admin?
-              </Typography>
-              <Link passHref href='/admin-masuk'>
-                <LinkStyled>Akses Admin</LinkStyled>
-              </Link>
-            </Box>
           </form>
         </CardContent>
       </Card>
