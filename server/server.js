@@ -24,13 +24,10 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      domain: 'localhost',
-      path: '/',
-      sameSite: 'Lax',
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
     },
   })
-)
+);
 
 
 const corsOptions = {
@@ -136,10 +133,32 @@ app.post('/api/masuk', async (req, res) => {
   }
 });
 
-app.get('/api/get-session', (req, res) => {
-  const sessionData = req.session.sessionData || {} // Update to 'sessionData'
-  res.status(200).json(sessionData);
-});
+// Debug Session
+/*
+app.get('/api/set-session', (req, res) => {
+  // Set session data
+  req.session.user = {
+    id: 1,
+    username: 'example_user',
+    email: 'user@example.com',
+  };
+  res.json({ message: 'Session data set' });
+});*/
+
+app.get('/api/get-session', async (req, res) => {
+  // Check the user's role and retrieve the session data from the corresponding session object
+  if (req.session.user) {
+    sessionUser = req.session.user
+    res.json(sessionUser)
+    console.log('Current Sesseion get and send :', sessionUser)
+  } else if (req.session.admin) {
+    sessionAdmin = req.session.admin
+    res.json(sessionAdmin)
+    console.log('Current Sesseion get and send :', sessionAdmin)
+  } else {
+    res.json({ error: 'Session data not found' });
+  }
+})
 
 
 // Cek Status koneksi MongoDB
