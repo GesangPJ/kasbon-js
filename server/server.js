@@ -148,6 +148,8 @@ app.post('/api/masuk', async (req, res) => {
       const sessionData = userResult.rows.length > 0 ? userResult.rows[0] : adminResult.rows[0];
       req.session.user = sessionData;
 
+
+
       // Set the isAdmin flag
       const isAdmin = adminResult.rows.length > 0;
 
