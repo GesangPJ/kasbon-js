@@ -6,15 +6,8 @@ const { pool, PostgresStatus } = require('./postgres')
 
 const app = express()
 
-const corsOptions = {
-  origin: 'http://localhost:3000', // Replace with the actual URL of your frontend.
-  optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204.
-};
-app.use(cors(corsOptions))
-
 // Express JS
 app.use(express.json())
-app.use(cors())
 
 
 // Configure express-session for session management
@@ -24,26 +17,63 @@ app.use(
     resave: false,
     saveUninitialized: true,
   })
-);
+)
+
+const corsOptions = {
+  origin: '*', // Be cautious when using '*' in a production environment.
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions))
+
+// Logout
+app.get('/api/logout', (req, res) => {
+
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error during logout:', err);
+      res.status(500).json({ error: 'Internal Server Error' })
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+      res.redirect('/')
+    }
+  })
+})
 
 // Define an API endpoint for user authentication
+// Define an API endpoint for user authentication
 app.post('/api/login', async (req, res) => {
-  const { name, password } = req.body;
+  const { username, password } = req.body;
 
   try {
     const client = await pool.connect();
 
-    // Check if the provided credentials match any user in the 'user' table
-    //const userQuery = 'SELECT * FROM "user" WHERE nama = $1 AND password = $2';
-    //const userResult = await client.query(userQuery, [name, password]);
-    const userQuery = 'SELECT * FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
-    const userResult = await client.query(userQuery, [name, password]);
+    const userQuery = 'SELECT nama_user, email_user, roles FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
+    const userResult = await client.query(userQuery, [username, password]);
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
-      req.session.user = user; // Store user information in the session
+
+      req.session.user = {
+        nama_user: user.nama_user,
+        email_user: user.email_user,
+        roles: user.roles,
+      };
+
       client.release();
-      res.status(200).json({ roles: 'user' });
+
+      // Include additional user information in the response
+      res.status(200).json({
+        roles: user.roles,
+        user: {
+          nama_user: user.nama_user,
+          email_user: user.email_user,
+          roles: user.roles,
+        },
+      });
 
       return;
     }
@@ -57,16 +87,17 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+
 // Define an API endpoint for admin authentication
 app.post('/api/login-admin', async (req, res) => {
-  const { name, password } = req.body;
+  const { username, password } = req.body;
 
   try {
     const client = await pool.connect();
 
     // Check if the provided credentials match any user in the 'admin' table
     const adminQuery = 'SELECT * FROM "admin_kasbon" WHERE nama_admin = $1 AND password_admin = $2';
-    const adminResult = await client.query(adminQuery, [name, password]);
+    const adminResult = await client.query(adminQuery, [username, password]);
 
     if (adminResult.rows.length > 0) {
       const admin = adminResult.rows[0];
