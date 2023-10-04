@@ -84,35 +84,47 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-
-// Define an API endpoint for admin authentication
+// Login API
 app.post('/api/login-admin', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body
 
   try {
-    const client = await pool.connect();
+    const client = await pool.connect()
 
-    // Check if the provided credentials match any user in the 'admin' table
-    const adminQuery = 'SELECT * FROM "admin_kasbon" WHERE nama_admin = $1 AND password_admin = $2';
-    const adminResult = await client.query(adminQuery, [username, password]);
+    const adminQuery = 'SELECT nama_admin, email_admin, roles FROM admin_kasbon WHERE nama_admin = $1 AND password_admin = $2';
+    const adminResult = await client.query(adminQuery, [username, password])
 
-    if (adminResult.rows.length > 0) {
-      const admin = adminResult.rows[0];
-      req.session.user = admin; // Store admin information in the session
-      client.release();
-      res.status(200).json({ roles: 'admin' });
+    if (userResult.rows.length > 0) {
+      const admin = adminResult.rows[0]
+      req.session.admin = {
+        nama_admin: admin.nama_admin,
+        email_admin: admin.email_admin,
+        roles: admin.roles,
+      };
 
-      return;
+      client.release()
+
+      res.status(200).json({
+        roles: admin.roles,
+        admin: {
+          nama_admin: admin.nama_admin,
+          email_admin: admin.email_admin,
+          roles: admin.roles,
+        },
+      })
+
+      return
     }
 
     // Invalid credentials
     client.release();
     res.status(401).json({ error: 'Invalid credentials' });
   } catch (error) {
-    console.error('Error during admin login:', error);
+    console.error('Error during user login:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 // Cek Status koneksi MongoDB
