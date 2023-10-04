@@ -76,14 +76,24 @@ const SignPage = () => {
           const role = data.roles; // Assuming the role is directly available in data
 
           // Store the user or admin data in sessionStorage
-          sessionStorage.setItem('user', JSON.stringify(role === 'user'));
-          sessionStorage.setItem('admin', JSON.stringify(role === 'admin'));
-          sessionStorage.setItem('username', values.username);
+          const sessionData = {
+            id: data.id,
+            username: values.username,
+            email: data.email,
+            nama: data.nama,
+            roles: role,
+            isAdmin: role === 'admin',
+
+            // Add other attributes from your session data if needed
+          };
+
+          // Store the session data as a JSON string
+          sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
 
           // Redirect to the appropriate dashboard page
           router.push(`/dashboard-${role}`);
         } else {
-          console.error('Role data not found in response');
+          console.error('Role tidak dapat diambil');
         }
       } else {
         console.error('Login error:', response.statusText);
