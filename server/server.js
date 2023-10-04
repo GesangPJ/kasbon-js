@@ -89,20 +89,22 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// API Masuk, semua jadi satu
+// API masuk semua akun
 app.post('/api/masuk', async (req, res) => {
   const { username, password } = req.body;
 
   try {
     const client = await pool.connect();
 
-    // Check user credentials in the user_kasbon table
+    // cek data dari postgres
     const userQuery = 'SELECT id_user, nama_user, email_user, roles_user FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
     const userResult = await client.query(userQuery, [username, password]);
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
-      req.session.user = {
+
+      // simpan data ke session storage
+      req.sessionStorage.user = {
         id: user.id_user,
         nama_user: user.nama_user,
         email_user: user.email_user,
@@ -126,7 +128,9 @@ app.post('/api/masuk', async (req, res) => {
 
     if (adminResult.rows.length > 0) {
       const admin = adminResult.rows[0];
-      req.session.admin = {
+
+      // Store admin data in session storage
+      req.sessionStorage.admin = {
         id: admin.id_admin,
         nama_admin: admin.nama_admin,
         email_admin: admin.email_admin,
@@ -143,37 +147,15 @@ app.post('/api/masuk', async (req, res) => {
 
       return;
     }
-    if (userResult.rows.length > 0 || adminResult.rows.length > 0) {
-      // Set the session data for the user or admin
-      const sessionData = userResult.rows.length > 0 ? userResult.rows[0] : adminResult.rows[0];
-      req.session.user = sessionData;
-
-
-
-      // Set the isAdmin flag
-      const isAdmin = adminResult.rows.length > 0;
-
-      // Release the database connection
-      client.release();
-
-      // Return the response
-      res.status(200).json({
-        roles: sessionData.roles,
-        isAdmin,
-      });
-
-      return;
-    }
 
     // Invalid credentials
     client.release();
     res.status(401).json({ error: 'Invalid credentials' });
-    console.log('Session Data:', req.session);
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-})
+});
 
 
 // Login API
