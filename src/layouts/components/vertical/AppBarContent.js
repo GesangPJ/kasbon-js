@@ -29,7 +29,7 @@ const AppBarContent = (props) => {
         ) : null}
         {/*<SearchBar />*/} {/* New Custom Search Bar */}
       </Box>
-      <Box className="actions-right" sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box className="actions-right" sx={{ display: 'flex', justifyContent: 'flex-end' }}>
         <ModeToggler settings={settings} saveSettings={saveSettings} />
         <NotificationDropdown />
         <UserDropdown />
