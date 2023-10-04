@@ -59,9 +59,8 @@ const SignPage = () => {
   };
 
   const handleLogin = async () => {
-    // Send a POST request to your Express server for user authentication
     try {
-      const response = await fetch('http://localhost:3001/api/login', {
+      const response = await fetch('http://localhost:3001/api/masuk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,17 +69,14 @@ const SignPage = () => {
       });
 
       if (response.status === 200) {
-        // Login successful
         const data = await response.json();
 
-        // Redirect to the appropriate page based on the role (user or admin)
-        if (data.roles === 'admin') {
-          router.push('/dashbaord-admin'); // Replace with the admin dashboard URL
-        } else {
-          router.push('/dashboard-user'); // Replace with the user dashboard URL
-        }
+        // Determine the role (user or admin) based on the response data
+        const role = data.isAdmin ? 'admin' : 'user';
+
+        // Redirect to the appropriate dashboard page
+        router.push(`/dashboard-${role}`);
       } else {
-        // Handle login failure (e.g., show an error message)
         console.error('Login error:', response.statusText);
       }
     } catch (error) {
