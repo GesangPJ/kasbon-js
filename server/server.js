@@ -143,6 +143,25 @@ app.post('/api/masuk', async (req, res) => {
 
       return;
     }
+    if (userResult.rows.length > 0 || adminResult.rows.length > 0) {
+      // Set the session data for the user or admin
+      const sessionData = userResult.rows.length > 0 ? userResult.rows[0] : adminResult.rows[0];
+      req.session.user = sessionData;
+
+      // Set the isAdmin flag
+      const isAdmin = adminResult.rows.length > 0;
+
+      // Release the database connection
+      client.release();
+
+      // Return the response
+      res.status(200).json({
+        roles: sessionData.roles,
+        isAdmin,
+      });
+
+      return;
+    }
 
     // Invalid credentials
     client.release();
