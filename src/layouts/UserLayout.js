@@ -37,10 +37,12 @@ const UserLayout = ({ children }) => {
 
     useEffect(() => {
       const fetchLoginStatus = async () => {
-        const response = await fetch('http://localhost:3001/api/session');
+        const response = await fetch('http://localhost:3001/api/get-session');
         const data = await response.json();
 
-        if (data.admin && data.admin.isAdmin) {
+        if (data.user && data.user.roles === 'user') {
+          setIsAdmin(false);
+        } else if (data.admin && data.admin.roles === 'admin') {
           setIsAdmin(true);
         }
       };
@@ -50,6 +52,7 @@ const UserLayout = ({ children }) => {
 
     return isAdmin;
   };
+
   const isAdmin = useLoginStatus();
   console.log('isAdmin:', isAdmin);
 

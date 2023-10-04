@@ -94,24 +94,23 @@ const UserDropdown = () => {
 
   const [sessionData, setSessionData] = useState(null);
 
-  const getActiveName = () => {
-    const userSession = sessionStorage.getItem('user');
-    const adminSession = sessionStorage.getItem('admin');
-
-    if (userSession) {
-      const userData = JSON.parse(userSession);
-
-      return userData.nama_user;
+  useEffect(() => {
+    async function fetchSessionData() {
+      try {
+        const response = await fetch('http://localhost:3001/api/get-session');
+        if (response.status === 200) {
+          const data = await response.json();
+          setSessionData(data);
+        } else {
+          console.error('Failed to fetch session data');
+        }
+      } catch (error) {
+        console.error('Error fetching session data:', error);
+      }
     }
 
-    if (adminSession) {
-      const adminData = JSON.parse(adminSession);
-
-      return adminData.nama_admin;
-    }
-
-    return 'User'; // Default name if no active session
-  };
+    fetchSessionData();
+  }, []);
 
   return (
     <Fragment>
@@ -151,7 +150,7 @@ const UserDropdown = () => {
               />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>{getActiveName()}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{sessionData ? sessionData.nama_user || sessionData.nama_admin : 'User'}</Typography>
               <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Akun
               </Typography>
