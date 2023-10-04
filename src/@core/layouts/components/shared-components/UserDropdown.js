@@ -32,7 +32,7 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
   boxShadow: `0 0 0 2px ${theme.palette.background.paper}`
 }))
 
-const UserDropdown = () => {
+const UserDropdown = (props) => {
   // ** States
   const [anchorEl, setAnchorEl] = useState(null)
 
@@ -49,6 +49,25 @@ const UserDropdown = () => {
     }
     setAnchorEl(null)
   }
+
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:3001/api/logout', {
+        method: 'GET',
+        credentials: 'include',
+      })
+
+      router.push('/'); // kirim user/admin ke login
+    } catch (error) {
+      console.error('Error during logout:', error);
+
+      // Handle logout error, if necessary
+    }
+
+    setAnchorEl(null); // Close the dropdown
+  }
+
+  //const UserName = req.session.user ? req.session.user.nama_user : 'User'
 
   const styles = {
     py: 2,
@@ -98,9 +117,9 @@ const UserDropdown = () => {
               <Avatar alt='Admin Icon' src='/images/avatars/admin-icon.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>Admin</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{props.user.nama_user}</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
-                Admin
+                Akun
               </Typography>
             </Box>
           </Box>
@@ -113,14 +132,8 @@ const UserDropdown = () => {
           </Box>
         </MenuItem>
         <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <CogOutline sx={{ marginRight: 2 }} />
-            Settings
-          </Box>
-        </MenuItem>
         <Divider />
-        <MenuItem sx={{ py: 2 }} onClick={() => handleDropdownClose('/pages/login')}>
+        <MenuItem sx={{ py: 2 }} onClick={handleLogout}>
           <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
           Logout
         </MenuItem>
