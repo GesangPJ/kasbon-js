@@ -89,18 +89,18 @@ app.post('/api/login-admin', async (req, res) => {
   const { username, password } = req.body
 
   try {
-    const client = await pool.connect()
+    const client = await pool.connect();
 
-    const adminQuery = 'SELECT nama_admin, email_admin, roles FROM admin_kasbon WHERE nama_admin = $1 AND password_admin = $2';
+    const adminQuery = 'SELECT nama_admin, email_admin, roles FROM admin_kasbon WHERE nama_admin = $1 AND password_admin = $2'
     const adminResult = await client.query(adminQuery, [username, password])
 
-    if (userResult.rows.length > 0) {
+    if (adminResult.rows.length > 0) {
       const admin = adminResult.rows[0]
       req.session.admin = {
         nama_admin: admin.nama_admin,
         email_admin: admin.email_admin,
         roles: admin.roles,
-      };
+      }
 
       client.release()
 
@@ -117,11 +117,11 @@ app.post('/api/login-admin', async (req, res) => {
     }
 
     // Invalid credentials
-    client.release();
-    res.status(401).json({ error: 'Invalid credentials' });
+    client.release()
+    res.status(401).json({ error: 'Invalid credentials' })
   } catch (error) {
-    console.error('Error during user login:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error during admin login:', error);
+    res.status(500).json({ error: 'Internal Server Error' })
   }
 })
 
