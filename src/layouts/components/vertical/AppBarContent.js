@@ -8,7 +8,7 @@ import UserDropdown from 'src/@core/layouts/components/shared-components/UserDro
 import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown';
 import SearchBar from './SearchBar'; // Import the SearchBar component
 import Typography from '@mui/material/Typography'
-import { useEffect, useState } from 'react';
+import { useState, useEffect, Fragment } from 'react'
 
 
 const AppBarContent = (props) => {
@@ -32,7 +32,12 @@ const AppBarContent = (props) => {
 
         if (response.ok) {
           const data = await response.json();
-          setUser(data.user);
+          if (data.user && data.user.nama) {
+            setUser({ nama: data.user.nama });
+          }
+          if (data.admin && data.admin.nama) {
+            setAdmin({ nama: data.admin.nama });
+          }
         }
       } catch (error) {
         console.error('Error fetching user info:', error);
@@ -63,7 +68,7 @@ const AppBarContent = (props) => {
           <ModeToggler settings={settings} saveSettings={saveSettings} />
           <NotificationDropdown />
           <UserDropdown />
-          <Typography variant="body1" sx={{ fontWeight: 600 }}>{user.nama || (admin.nama ? admin.nama : 'User')}</Typography>
+          <Typography variant="body1" sx={{ fontWeight: 600 }}>{user.nama || admin.nama || 'User'}</Typography>
         </div>
       </Box>
     </Box>
