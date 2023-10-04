@@ -61,7 +61,7 @@ const AppBarContent = (props) => {
             <Menu />
           </IconButton>
         ) : null}
-        {/*<SearchBar />*/} {/* New Custom Search Bar */}
+
       </Box>
       <Box className="actions-right" sx={{ display: 'flex', justifyContent: 'flex-end', flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
