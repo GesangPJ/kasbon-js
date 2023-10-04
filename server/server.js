@@ -31,20 +31,18 @@ app.use(cors(corsOptions))
 
 // Logout
 app.get('/api/logout', (req, res) => {
-
   req.session.destroy((err) => {
     if (err) {
       console.error('Error during logout:', err);
-      res.status(500).json({ error: 'Internal Server Error' })
+      res.status(500).json({ error: 'Internal Server Error' });
     } else {
-      // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
-      //res.redirect('/')
+      // Redirect to the login page after successful logout
+      res.status(200).json({ message: 'Logged out successfully' });
     }
-  })
+  });
 })
 
-// Define an API endpoint for user authentication
-// Define an API endpoint for user authentication
+// Login API
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
