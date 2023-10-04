@@ -1,5 +1,5 @@
 # KASBON WEBSITE [EARLY DEVELOPMENT]
 
-Website untum manajemen Kasbon
+Website untuk manajemen Kasbon
 
 Menggunakan NextJS, ExpressJS, MongoDB/PostgreSQL (database belum final)
