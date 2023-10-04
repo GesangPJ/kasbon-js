@@ -17,12 +17,18 @@ app.use(cookieParser())
 app.use(
   session({
     store: new pgSession({
-      pool: pool, // Your PostgreSQL pool
-      tableName: 'sessions', // Name of the table to store sessions
+      pool: pool,
+      tableName: 'sessions',
     }),
-    secret: 'zXBVUQI0XCO24vcOc7leDCRJDI26QvSN', // Change this to a more secure secret key
+    secret: 'zXBVUQI0XCO24vcOc7leDCRJDI26QvSN',
     resave: false,
     saveUninitialized: true,
+    cookie: {
+      domain: 'localhost',
+      path: '/',
+      sameSite: 'Lax',
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+    },
   })
 )
 
@@ -69,7 +75,7 @@ app.post('/api/masuk', async (req, res) => {
         req.session.user = {};
       }
 
-      const sessionData = {
+      req.session.user = {
         id: user.id_user,
         username: user.nama_user, // Add the 'username' field
         email: user.email_user,
@@ -83,8 +89,8 @@ app.post('/api/masuk', async (req, res) => {
         roles: user.roles_user,
         isAdmin: false,
       });
-      req.session.sessionData = sessionData
-      console.log('Session User Data:', req.session.sessionData);
+
+      console.log('Session User Data:', req.session.user);
 
       return;
     }
@@ -101,10 +107,10 @@ app.post('/api/masuk', async (req, res) => {
         req.session.admin = {};
       }
 
-      const sessionData = {
+      req.session.admin = {
         id: admin.id_admin,
-        nama_admin: admin.nama_admin,
-        email_admin: admin.email_admin,
+        username: admin.nama_admin,
+        email: admin.email_admin,
         roles: admin.roles_admin,
         isAdmin: true,
       };
@@ -115,8 +121,8 @@ app.post('/api/masuk', async (req, res) => {
         roles: admin.roles_admin,
         isAdmin: true,
       });
-      req.session.sessionData = sessionData
-      console.log('Session Admin Data:', req.session.sessionData);
+
+      console.log('Session Admin Data:', req.session.admin);
 
       return;
     }
@@ -131,7 +137,7 @@ app.post('/api/masuk', async (req, res) => {
 });
 
 app.get('/api/get-session', (req, res) => {
-  const sessionData = req.session.sessionData || null; // Update to 'sessionData'
+  const sessionData = req.session.sessionData || {} // Update to 'sessionData'
   res.status(200).json(sessionData);
 });
 
