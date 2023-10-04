@@ -37,13 +37,21 @@ const UserLayout = ({ children }) => {
 
     useEffect(() => {
       const fetchLoginStatus = async () => {
-        const response = await fetch('http://localhost:3001/api/get-session');
-        const data = await response.json();
+        try {
+          const response = await fetch('http://localhost:3001/api/get-session');
+          if (response.status === 200) {
+            const data = await response.json();
 
-        if (data.user && data.user.roles === 'user') {
-          setIsAdmin(false);
-        } else if (data.admin && data.admin.roles === 'admin') {
-          setIsAdmin(true);
+            if (data && data.user && data.user.roles === 'user') {
+              setIsAdmin(false);
+            } else if (data && data.admin && data.admin.roles === 'admin') {
+              setIsAdmin(true);
+            }
+          } else {
+            console.error('Failed to fetch session data');
+          }
+        } catch (error) {
+          console.error('Error fetching session data:', error);
         }
       };
 
