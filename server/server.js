@@ -123,6 +123,27 @@ app.post('/api/login-admin', async (req, res) => {
     console.error('Error during user login:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
+})
+
+// Ambil dan simpan info session
+app.get('/api/session', (req, res) => {
+  const userData = req.session.user || {};
+  const adminData = req.session.admin || {};
+
+  const sessionData = {
+    user: {
+      nama: userData.nama_user,
+      email: userData.email_user,
+      roles: userData.roles,
+    },
+    admin: {
+      nama: adminData.nama_admin,
+      email: adminData.email_admin,
+      roles: adminData.roles,
+    },
+  };
+
+  res.status(200).json(sessionData);
 });
 
 
