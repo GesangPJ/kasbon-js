@@ -9,29 +9,33 @@ import NotificationDropdown from 'src/@core/layouts/components/shared-components
 import SearchBar from './SearchBar';
 import Typography from '@mui/material/Typography';
 
-async function fetchSessionData() {
-  try {
-    const response = await fetch('/api/session');
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching session data:', error);
-  }
-}
-
 const AppBarContent = (props) => {
   const { hidden, settings, saveSettings, toggleNavVisibility } = props;
   const hiddenSm = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   const [sessionData, setSessionData] = useState(null);
 
-  useEffect(() => {
-    fetchSessionData().then(data => {
-      setSessionData(data);
-    });
-  }, []);
+  const username = sessionStorage.getItem('username');
 
+  // Function to determine the active session name
+  const getActiveName = () => {
+    const userSession = sessionStorage.getItem('user');
+    const adminSession = sessionStorage.getItem('admin');
+
+    if (userSession) {
+      const userData = JSON.parse(userSession);
+
+      return userData.nama_user;
+    }
+
+    if (adminSession) {
+      const adminData = JSON.parse(adminSession);
+
+      return adminData.nama_admin;
+    }
+
+    return 'User'; // Default name if no active session
+  };
 
   return (
     <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space between' }}>
@@ -52,7 +56,7 @@ const AppBarContent = (props) => {
           <NotificationDropdown />
           <UserDropdown />
           <Typography variant="body1" sx={{ fontWeight: 600 }}>
-            {sessionData && sessionData.nama}
+            {getActiveName()}
           </Typography>
         </div>
       </Box>

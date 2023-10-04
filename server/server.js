@@ -45,66 +45,26 @@ app.get('/api/logout', (req, res) => {
   });
 })
 
-// Login API
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const client = await pool.connect();
-
-    const userQuery = 'SELECT nama_user, email_user, roles_user FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
-    const userResult = await client.query(userQuery, [username, password]);
-
-    if (userResult.rows.length > 0) {
-      const user = userResult.rows[0];
-      req.session.user = {
-        nama_user: user.nama_user,
-        email_user: user.email_user,
-        roles: user.roles_user,
-        isAdmin: false,
-      };
-
-      client.release();
-
-      // Include additional user information in the response
-      res.status(200).json({
-        roles: user.roles,
-        user: {
-          nama_user: user.nama_user,
-          email_user: user.email_user,
-          roles: user.roles_user,
-          isAdmin: false,
-        },
-      });
-
-      return;
-    }
-
-    // Invalid credentials
-    client.release();
-    res.status(401).json({ error: 'Invalid credentials' });
-  } catch (error) {
-    console.error('Error during user login:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// API masuk semua akun
+// API Masuk
 app.post('/api/masuk', async (req, res) => {
   const { username, password } = req.body;
 
   try {
     const client = await pool.connect();
 
-    // cek data dari postgres
+    // Check user credentials in the user_kasbon table
     const userQuery = 'SELECT id_user, nama_user, email_user, roles_user FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
     const userResult = await client.query(userQuery, [username, password]);
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
 
-      // simpan data ke session storage
-      req.sessionStorage.user = {
+      // Ensure that req.session.user is an object
+      if (!req.session.user) {
+        req.session.user = {};
+      }
+
+      req.session.user = {
         id: user.id_user,
         nama_user: user.nama_user,
         email_user: user.email_user,
@@ -129,8 +89,12 @@ app.post('/api/masuk', async (req, res) => {
     if (adminResult.rows.length > 0) {
       const admin = adminResult.rows[0];
 
-      // Store admin data in session storage
-      req.sessionStorage.admin = {
+      // Ensure that req.session.admin is an object
+      if (!req.session.admin) {
+        req.session.admin = {};
+      }
+
+      req.session.admin = {
         id: admin.id_admin,
         nama_admin: admin.nama_admin,
         email_admin: admin.email_admin,
@@ -156,50 +120,6 @@ app.post('/api/masuk', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
-// Login API
-app.post('/api/login-admin', async (req, res) => {
-  const { username, password } = req.body
-
-  try {
-    const client = await pool.connect();
-
-    const adminQuery = 'SELECT nama_admin, email_admin, roles_admin FROM admin_kasbon WHERE nama_admin = $1 AND password_admin = $2'
-    const adminResult = await client.query(adminQuery, [username, password])
-
-    if (adminResult.rows.length > 0) {
-      const admin = adminResult.rows[0]
-      req.session.admin = {
-        nama_admin: admin.nama_admin,
-        email_admin: admin.email_admin,
-        roles: admin.roles_admin,
-        isAdmin: true,
-      }
-
-      client.release()
-
-      res.status(200).json({
-        roles: admin.roles,
-        admin: {
-          nama_admin: admin.nama_admin,
-          email_admin: admin.email_admin,
-          roles: admin.roles_admin,
-          isAdmin: true,
-        },
-      })
-
-      return
-    }
-
-    // Invalid credentials
-    client.release()
-    res.status(401).json({ error: 'Invalid credentials' })
-  } catch (error) {
-    console.error('Error during admin login:', error);
-    res.status(500).json({ error: 'Internal Server Error' })
-  }
-})
 
 // Ambil dan simpan info session
 app.get('/api/session', (req, res) => {

@@ -73,6 +73,11 @@ const SignPage = () => {
 
         // Determine the role (user or admin) based on the response data
         const role = data.isAdmin ? 'admin' : 'user';
+        sessionStorage.setItem('username', values.username);
+
+        // Store the user or admin data in sessionStorage
+        sessionStorage.setItem('user', JSON.stringify(data.user));
+        sessionStorage.setItem('admin', JSON.stringify(data.admin));
 
         // Redirect to the appropriate dashboard page
         router.push(`/dashboard-${role}`);

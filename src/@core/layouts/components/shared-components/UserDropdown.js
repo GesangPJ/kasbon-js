@@ -23,6 +23,17 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
+async function fetchSessionData() {
+  try {
+    const response = await fetch('/api/session');
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching session data:', error);
+  }
+}
+
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
   width: 8,
@@ -83,20 +94,24 @@ const UserDropdown = () => {
 
   const [sessionData, setSessionData] = useState(null);
 
-  useEffect(() => {
-    async function fetchSessionData() {
-      try {
-        const response = await fetch('/api/session');
-        const data = await response.json();
+  const getActiveName = () => {
+    const userSession = sessionStorage.getItem('user');
+    const adminSession = sessionStorage.getItem('admin');
 
-        setSessionData(data);
-      } catch (error) {
-        console.error('Error fetching session data:', error);
-      }
+    if (userSession) {
+      const userData = JSON.parse(userSession);
+
+      return userData.nama_user;
     }
 
-    fetchSessionData();
-  }, []);
+    if (adminSession) {
+      const adminData = JSON.parse(adminSession);
+
+      return adminData.nama_admin;
+    }
+
+    return 'User'; // Default name if no active session
+  };
 
   return (
     <Fragment>
@@ -136,7 +151,7 @@ const UserDropdown = () => {
               />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>{sessionData.nama}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{getActiveName()}</Typography>
               <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Akun
               </Typography>
