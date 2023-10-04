@@ -90,10 +90,7 @@ const SignPage = () => {
           // Store the session data as a JSON string
           sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
 
-          // Redirect to the appropriate dashboard page
-          router.push(`/dashboard-${role}`);
-
-          // Use the following code to wait for the session data to be set
+          // Wait for the session data to be set
           await fetch('http://localhost:3001/api/get-session', {
             method: 'GET',
             credentials: 'include',
@@ -101,6 +98,9 @@ const SignPage = () => {
               'Content-Type': 'application/json',
             },
           });
+
+          // Once session data is available, perform routing
+          router.push(`/dashboard-${role}`);
         } else {
           console.error('Role tidak dapat diambil');
         }
