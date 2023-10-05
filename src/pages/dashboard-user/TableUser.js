@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import Link from 'next/dist/client/link';
-import { useRouter } from 'next/router';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
@@ -14,29 +11,18 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 const columns = [
-  { id: 'namaObat', label: 'Tanggal', minWidth: 170, sortable: true },
-  { id: 'latin', label: 'Jumlah', minWidth: 100, sortable: true },
-  { id: 'komposisi', label: 'Metode Pembayaran', minWidth: 50, sortable: true },
-  {
-    id: 'kegunaanUtama',
-    label: 'Status Request',
-    minWidth: 170,
-    align: 'left',
-    sortable: true,
-  },
-  {
-    id: 'aksi',
-    label: 'Status Pembayaran',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toFixed(2),
-    sortable: false, // No sorting for this column
-  },
+  { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
+  { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: true },
+  { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
+  { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_request', label: 'Req', minWidth: 10, align: 'center', sortable: false },
+  { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'center', sortable: false },
 ];
 
-function createData(namaObat, komposisi, latin, kegunaanUtama) {
-  return { namaObat, komposisi, latin, kegunaanUtama };
+function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_bayar) {
+  return { tanggaljam, jumlah, metode, keterangan, status_request, status_bayar };
 }
+
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -68,12 +54,10 @@ function descendingComparator(a, b, orderBy) {
 }
 
 const TableDataUser = () => {
-  // ** States
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]); // Declare data state
-  const [sorting, setSorting] = useState({ column: 'namaObat', direction: 'asc' });
-  const router = useRouter();
+  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -89,28 +73,15 @@ const TableDataUser = () => {
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
   };
 
-  const handleDetailClick = (namaObat) => {
-    // Construct the link with the target="_blank" attribute
-    return (
-      <Link href={`/detail-obat-herbal?namaObat=${namaObat}`} passHref>
-        <a target="_blank">
-          <Button variant='contained' color='primary'>
-            Detail
-          </Button>
-        </a>
-      </Link>
-    );
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api');
+        const response = await fetch('http://localhost:3001/api/ambil-dashboard-user');
         if (response.ok) {
           const result = await response.json();
           setData(result); // Update data state
         } else {
-          console.error('Error fetching obat herbal data.');
+          console.error('Error fetching dashboard user data.');
         }
       } catch (error) {
         console.error('Error:', error);
@@ -120,7 +91,8 @@ const TableDataUser = () => {
     fetchData();
   }, []);
 
-  const rows = data.map((row) => createData(row.namaObat, row.komposisi, row.latin, row.kegunaanUtama));
+  // Map data to table rows
+  const rows = data.map((row) => createData(row.tanggaljam, row.jumlah, row.metode, row.keterangan, row.status_request, row.status_bayar));
 
   // Sorting function
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
@@ -162,27 +134,25 @@ const TableDataUser = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.namaObat}>
-                {columns.map((column) => {
-                  const value = row[column.id];
-                  if (column.id === 'aksi') {
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                        {handleDetailClick(row.namaObat)}
-                      </TableCell>
-                    );
-                  }
+            {sortedData.length === 0 ? (
 
-                  return (
+              // Render a "No Data" message when there are no records
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  No Data
+                </TableCell>
+              </TableRow>
+            ) : (
+              sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.namaObat}>
+                  {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
                       {column.format && typeof value === 'number' ? column.format(value) : value}
                     </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+                  ))}
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -197,6 +167,6 @@ const TableDataUser = () => {
       />
     </Paper>
   );
-}
+};
 
 export default TableDataUser;
