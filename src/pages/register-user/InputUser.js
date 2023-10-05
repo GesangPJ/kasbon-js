@@ -20,7 +20,7 @@ const FormUser = () => {
   const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
 
   const handlepasswordChange = (e) => setpassword(e.target.value)
   const handlenamaChange = (e) => setnama(e.target.value)
