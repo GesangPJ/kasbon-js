@@ -140,6 +140,7 @@ app.post('/api/masuk', async (req, res) => {
         email: admin.email_admin,
         roles: admin.roles_admin,
         isAdmin: true,
+        id_akun: admin.id_petugas,
       });
 
       console.log('Session Admin Data:', req.session.admin);
@@ -175,9 +176,10 @@ app.get('/api/get-session', async (req, res) => {
   }
 });
 
+// Kirim Status PostgreSQL
 app.get('/api/postgres-status', async (req, res) => {
   try {
-    // Check PostgreSQL status using the PostgresStatus function
+    // cek postgresql status
     await PostgresStatus();
 
     // Respond with a JSON status
@@ -194,33 +196,36 @@ app.get('/api/server-status', (req, res) => {
   res.json({ status: 'Online' });
 })
 
-// Kirim (POST) data admin ke Postgres
+// Tambah Akun Admin
 app.post('/api/tambah-admin', async (req, res) => {
-  const { nama, email, password, id_petugas } = req.body;
-  const roles = 'admin'; // Manually set roles to 'admin'
+  const { nama, email, password, id_petugas } = req.body
+  const roles = 'admin'
 
   try {
     const client = await pool.connect()
 
-    // Cek apakah ada admin dengan nama yang sama
-    const checkQuery = 'SELECT COUNT(*) FROM "admin_kasbon" WHERE id_petugas = $4 AND nama_admin = $1';
-    const checkResult = await client.query(checkQuery, [id_karyawan]);
+    // Cek apakah ada admin dengan nama dan id yang sama
+    const checkQuery = 'SELECT COUNT(*) FROM "admin_kasbon" WHERE id_petugas = $1 AND nama_admin = $2'
+    const checkResult = await client.query(checkQuery, [id_petugas, nama])
 
     if (checkResult.rows[0].count > 0) {
-      // user dengan nama yang sama sudah ada
+      // ada admin dengan nama dan id yang sama
       client.release()
 
-      return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` });
+      return res.status(400).json({ error: `Id ${id_petugas} - ${nama} sudah ada` })
     }
 
-    const insertQuery = await client.query('INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin, id_petugas) VALUES ($1, $2, $3, NOW(), $4, $5)', [nama, email, password, roles, id_petugas])
+    // Lanjut jika tidak ada
+
+    const insertQuery = 'INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin, id_petugas) VALUES ($1, $2, $3, NOW(), $4, $5)';
     const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_petugas])
+
     client.release()
 
     if (insertResult.rowCount === 1) {
       res.status(201).json({ message: `Admin ${nama} ID : ${id_petugas} berhasil ditambahkan.` })
     } else {
-      res.status(500).json({ error: 'Failed to add the account.' })
+      res.status(500).json({ error: 'Gagal menambahkan akun admin.' })
     }
   } catch (error) {
     console.error('Error menambahkan admin:', error)
@@ -228,7 +233,7 @@ app.post('/api/tambah-admin', async (req, res) => {
   }
 })
 
-// Kirim (POST) data user ke Postgres
+// Tambah Akun User
 app.post('/api/tambah-user', async (req, res) => {
   const { nama, email, password, id_karyawan } = req.body;
   const roles = 'user';
@@ -238,11 +243,11 @@ app.post('/api/tambah-user', async (req, res) => {
 
     // Cek apakah ada user dengan nama yang sama
     const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE id_karyawan = $4 AND nama_user = $1';
-    const checkResult = await client.query(checkQuery, [id_karyawan]);
+    const checkResult = await client.query(checkQuery, [nama, id_karyawan]); // Include `nama` and `id_karyawan` in the correct order
 
     if (checkResult.rows[0].count > 0) {
-      // user dengan nama yang sama sudah ada
-      client.release()
+      // ada user dengan nama dan id yang sama
+      client.release();
 
       return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` });
     }
@@ -263,6 +268,7 @@ app.post('/api/tambah-user', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 // Ambil Detail Data Obat Generik berdasarkan row yang dipilih user
 app.get('/api/obat-generik/:namaObat', async (req, res) => {
