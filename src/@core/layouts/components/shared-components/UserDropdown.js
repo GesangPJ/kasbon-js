@@ -56,8 +56,8 @@ const UserDropdown = () => {
         credentials: 'include',
       });
 
-      // Clear all items in local session storage
-      localStorage.clear();
+      // hapus session storage saat logout
+      sessionStorage.clear();
 
       // Redirect to the login page after successful logout
       router.push('/'); // Replace with your login page URL
@@ -134,9 +134,9 @@ const UserDropdown = () => {
               />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>{sessionData ? sessionData.username : 'User'}</Typography>
+              <Typography sx={{ fontWeight: 450 }}>{sessionData ? sessionData.username : 'User'}</Typography>
               <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
-                Akun
+                {sessionData ? sessionData.id_akun : 'User'}
               </Typography>
             </Box>
           </Box>
