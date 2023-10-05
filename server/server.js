@@ -70,12 +70,13 @@ app.get('/api/logout', (req, res) => {
 // API Masuk
 app.post('/api/masuk', async (req, res) => {
   const { idakun, password } = req.body;
+  const jakartaTimezone = 'Asia/Jakarta';
 
   try {
     const client = await pool.connect();
 
     // Check user credentials in the user_kasbon table
-    const userQuery = 'SELECT id_user, nama_user, email_user, roles_user, id_karyawan FROM user_kasbon WHERE id_karyawan = $1 AND password_user = $2';
+    const userQuery = 'SELECT id_user, nama_user, email_user, tanggal, roles_user, id_karyawan FROM user_kasbon WHERE id_karyawan = $1 AND password_user = $2';
     const userResult = await client.query(userQuery, [idakun, password]);
 
     if (userResult.rows.length > 0) {
@@ -86,6 +87,8 @@ app.post('/api/masuk', async (req, res) => {
       if (!req.session.user) {
         req.session.user = {};
       }
+      const tanggalAkun = new Date(user.tanggal);
+      const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
 
       req.session.user = {
         id: user.id_user,
@@ -93,6 +96,7 @@ app.post('/api/masuk', async (req, res) => {
         email: user.email_user,
         roles: user.roles_user,
         isAdmin: false,
+        tanggal_akun: tanggalFormat,
       };
 
       client.release();
@@ -104,6 +108,7 @@ app.post('/api/masuk', async (req, res) => {
         roles: user.roles_user,
         isAdmin: false,
         id_akun: user.id_karyawan,
+        tanggal_akun: user.tanggal,
       });
 
       console.log('Session User Data:', req.session.user);
@@ -112,7 +117,7 @@ app.post('/api/masuk', async (req, res) => {
     }
 
     // Check admin credentials in the admin_kasbon table
-    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, roles_admin, id_petugas FROM admin_kasbon WHERE id_petugas = $1 AND password_admin = $2';
+    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, tanggal, roles_admin, id_petugas FROM admin_kasbon WHERE id_petugas = $1 AND password_admin = $2';
     const adminResult = await client.query(adminQuery, [idakun, password]);
 
     if (adminResult.rows.length > 0) {
@@ -122,6 +127,8 @@ app.post('/api/masuk', async (req, res) => {
       if (!req.session.admin) {
         req.session.admin = {};
       }
+      const tanggalAkun = new Date(admin.tanggal);
+      const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
 
       req.session.admin = {
         id: admin.id_admin,
@@ -130,6 +137,7 @@ app.post('/api/masuk', async (req, res) => {
         roles: admin.roles_admin,
         isAdmin: true,
         id_akun: admin.id_petugas,
+        tanggal_akun: tanggalFormat,
       };
 
       client.release();
@@ -141,6 +149,7 @@ app.post('/api/masuk', async (req, res) => {
         roles: admin.roles_admin,
         isAdmin: true,
         id_akun: admin.id_petugas,
+        tanggal_akun: admin.tanggal,
       });
 
       console.log('Session Admin Data:', req.session.admin);
@@ -242,11 +251,11 @@ app.post('/api/tambah-user', async (req, res) => {
     const client = await pool.connect();
 
     // Cek apakah ada user dengan nama yang sama
-    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE id_karyawan = $4 AND nama_user = $1';
+    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE id_karyawan = $1 AND nama_user = $2';
     const checkResult = await client.query(checkQuery, [nama, id_karyawan]); // Include `nama` and `id_karyawan` in the correct order
 
     if (checkResult.rows[0].count > 0) {
-      // ada user dengan nama dan id yang sama
+      // user dengan nama yang sama sudah ada
       client.release();
 
       return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` });
@@ -291,6 +300,25 @@ app.get('/api/obat-generik/:namaObat', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 })
+
+// Ambil Data dari view dashboard_user
+app.get('/api/ambil-dashboard-user', async (req, res) => {
+  try {
+    // Query the dashboard_user view to retrieve the data
+    const query = 'SELECT * FROM dashboard_user'; // Replace with your actual SQL query if needed
+    const client = await pool.connect(); // Assuming "pool" is your PostgreSQL connection pool
+
+    const result = await client.query(query);
+
+    client.release(); // Release the client back to the pool
+
+    // Send the retrieved data as a JSON response
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error retrieving dashboard user data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 // Set Port buat server
 const port = process.env.PORT || 3001;
