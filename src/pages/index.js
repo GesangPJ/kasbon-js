@@ -47,7 +47,7 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
 
 const SignPage = () => {
   const [values, setValues] = useState({
-    username: '', // Change 'name' to 'username'
+    idakun: '', // Change 'name' to 'username'
     password: '',
     showPassword: false,
   });
@@ -156,11 +156,11 @@ const SignPage = () => {
             <TextField
               autoFocus
               fullWidth
-              id='username'
-              label='Username' // Change 'Nama' to 'Username'
+              id='idakun'
+              label='ID Anda' // Change 'Nama' to 'Username'
               sx={{ marginBottom: 4 }}
-              value={values.username}
-              onChange={handleChange('username')}
+              value={values.idakun}
+              onChange={handleChange('idakun')}
             />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
