@@ -80,6 +80,7 @@ app.post('/api/masuk', async (req, res) => {
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
+      console.log('User login data:', user);
 
       // Ensure that req.session.user is an object
       if (!req.session.user) {
@@ -97,6 +98,9 @@ app.post('/api/masuk', async (req, res) => {
       client.release();
 
       res.status(200).json({
+        id: user.id_user,
+        username: user.nama_user,
+        email: user.email_user,
         roles: user.roles_user,
         isAdmin: false,
       });
@@ -129,6 +133,9 @@ app.post('/api/masuk', async (req, res) => {
       client.release();
 
       res.status(200).json({
+        id: admin.id_admin,
+        username: admin.nama_admin,
+        email: admin.email_admin,
         roles: admin.roles_admin,
         isAdmin: true,
       });

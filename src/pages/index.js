@@ -70,30 +70,43 @@ const SignPage = () => {
 
       if (response.status === 200) {
         const data = await response.json();
+        console.log('Response data:', data);
 
         // Check if data contains role information
-        if (data && data.roles) {
-          const role = data.roles; // Assuming the role is directly available in data
+        if (data && data.isAdmin !== undefined && data.roles !== '') {
+          const role = data.roles;
 
-          // Store the user or admin data in sessionStorage
-          const sessionData = {
-            id: data.id,
-            username: values.username,
-            email: data.email,
-            nama: data.nama,
-            role,
-            isAdmin: role === 'admin',
+          // Check if data contains role information
+          if (data && data.isAdmin !== undefined && data.roles !== '') {
+            const role = data.roles;
 
-            // Add other attributes from your session data if needed
-          };
+            // Check if the 'id' is available in the data received from the server
+            if (data.id !== undefined) {
+              // Convert the 'id' to an integer
+              const id = parseInt(data.id, 10); // Assuming base 10
 
-          // Store the session data as a JSON string
-          sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
+              const sessionData = {
+                id, // Store the 'id' as an integer
+                username: values.username,
+                email: data.email,
+                nama: data.nama,
+                role,
+                isAdmin: role === 'admin',
+              };
 
-          // Once session data is available, perform routing
-          router.push(`/dashboard-${role}`);
+              // Store the session data as a JSON string
+              sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
+
+              // Once session data is available, perform routing
+              router.push(`/dashboard-${role}`);
+            } else {
+              console.error('ID not found in response data');
+            }
+          } else {
+            console.error('Role or id not found');
+          }
         } else {
-          console.error('Role tidak dapat diambil');
+          console.error('Role or id not found');
         }
       } else {
         console.error('Login error:', response.statusText);
@@ -102,6 +115,7 @@ const SignPage = () => {
       console.error('Login error:', error);
     }
   };
+
 
 
   const theme = useTheme();
