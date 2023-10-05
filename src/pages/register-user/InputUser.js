@@ -11,6 +11,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import IconButton from '@mui/material/IconButton'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+import FormControl from '@mui/material/FormControl'
 
 const FormUser = () => {
   const [nama, setnama] = useState('')
@@ -19,6 +20,7 @@ const FormUser = () => {
   const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [showPassword, setShowPassword] = useState(false);
 
   const handlepasswordChange = (e) => setpassword(e.target.value)
   const handlenamaChange = (e) => setnama(e.target.value)
@@ -74,7 +76,7 @@ const FormUser = () => {
   };
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
+    setShowPassword(!showPassword); // Toggle password visibility state
   };
 
   const handleMouseDownPassword = (event) => {
@@ -130,28 +132,31 @@ const FormUser = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label='Password'
-                name='password'
-                placeholder='Password User'
-                helperText='Masukkan Password User'
-                value={password}
-                onChange={handlepasswordChange}
-                type={password.showPassword ? 'text' : 'password'}
-                endAdornment={
-                  <InputAdornment position='end'>
-                    <IconButton
-                      edge='end'
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      aria-label='toggle password visibility'
-                    >
-                      {password.showPassword ? <EyeOutline /> : <EyeOffOutline />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
+              <FormControl fullWidth variant="outlined"> {/* Wrap the TextField in a FormControl */}
+                <TextField
+                  label='Password'
+                  name='password'
+                  placeholder='Password User'
+                  helperText='Masukkan Password User'
+                  value={password}
+                  onChange={handlepasswordChange}
+                  type={showPassword ? 'text' : 'password'}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                          aria-label='toggle password visibility'
+                        >
+                          {showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Box
