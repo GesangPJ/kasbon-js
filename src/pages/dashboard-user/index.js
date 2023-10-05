@@ -13,7 +13,7 @@ const DataUser = () => {
       <Grid item xs={12}>
         <Typography variant='h5'>
           <Link href='' target='_blank'>
-            Dashboard User
+            Dashboard Karyawan
           </Link>
         </Typography>
         <Typography variant='body2'></Typography>
