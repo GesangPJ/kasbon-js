@@ -78,7 +78,12 @@ const SignPage = () => {
 
           // Check if data contains role information
           if (data && data.isAdmin !== undefined && data.roles !== '') {
-            const role = data.roles;
+            const role = data.roles
+
+            const tanggalAkun = new Date(data.tanggal_akun);
+            const jakartaTimezone = 'Asia/Jakarta';
+
+            const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
 
             const sessionData = {
               id_table: data.id,
@@ -87,6 +92,7 @@ const SignPage = () => {
               role,
               isAdmin: role === 'admin',
               id_akun: data.id_akun,
+              tanggal_akun: tanggalFormat,
             };
 
             // Store the session data as a JSON string
