@@ -14,7 +14,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 const columns = [
-  { id: 'namaObat', label: 'Tanggal', minWidth: 170, sortable: true },
+  { id: 'tanggaljam', label: 'Tanggal Jam', minWidth: 170, sortable: true },
   { id: 'latin', label: 'Jumlah', minWidth: 100, sortable: true },
   { id: 'komposisi', label: 'Metode Pembayaran', minWidth: 50, sortable: true },
   {
