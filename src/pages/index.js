@@ -80,28 +80,21 @@ const SignPage = () => {
           if (data && data.isAdmin !== undefined && data.roles !== '') {
             const role = data.roles;
 
-            // Check if the 'id' is available in the data received from the server
-            if (data.id !== undefined) {
-              // Convert the 'id' to an integer
-              const id_table = parseInt(data.id, 10); // Assuming base 10
+            const sessionData = {
+              id_table: data.id,
+              username: data.username,
+              email: data.email,
+              role,
+              isAdmin: role === 'admin',
+              id_akun: data.id_akun,
+            };
 
-              const sessionData = {
-                id_table,
-                username: data.username,
-                email: data.email,
-                role,
-                isAdmin: role === 'admin',
-                id_akun: data.id_akun,
-              };
+            // Store the session data as a JSON string
+            sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
 
-              // Store the session data as a JSON string
-              sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
+            // Once session data is available, perform routing
+            router.push(`/dashboard-${role}`);
 
-              // Once session data is available, perform routing
-              router.push(`/dashboard-${role}`);
-            } else {
-              console.error('ID not found in response data');
-            }
           } else {
             console.error('Role or id not found');
           }
