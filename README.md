@@ -4,9 +4,8 @@ Website untuk manajemen Kasbon
 
 ### A. Features
 
-- Account authentication
-- Local session storage
-- Session Management
+- Account auth using express-session
+- Session storage
 
 ### B. Modules
 
