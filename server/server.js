@@ -1,5 +1,5 @@
 const express = require('express')
-const { connectToKatalogObatDB } = require('./mongoDB')
+const { connectToKatalogObatDB, client } = require('./mongoDB')
 const cors = require('cors')
 const session = require('express-session')
 const { pool, PostgresStatus } = require('./postgres')
@@ -244,37 +244,37 @@ app.post('/api/tambah-admin', async (req, res) => {
 
 // Tambah Akun User
 app.post('/api/tambah-user', async (req, res) => {
-  const { nama, email, password, id_karyawan } = req.body;
-  const roles = 'user';
+  const { nama, email, password, id_karyawan } = req.body
+  const roles = 'user'
 
   try {
-    const client = await pool.connect();
+    const client = await pool.connect()
 
     // Cek apakah ada user dengan nama yang sama
-    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE id_karyawan = $1 AND nama_user = $2';
-    const checkResult = await client.query(checkQuery, [nama, id_karyawan]); // Include `nama` and `id_karyawan` in the correct order
+    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE id_karyawan = $1 AND nama_user = $2'
+    const checkResult = await client.query(checkQuery, [nama, id_karyawan])
 
     if (checkResult.rows[0].count > 0) {
       // user dengan nama yang sama sudah ada
       client.release();
 
-      return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` });
+      return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` })
     }
 
     // Jika tidak ada maka lanjut masukkan data
-    const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles_user, id_karyawan) VALUES ($1, $2, $3, NOW(), $4, $5)';
-    const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_karyawan]);
+    const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles_user, id_karyawan) VALUES ($1, $2, $3, NOW(), $4, $5)'
+    const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_karyawan])
 
     client.release();
 
     if (insertResult.rowCount === 1) {
-      res.status(201).json({ message: `User: ${nama} Id: ${id_karyawan} berhasil ditambahkan.` });
+      res.status(201).json({ message: `User: ${nama} Id: ${id_karyawan} berhasil ditambahkan.` })
     } else {
-      res.status(500).json({ error: 'Gagal menambahkan akun user' });
+      res.status(500).json({ error: 'Gagal menambahkan akun user' })
     }
   } catch (error) {
     console.error('Error menambahkan user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error' })
   }
 });
 
@@ -304,21 +304,48 @@ app.get('/api/obat-generik/:namaObat', async (req, res) => {
 // Ambil Data dari view dashboard_user
 app.get('/api/ambil-dashboard-user', async (req, res) => {
   try {
-    // Query the dashboard_user view to retrieve the data
-    const query = 'SELECT * FROM dashboard_user'; // Replace with your actual SQL query if needed
-    const client = await pool.connect(); // Assuming "pool" is your PostgreSQL connection pool
+
+    const query = '';
+    const client = await pool.connect();
 
     const result = await client.query(query);
 
-    client.release(); // Release the client back to the pool
+    client.release();
 
-    // Send the retrieved data as a JSON response
-    res.json(result.rows);
+
+    res.json(result.rows)
   } catch (error) {
-    console.error('Error retrieving dashboard user data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error retrieving dashboard user data:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
   }
-});
+})
+
+// API Input Kasbon Karyawan
+app.get('/api/input-kasbon', async (req, res) => {
+
+  const { jumlah, metode, keterangan, id_akun } = req.body
+  const request_status = 'wait'
+
+  try {
+    const client = await pool.connect()
+
+    const insertQuery = 'INSERT INTO request (jumlah, metode, tanggaljam, id_karyawan, status_request, keterangan)  VALUES ($1, $2, NOW(), $3, $4, $5)'
+    const insertResult = await client.query(insertQuery, [jumlah, metode, id_akun, request_status, keterangan])
+
+    client.release()
+
+    if (insertResult.rowCount === 1) {
+      res.status(201).json({ message: `Kasbon Id: ${id_akun} berhasil dimasukkan ` })
+    }
+    else {
+      res.status(500).json({ error: `Error memasukkan kasbon ${id_akun} ` })
+    }
+  }
+  catch (error) {
+    console.error('Error menambahkan kasbon', error)
+    res.status(500).json({ error: `Internal Server Error` })
+  }
+})
 
 // Set Port buat server
 const port = process.env.PORT || 3001;
