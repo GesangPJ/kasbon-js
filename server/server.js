@@ -69,14 +69,14 @@ app.get('/api/logout', (req, res) => {
 
 // API Masuk
 app.post('/api/masuk', async (req, res) => {
-  const { username, password } = req.body;
+  const { idakun, password } = req.body;
 
   try {
     const client = await pool.connect();
 
     // Check user credentials in the user_kasbon table
-    const userQuery = 'SELECT id_user, nama_user, email_user, roles_user FROM user_kasbon WHERE nama_user = $1 AND password_user = $2';
-    const userResult = await client.query(userQuery, [username, password]);
+    const userQuery = 'SELECT id_user, nama_user, email_user, roles_user, id_karyawan FROM user_kasbon WHERE id_karyawan = $1 AND password_user = $2';
+    const userResult = await client.query(userQuery, [idakun, password]);
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
@@ -103,6 +103,7 @@ app.post('/api/masuk', async (req, res) => {
         email: user.email_user,
         roles: user.roles_user,
         isAdmin: false,
+        id_akun: user.id_karyawan,
       });
 
       console.log('Session User Data:', req.session.user);
@@ -111,8 +112,8 @@ app.post('/api/masuk', async (req, res) => {
     }
 
     // Check admin credentials in the admin_kasbon table
-    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, roles_admin FROM admin_kasbon WHERE nama_admin = $1 AND password_admin = $2';
-    const adminResult = await client.query(adminQuery, [username, password]);
+    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, roles_admin, id_petugas FROM admin_kasbon WHERE id_petugas = $1 AND password_admin = $2';
+    const adminResult = await client.query(adminQuery, [idakun, password]);
 
     if (adminResult.rows.length > 0) {
       const admin = adminResult.rows[0];
@@ -128,6 +129,7 @@ app.post('/api/masuk', async (req, res) => {
         email: admin.email_admin,
         roles: admin.roles_admin,
         isAdmin: true,
+        id_akun: admin.id_petugas,
       };
 
       client.release();
@@ -173,21 +175,6 @@ app.get('/api/get-session', async (req, res) => {
   }
 });
 
-
-// Cek Status koneksi MongoDB
-app.get('/api/mongodb-status', async (req, res) => {
-  try {
-    // Cek koneksi ke MongoDB pake MongoDB Driver
-    await connectToKatalogObatDB(); // Call the correct function to check MongoDB status
-
-    // Respon status pake JSON
-    res.json({ isConnected: true });
-  } catch (error) {
-    console.error('Error checking MongoDB status:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-})
-
 app.get('/api/postgres-status', async (req, res) => {
   try {
     // Check PostgreSQL status using the PostgresStatus function
@@ -209,16 +196,29 @@ app.get('/api/server-status', (req, res) => {
 
 // Kirim (POST) data admin ke Postgres
 app.post('/api/tambah-admin', async (req, res) => {
-  const { nama, email, password } = req.body;
+  const { nama, email, password, id_petugas } = req.body;
   const roles = 'admin'; // Manually set roles to 'admin'
 
   try {
     const client = await pool.connect()
-    const result = await client.query('INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin) VALUES ($1, $2, $3, NOW(), $4)', [nama, email, password, roles])
+
+    // Cek apakah ada admin dengan nama yang sama
+    const checkQuery = 'SELECT COUNT(*) FROM "admin_kasbon" WHERE id_petugas = $4 AND nama_admin = $1';
+    const checkResult = await client.query(checkQuery, [id_karyawan]);
+
+    if (checkResult.rows[0].count > 0) {
+      // user dengan nama yang sama sudah ada
+      client.release()
+
+      return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` });
+    }
+
+    const insertQuery = await client.query('INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin, id_petugas) VALUES ($1, $2, $3, NOW(), $4, $5)', [nama, email, password, roles, id_petugas])
+    const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_petugas])
     client.release()
 
-    if (result.rowCount === 1) {
-      res.status(201).json({ message: `Admin ${nama} berhasil ditambahkan.` })
+    if (insertResult.rowCount === 1) {
+      res.status(201).json({ message: `Admin ${nama} ID : ${id_petugas} berhasil ditambahkan.` })
     } else {
       res.status(500).json({ error: 'Failed to add the account.' })
     }
@@ -230,31 +230,31 @@ app.post('/api/tambah-admin', async (req, res) => {
 
 // Kirim (POST) data user ke Postgres
 app.post('/api/tambah-user', async (req, res) => {
-  const { nama, email, password } = req.body;
+  const { nama, email, password, id_karyawan } = req.body;
   const roles = 'user';
 
   try {
     const client = await pool.connect();
 
     // Cek apakah ada user dengan nama yang sama
-    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE nama_user = $1';
-    const checkResult = await client.query(checkQuery, [nama]);
+    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE id_karyawan = $4 AND nama_user = $1';
+    const checkResult = await client.query(checkQuery, [id_karyawan]);
 
     if (checkResult.rows[0].count > 0) {
       // user dengan nama yang sama sudah ada
       client.release()
 
-      return res.status(400).json({ error: `User ini ${nama} sudah ada` });
+      return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` });
     }
 
     // Jika tidak ada maka lanjut masukkan data
-    const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles_user) VALUES ($1, $2, $3, NOW(), $4)';
-    const insertResult = await client.query(insertQuery, [nama, email, password, roles]);
+    const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles_user, id_karyawan) VALUES ($1, $2, $3, NOW(), $4, $5)';
+    const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_karyawan]);
 
     client.release();
 
     if (insertResult.rowCount === 1) {
-      res.status(201).json({ message: `User ${nama} berhasil ditambahkan.` });
+      res.status(201).json({ message: `User: ${nama} Id: ${id_karyawan} berhasil ditambahkan.` });
     } else {
       res.status(500).json({ error: 'Gagal menambahkan akun user' });
     }
