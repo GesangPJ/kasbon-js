@@ -2,4 +2,16 @@
 
 Website untuk manajemen Kasbon
 
-Menggunakan NextJS, ExpressJS, PostgreSQL
+### A. Features
+
+- Account authentication
+- Local session storage
+- Session Management
+
+### B. Modules
+
+- React & NextJS
+- MUI core, Mui Icons
+- Express-JS
+- Express-Session
+- PostgreSQL Database
