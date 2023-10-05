@@ -6,11 +6,12 @@ import { AddCircle } from '@mui/icons-material'
 import { ModeEdit } from '@mui/icons-material'
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined'
+import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined';
 
 const AdminNavigation = () => {
   return [
     {
-      sectionTitle: 'Data'
+      sectionTitle: 'Data Kasbon'
     },
     {
       title: 'Dashboard',
@@ -18,9 +19,9 @@ const AdminNavigation = () => {
       path: '/dashboard-admin'
     },
     {
-      title: 'Kasbon',
-      icon: AccountBalanceWalletOutlinedIcon,
-      path: '/kasbonpage'
+      title: 'Request',
+      icon: RequestQuoteOutlinedIcon,
+      path: '/request-kasbon'
     },
     {
       sectionTitle: 'Admin'
