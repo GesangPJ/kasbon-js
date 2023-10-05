@@ -11,10 +11,10 @@ import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlin
 const navigation = () => {
   return [
     {
-      sectionTitle: 'Data'
+      sectionTitle: 'Data Kasbon'
     },
     {
-      title: 'Dashboard User',
+      title: 'Dashboard Karyawan',
       icon: SpaceDashboardOutlinedIcon,
       path: '/dashboard-user'
     },
