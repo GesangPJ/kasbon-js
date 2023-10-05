@@ -352,8 +352,6 @@ const port = process.env.PORT || 3001;
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
 
-  // Mulai Koneksi ke MongoDB saat server start
-  // await connectToKasbonDB()
   await PostgresStatus()
 
 })
