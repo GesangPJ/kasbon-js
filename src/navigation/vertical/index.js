@@ -16,7 +16,7 @@ const navigation = () => {
     {
       title: 'Dashboard User',
       icon: SpaceDashboardOutlinedIcon,
-      path: '/'
+      path: '/dashboard-user'
     },
     {
       title: 'Input Kasbon',
