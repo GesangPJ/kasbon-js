@@ -15,12 +15,12 @@ const AdminNavigation = () => {
     {
       title: 'Dashboard',
       icon: SpaceDashboardOutlinedIcon,
-      path: '/'
+      path: '/dashboard-admin'
     },
     {
       title: 'Kasbon',
       icon: AccountBalanceWalletOutlinedIcon,
-      path: '/obat-herbal'
+      path: '/kasbonpage'
     },
     {
       sectionTitle: 'Admin'
@@ -31,15 +31,15 @@ const AdminNavigation = () => {
       path: '/status'
     },
     {
-      title: 'Tambah Obat Generik',
+      title: 'Tambah User',
       icon: AddCircle,
-      path: '/tambah-obat-generik',
+      path: '/register-user',
       openInNewTab: false
     },
     {
-      title: 'Tambah Obat Herbal',
+      title: 'Tambah Admin',
       icon: AddCircle,
-      path: '/tambah-obat-herbal',
+      path: '/register-admin',
       openInNewTab: false
     },
     {
