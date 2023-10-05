@@ -83,15 +83,15 @@ const SignPage = () => {
             // Check if the 'id' is available in the data received from the server
             if (data.id !== undefined) {
               // Convert the 'id' to an integer
-              const id = parseInt(data.id, 10); // Assuming base 10
+              const id_table = parseInt(data.id, 10); // Assuming base 10
 
               const sessionData = {
-                id, // Store the 'id' as an integer
-                username: values.username,
+                id_table,
+                username: data.username,
                 email: data.email,
-                nama: data.nama,
                 role,
                 isAdmin: role === 'admin',
+                id_akun: data.id_akun,
               };
 
               // Store the session data as a JSON string
