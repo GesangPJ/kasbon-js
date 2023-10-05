@@ -12,12 +12,14 @@ const FormUser = () => {
   const [nama, setnama] = useState('')
   const [email, setemail] = useState('')
   const [password, setpassword] = useState('')
+  const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
   const handlepasswordChange = (e) => setpassword(e.target.value)
   const handlenamaChange = (e) => setnama(e.target.value)
   const handleemailChange = (e) => setemail(e.target.value)
+  const handleidkaryawanChange = (e) => setidkaryawan(e.target.value)
 
   const handleChange = (event) => {
     setRoles(event.target.value);
@@ -27,7 +29,7 @@ const FormUser = () => {
     e.preventDefault();
 
     // Validate the form fields
-    if (!nama || !email || !password) {
+    if (!nama || !email || !password || !id_karyawan) {
       // Display an error message if any field is empty
       setErrorMessage('Semua kolom harus diisi!');
 
@@ -37,7 +39,8 @@ const FormUser = () => {
     const AkunData = {
       nama,
       email,
-      password
+      password,
+      id_karyawan,
     };
 
     try {
@@ -47,13 +50,14 @@ const FormUser = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(AkunData),
-      });
+      })
 
       if (response.ok) {
-        setSuccessMessage(`User ${nama} berhasil ditambahkan.`);
-        setnama('');
-        setemail('');
-        setpassword('');
+        setSuccessMessage(`User: ${nama} Id: ${id_karyawan} berhasil ditambahkan.`)
+        setnama('')
+        setemail('')
+        setpassword('')
+        setidkaryawan('')
         setTimeout(() => {
           setSuccessMessage('');
         }, 5000);
@@ -77,6 +81,18 @@ const FormUser = () => {
         )}
         <form onSubmit={handleSubmit}>
           <Grid container spacing={5}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                type='text'
+                label='ID'
+                name='id_karyawan'
+                placeholder='ID Karyawan'
+                helperText='Masukkan ID'
+                value={id_karyawan}
+                onChange={handleidkaryawanChange}
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
