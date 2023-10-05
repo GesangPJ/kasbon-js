@@ -7,6 +7,10 @@ import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Alert from '@mui/material/Alert'
+import InputAdornment from '@mui/material/InputAdornment'
+import IconButton from '@mui/material/IconButton'
+import EyeOutline from 'mdi-material-ui/EyeOutline'
+import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
 const FormUser = () => {
   const [nama, setnama] = useState('')
@@ -69,6 +73,14 @@ const FormUser = () => {
     }
   };
 
+  const handleClickShowPassword = () => {
+    setValues({ ...values, showPassword: !values.showPassword });
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
   return (
     <Card>
       <CardHeader title='Form Tambah User' titleTypographyProps={{ variant: 'h6' }} />
@@ -120,13 +132,25 @@ const FormUser = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                type='password'
                 label='Password'
                 name='password'
                 placeholder='Password User'
                 helperText='Masukkan Password User'
                 value={password}
                 onChange={handlepasswordChange}
+                type={password.showPassword ? 'text' : 'password'}
+                endAdornment={
+                  <InputAdornment position='end'>
+                    <IconButton
+                      edge='end'
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      aria-label='toggle password visibility'
+                    >
+                      {password.showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
             </Grid>
             <Grid item xs={12}>
