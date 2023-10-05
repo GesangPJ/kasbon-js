@@ -70,9 +70,10 @@ const SignPage = () => {
 
       if (response.status === 200) {
         const data = await response.json();
+        console.log('Response data:', data);
 
         // Check if data contains role information
-        if (data && data.id && data.roles) {
+        if (data && data.isAdmin !== undefined && data.roles !== '') {
           const role = data.roles;
 
           const sessionData = {
