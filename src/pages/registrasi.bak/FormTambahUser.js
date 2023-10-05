@@ -1,36 +1,19 @@
-import { useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
+import React, { useState } from 'react'
 import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
+import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
+import InputAdornment from '@mui/material/InputAdornment'
+import Alert from '@mui/material/Alert'
+import Link from 'next/link'
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
+import Typography from '@mui/material/Typography'
 import FormControl from '@mui/material/FormControl'
 import OutlinedInput from '@mui/material/OutlinedInput'
-import { styled, useTheme } from '@mui/material/styles'
-import MuiCard from '@mui/material/Card'
-import InputAdornment from '@mui/material/InputAdornment'
-import MuiFormControlLabel from '@mui/material/FormControlLabel'
-import EyeOutline from 'mdi-material-ui/EyeOutline'
-import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
-import Alert from '@mui/material/Alert'
-
-import themeConfig from 'src/configs/themeConfig'
-
-import BlankLayout from 'src/@core/layouts/BlankLayout'
-
-import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import { Receipt } from '@mui/icons-material'
-
-// ** Styled Components
-const Card = styled(MuiCard)(({ theme }) => ({
-  [theme.breakpoints.up('sm')]: { width: '28rem' }
-}))
+import InputLabel from '@mui/material/InputLabel'
 
 const LinkStyled = styled('a')(({ theme }) => ({
   fontSize: '0.875rem',
@@ -45,7 +28,7 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
   }
 }))
 
-const UserRegistrasi = () => {
+const FormTambahUser = () => {
   const [nama, setnama] = useState('')
   const [email, setemail] = useState('')
   const [password, setpassword] = useState('')
@@ -125,7 +108,7 @@ const UserRegistrasi = () => {
   }
 
   return (
-    <Box className='content-center'>
+    <Card>
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
           {errorMessage && (
@@ -150,7 +133,7 @@ const UserRegistrasi = () => {
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='body2' align="center">Registrasi Akun Untuk Melanjutkan</Typography>
+            <Typography variant='body2' align="center">Registrasi Akun User</Typography>
           </Box>
           <form onSubmit={handleSubmit}>
             <TextField
@@ -184,7 +167,6 @@ const UserRegistrasi = () => {
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-
             </Box>
             <Button
               fullWidth
@@ -195,22 +177,12 @@ const UserRegistrasi = () => {
             >
               Buat Akun
             </Button>
-            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography variant='body2' sx={{ marginRight: 2 }}>
-                Sudah ada akun?
-              </Typography>
-              <Link passHref href='/'>
-                <LinkStyled>Masuk</LinkStyled>
-              </Link>
-            </Box>
           </form>
         </CardContent>
       </Card>
-      <FooterIllustrationsV1 />
-    </Box>
+      );
+    </Card>
   )
-}
+};
 
-UserRegistrasi.getLayout = page => <BlankLayout>{page}</BlankLayout>
-
-export default UserRegistrasi
+export default FormTambahUser;
