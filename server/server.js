@@ -80,6 +80,7 @@ app.post('/api/masuk', async (req, res) => {
 
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
+      console.log('User login data:', user);
 
       // Ensure that req.session.user is an object
       if (!req.session.user) {
