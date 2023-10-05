@@ -72,19 +72,16 @@ const SignPage = () => {
         const data = await response.json();
 
         // Check if data contains role information
-        if (data && data.roles) {
-          const role = data.roles; // Assuming the role is directly available in data
+        if (data && data.id && data.roles) {
+          const role = data.roles;
 
-          // Store the user or admin data in sessionStorage
           const sessionData = {
-            id: data.id,
+            id: data.id, // Ensure that 'id' is present in the response data
             username: values.username,
             email: data.email,
             nama: data.nama,
             role,
             isAdmin: role === 'admin',
-
-            // Add other attributes from your session data if needed
           };
 
           // Store the session data as a JSON string
@@ -93,7 +90,7 @@ const SignPage = () => {
           // Once session data is available, perform routing
           router.push(`/dashboard-${role}`);
         } else {
-          console.error('Role tidak dapat diambil');
+          console.error('Role or id not found');
         }
       } else {
         console.error('Login error:', response.statusText);
@@ -102,6 +99,7 @@ const SignPage = () => {
       console.error('Login error:', error);
     }
   };
+
 
 
   const theme = useTheme();
