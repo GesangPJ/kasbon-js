@@ -147,7 +147,7 @@ const TableEditRequest = () => {
     return utcDate.toLocaleString('id-ID', options);
   };
 
-  const id_akun = sessionData.id_akun
+
 
   // Masukkan data ke baris tabel
   const rows = data.map((row) => {
