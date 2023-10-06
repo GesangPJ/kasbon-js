@@ -1,14 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
-import TableHead from '@mui/material/TableHead';
+import React, { useState, useEffect } from 'react'
+import Paper from '@mui/material/Paper'
+import Table from '@mui/material/Table'
+import TableRow from '@mui/material/TableRow'
+import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import clsx from 'clsx'
+import { makeStyles } from '@mui/styles';
+
+// Menggunakan style untuk edit style cell table nanti
+const useStyles = makeStyles((theme) => ({
+  // warna warning/kuning
+  warningCell: {
+    backgroundColor: 'yellow',
+
+  },
+
+  //warna success/hijau
+  successCell: {
+    backgroundColor: 'green',
+
+  },
+}));
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
@@ -19,10 +36,12 @@ const columns = [
   { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'center', sortable: false },
 ];
 
+// Konstruktor row
 function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_bayar) {
   return { tanggaljam, jumlah, metode, keterangan, status_request, status_bayar };
 }
 
+// Sortir
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -35,12 +54,14 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+// Komparasi sortir
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
+// Komparasi sortir descending
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) return -1;
   if (b[orderBy] > a[orderBy]) return 1;
@@ -48,6 +69,7 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
+// Table dashboard karyawan
 const TableDataUser = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -70,6 +92,7 @@ const TableDataUser = () => {
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
   };
 
+  // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,6 +110,7 @@ const TableDataUser = () => {
     fetchData();
   }, [id_akun]);
 
+  // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -94,6 +118,7 @@ const TableDataUser = () => {
     }).format(jumlah);
   };
 
+  // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
     const jakartaTimezone = 'Asia/Jakarta';
     const utcDate = new Date(tanggaljam);
@@ -102,7 +127,7 @@ const TableDataUser = () => {
     return utcDate.toLocaleString('id-ID', options);
   };
 
-  // Map data to table rows and format tanggaljam
+  // Masukkan data ke baris tabel
   const rows = data.map((row) => {
     return createData(
       formatTanggaljam(row.tanggaljam),
@@ -114,6 +139,8 @@ const TableDataUser = () => {
     );
   });
 
+  const classes = useStyles();
+
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
   return (
@@ -123,7 +150,14 @@ const TableDataUser = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                <TableCell
+                  key={column.id}
+                  align={column.align}
+                  className={clsx({
+                    [classes.warningCell]: rows.status_request === 'wait',
+                    [classes.successCell]: rows.status_request === 'success',
+                  })}
+                  sx={{ minWidth: column.minWidth }}>
                   <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
                     {column.label}
                     {column.sortable && (
