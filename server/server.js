@@ -335,8 +335,8 @@ app.post('/api/input-kasbon', async (req, res) => {
     client.release()
 
     if (insertResult.rowCount === 1) {
-      res.status(201).json({ message: `Kasbon Id: ${id_akun} berhasil dimasukkan ` })
-      console.log('Berhasil mengirim Request', id_akun)
+      res.status(201).json({ message: `Kasbon Akun Id: ${id_akun} berhasil dimasukkan ` })
+      console.log('Berhasil mengirim Request Akun', id_akun)
     }
     else {
       res.status(500).json({ error: `Error memasukkan kasbon ${id_akun} ` })
