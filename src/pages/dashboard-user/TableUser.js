@@ -10,7 +10,8 @@ import TablePagination from '@mui/material/TablePagination'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import clsx from 'clsx'
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from '@mui/styles'
+import Chip from '@mui/material/Chip'
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
@@ -32,13 +33,25 @@ const columns = [
   { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: true },
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_request', label: 'Req', minWidth: 10, align: 'center', sortable: false },
-  { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'center', sortable: false },
+  { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'left', sortable: false },
 ];
 
 // Konstruktor row
 function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_bayar) {
-  return { tanggaljam, jumlah, metode, keterangan, status_request, status_bayar };
+  let statusChip = null;
+
+  if (status_request === "wait") {
+    statusChip = (
+      <Chip label="Wait" color="secondary" variant="outlined" />
+    );
+  } else if (status_request === "success") {
+    statusChip = (
+      <Chip label="Success" color="primary" variant="outlined" />
+    );
+  }
+
+  return { tanggaljam, jumlah, metode, keterangan, status_request, status_bayar, statusChip };
 }
 
 // Sortir
@@ -135,7 +148,8 @@ const TableDataUser = () => {
       row.metode,
       row.keterangan,
       row.status_request,
-      row.status_bayar
+      row.status_bayar,
+      row.statusChip
     );
   });
 
@@ -150,14 +164,7 @@ const TableDataUser = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  className={clsx({
-                    [classes.warningCell]: rows.status_request === 'wait',
-                    [classes.successCell]: rows.status_request === 'success',
-                  })}
-                  sx={{ minWidth: column.minWidth }}>
+                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
                   <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
                     {column.label}
                     {column.sortable && (
@@ -179,7 +186,10 @@ const TableDataUser = () => {
             {sortedData.length === 0 ? (
               <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
                 {columns.map((column) => (
-                  <TableCell key={column.id} align={column.align}>
+                  <TableCell
+                    key={column.id}
+                    align={column.align} >
+                    {column.id === 'status_request' ? rows.statusChip : rows[column.id]}
                     {column.format && typeof rows[column.id] === 'number' ? column.format(rows[column.id]) : rows[column.id]}
                   </TableCell>
                 ))}
@@ -189,6 +199,7 @@ const TableDataUser = () => {
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
+                      {column.id === 'status_request' ? rows.statusChip : rows[column.id]}
                       {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
                     </TableCell>
                   ))}
