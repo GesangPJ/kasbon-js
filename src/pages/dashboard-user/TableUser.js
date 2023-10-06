@@ -17,7 +17,7 @@ const columns = [
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'center', sortable: false },
   { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'center', sortable: false },
-];
+};
 
 function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_bayar) {
   return { tanggaljam, jumlah, metode, keterangan, status_request, status_bayar };
@@ -58,6 +58,19 @@ const TableDataUser = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]); // Declare data state
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
+  const sessionData = JSON.parse(sessionStorage.getItem('sessionData'));
+  const id_akun = sessionData.id_akun; // Get id_akun from session storage
+
+  useEffect(() => {
+    // Retrieve dashboard data for the user based on id_akun from localStorage
+    const dashboardData = JSON.parse(localStorage.getItem(`dashboard_karyawan_${id_akun}`));
+
+    if (dashboardData) {
+      setData(dashboardData); // Update data state
+    } else {
+      console.error('Dashboard data not found in localStorage.');
+    }
+  }, [id_akun]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -72,24 +85,6 @@ const TableDataUser = () => {
     const isAsc = sorting.column === columnId && sorting.direction === 'asc';
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:3001/api/ambil-dashboard-user');
-        if (response.ok) {
-          const result = await response.json();
-          setData(result); // Update data state
-        } else {
-          console.error('Error fetching dashboard user data.');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   // Map data to table rows
   const rows = data.map((row) => createData(row.tanggaljam, row.jumlah, row.metode, row.keterangan, row.status_request, row.status_bayar));
@@ -135,7 +130,6 @@ const TableDataUser = () => {
           </TableHead>
           <TableBody>
             {sortedData.length === 0 ? (
-
               // Render a "No Data" message when there are no records
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
