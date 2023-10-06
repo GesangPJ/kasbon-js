@@ -39,9 +39,6 @@ const AppBarContent = (props) => {
       <Box className="actions-right" sx={{ display: 'flex', justifyContent: 'flex-end', flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <ModeToggler settings={settings} saveSettings={saveSettings} />
-          <Typography variant="body1" sx={{ fontWeight: 100 }}>
-            {sessionData ? sessionData.id_akun : 'User'} |
-          </Typography>
           <Typography variant="body1" sx={{ fontWeight: 600 }}>
             {sessionData ? sessionData.username : 'User'}
           </Typography>
