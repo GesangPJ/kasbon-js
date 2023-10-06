@@ -368,7 +368,7 @@ app.put('/api/update-request/:id', async (req, res) => {
     const client = await pool.connect();
 
     // Update the request in your database using SQL
-    const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2 WHERE id_request = $3';
+    const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2, tanggaljam= NOW() WHERE id_request = $3';
     const updateValues = [status_request, id_petugas, requestId];
     const updateResult = await client.query(updateQuery, updateValues);
 
