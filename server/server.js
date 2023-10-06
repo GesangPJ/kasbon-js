@@ -375,16 +375,15 @@ app.put('/api/update-request/:id', async (req, res) => {
     client.release();
 
     if (updateResult.rowCount === 1) {
-      res.status(200).json({ message: 'Request updated successfully' });
+      res.status(200).json({ message: 'Request berhasil diupdate' });
     } else {
-      res.status(404).json({ error: 'Request not found' });
+      res.status(404).json({ error: 'Request tidak ditemukan' });
     }
   } catch (error) {
-    console.error('Error updating request:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error updating request:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
   }
-});
-
+})
 
 // Set Port buat server
 const port = process.env.PORT || 3001;
