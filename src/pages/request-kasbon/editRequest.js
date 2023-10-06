@@ -174,34 +174,45 @@ const TableEditRequest = () => {
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column))
 
-  const [updatedRequests, setUpdatedRequests] = useState({});
+  const [selectedRequestIds, setSelectedRequestIds] = useState([]);
 
   const handleRowButtonChange = (event, requestId) => {
-    const newButtonState = { ...updatedRequests };
-    newButtonState[requestId] = event;
-    setUpdatedRequests(newButtonState);
+    const newSelectedRequestIds = [...selectedRequestIds];
+
+    if (event === 'setuju') {
+      // Add requestId to selectedRequestIds if "Setuju" is selected
+      if (!newSelectedRequestIds.includes(requestId)) {
+        newSelectedRequestIds.push(requestId);
+      }
+    } else if (event === 'tolak') {
+      // Remove requestId from selectedRequestIds if "Tolak" is selected
+      const index = newSelectedRequestIds.indexOf(requestId);
+      if (index !== -1) {
+        newSelectedRequestIds.splice(index, 1);
+      }
+    }
+
+    setSelectedRequestIds(newSelectedRequestIds);
   };
 
   const handleSimpanButtonClick = () => {
-    const id_akun = sessionData.id_akun
+    const id_akun = sessionData.id_akun;
 
     const updatePromises = [];
-    for (const requestId in updatedRequests) {
-      if (updatedRequests[requestId] === 'setuju' || updatedRequests[requestId] === 'tolak') {
-        const requestData = {
-          status_request: updatedRequests[requestId],
-          id_petugas: id_akun,
-        };
-        updatePromises.push(
-          fetch(`http://localhost:3001/api/update-request/${requestId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestData),
-          })
-        );
-      }
+    for (const requestId of selectedRequestIds) {
+      const requestData = {
+        status_request: updatedRequests[requestId],
+        id_petugas: id_akun,
+      };
+      updatePromises.push(
+        fetch(`http://localhost:3001/api/update-request/${requestId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        })
+      );
     }
 
     // Handle the responses of all update requests
@@ -214,6 +225,9 @@ const TableEditRequest = () => {
 
         // Clear the updatedRequests state to avoid resending the same updates
         setUpdatedRequests({});
+
+        // Clear the selectedRequestIds state
+        setSelectedRequestIds([]);
       })
       .catch((error) => {
         console.error('Error updating requests:', error);
