@@ -6,7 +6,8 @@ import { AddCircle } from '@mui/icons-material'
 import { ModeEdit } from '@mui/icons-material'
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined'
-import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined';
+import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined'
+import PaidIcon from '@mui/icons-material/Paid'
 
 const AdminNavigation = () => {
   return [
@@ -22,6 +23,11 @@ const AdminNavigation = () => {
       title: 'Request',
       icon: RequestQuoteOutlinedIcon,
       path: '/request-kasbon'
+    },
+    {
+      title: 'Bayar',
+      icon: PaidIcon,
+      path: '/bayar-kasbon'
     },
     {
       sectionTitle: 'Admin'
@@ -41,12 +47,6 @@ const AdminNavigation = () => {
       title: 'Tambah Admin',
       icon: AddCircle,
       path: '/register-admin',
-      openInNewTab: false
-    },
-    {
-      title: 'Test Input Kasbon',
-      icon: ModeEdit,
-      path: '/input-kasbon',
       openInNewTab: false
     },
     {
