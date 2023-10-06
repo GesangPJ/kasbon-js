@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -47,6 +47,8 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
 }))
 
 const SignPage = () => {
+  const [loading, setLoading] = useState(true)
+
   const [values, setValues] = useState({
     idakun: '', // Change 'name' to 'username'
     password: '',
@@ -107,6 +109,13 @@ const SignPage = () => {
       console.error('Login error:', error);
     }
   };
+  useEffect(() => {
+    // Simulate loading the login form
+    setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+  }, []);
 
 
 
@@ -127,12 +136,12 @@ const SignPage = () => {
         <CardContent sx={{ padding: (theme) => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {loading ? (
-              <Skeleton variant="rect" width={40} height={40} sx={{ backgroundColor: 'lightgray', marginRight: 2 }} />
+              <Skeleton animation="wave" variant="rect" width={40} height={40} sx={{ backgroundColor: 'lightgray', marginRight: 2 }} />
             ) : (
               <ReceiptLongOutlinedIcon color='primary' />
             )}
             {loading ? (
-              <Skeleton variant="text" width={120} sx={{ backgroundColor: 'lightgray' }} />
+              <Skeleton animation="wave" variant="text" width={120} sx={{ backgroundColor: 'lightgray' }} />
             ) : (
               <Typography
                 variant='h6'
@@ -150,7 +159,7 @@ const SignPage = () => {
           </Box>
           <Box sx={{ mb: 6 }}>
             {loading ? (
-              <Skeleton variant="text" width={200} sx={{ backgroundColor: 'lightgray' }} />
+              <Skeleton animation="wave" variant="text" width={200} sx={{ backgroundColor: 'lightgray' }} />
             ) : (
               <Typography variant='body2' align='center'>
                 Masuk Ke Akun Anda Untuk Melanjutkan
@@ -158,7 +167,7 @@ const SignPage = () => {
             )}
           </Box>
           {loading ? (
-            <Skeleton variant="text" width={240} height={40} sx={{ backgroundColor: 'lightgray' }} />
+            <Skeleton animation="wave" variant="text" width={240} height={40} sx={{ backgroundColor: 'lightgray' }} />
           ) : (
             <form noValidate autoComplete='off' onSubmit={(e) => e.preventDefault()}>
               <TextField
