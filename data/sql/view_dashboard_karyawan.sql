@@ -1,6 +1,12 @@
 CREATE OR REPLACE VIEW dashboard_karyawan AS
 SELECT
     u.id_karyawan,
+    (
+        SELECT nama_user
+        FROM user_kasbon uk
+        WHERE uk.id_karyawan = u.id_karyawan
+        LIMIT 1
+    ) AS nama_user, -- Include nama_user from user_kasbon
     COALESCE(
         GREATEST(
             MAX(r.tanggaljam),
@@ -16,4 +22,4 @@ SELECT
 FROM user_kasbon u
 LEFT JOIN request r ON u.id_karyawan = r.id_karyawan
 LEFT JOIN bayar b ON r.id_request = b.id_request
-GROUP BY u.id_karyawan, r.id_request; -- Group by id_request
+GROUP BY u.id_karyawan, r.id_request; -- Include nama_user in GROUP BY
