@@ -321,7 +321,7 @@ app.get('/api/ambil-dashboard-user', async (req, res) => {
 })
 
 // API Input Kasbon Karyawan
-app.get('/api/input-kasbon', async (req, res) => {
+app.post('/api/input-kasbon', async (req, res) => {
 
   const { jumlah, metode, keterangan, id_akun } = req.body
   const request_status = 'wait'
@@ -336,6 +336,7 @@ app.get('/api/input-kasbon', async (req, res) => {
 
     if (insertResult.rowCount === 1) {
       res.status(201).json({ message: `Kasbon Id: ${id_akun} berhasil dimasukkan ` })
+      console.log('Berhasil mengirim Request', id_akun)
     }
     else {
       res.status(500).json({ error: `Error memasukkan kasbon ${id_akun} ` })
