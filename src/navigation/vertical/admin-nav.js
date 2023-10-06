@@ -44,9 +44,9 @@ const AdminNavigation = () => {
       openInNewTab: false
     },
     {
-      title: 'Edit Obat Generik',
+      title: 'Test Input Kasbon',
       icon: ModeEdit,
-      path: '/edit-obat-generik',
+      path: '/input-kasbon',
       openInNewTab: false
     },
     {
