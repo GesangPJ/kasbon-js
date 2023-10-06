@@ -91,35 +91,11 @@ const SignPage = () => {
             tanggal_akun: tanggalFormat,
           };
 
-          // Store the session data as a JSON string
+          // Store the session data as a JSON string in session storage
           sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
 
           // Once session data is available, perform routing
-          if (role === 'user') {
-            // Fetch dashboard data for the user
-            const id_akun = data.id_akun;
-
-            const dashboardResponse = await fetch('http://localhost:3001/api/ambil-dashboard-karyawan', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ id_akun }),
-            });
-
-            if (dashboardResponse.status === 200) {
-              const dashboardData = await dashboardResponse.json();
-
-              // Store the dashboard data in localStorage
-              localStorage.setItem(`dashboard_karyawan_${id_akun}`, JSON.stringify(dashboardData));
-            } else {
-              console.error('Error fetching dashboard data for user');
-            }
-
-            router.push('/dashboard-user');
-          } else if (role === 'admin') {
-            router.push('/dashboard-admin');
-          }
+          router.push(`/dashboard-${role}`);
         } else {
           console.error('Role or id not found');
         }
