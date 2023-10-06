@@ -1,8 +1,7 @@
 // Impor MUI Grid
 import Grid from '@mui/material/Grid'
 
-// Impor Form Kasbon
-import FormKasbon from './inputKasbon'
+// Impor Tabel
 import TableEditRequest from './editRequest'
 
 const RequestKasbonAdmin = () => {
