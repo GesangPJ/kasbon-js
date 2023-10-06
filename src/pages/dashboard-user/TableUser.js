@@ -1,4 +1,3 @@
-// frontend components
 import React, { useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -37,7 +36,9 @@ function stableSort(array, comparator) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -47,11 +48,13 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
-const TableDataUser = ({ id_akun }) => {
+const TableDataUser = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
+
+  const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun; // Get id_akun from sessionStorage
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -70,7 +73,7 @@ const TableDataUser = ({ id_akun }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/dashboard-user/${id_akun}`);
+        const response = await fetch(`http://localhost:3001/api/ambil-dashboard-karyawan/${id_akun}`);
         if (response.ok) {
           const result = await response.json();
           setData(result);
@@ -117,17 +120,19 @@ const TableDataUser = ({ id_akun }) => {
           </TableHead>
           <TableBody>
             {sortedData.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} align="center">
-                  No Data
-                </TableCell>
+              <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
+                {columns.map((column) => (
+                  <TableCell key={column.id} align={column.align}>
+                    {column.format && typeof rows[column.id] === 'number' ? column.format(rows[column.id]) : rows[column.id]}
+                  </TableCell>
+                ))}
               </TableRow>
             ) : (
               sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
-                      {column.format && typeof value === 'number' ? column.format(value) : value}
+                      {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
                     </TableCell>
                   ))}
                 </TableRow>
