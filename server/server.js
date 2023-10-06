@@ -332,7 +332,30 @@ app.get('/api/ambil-dashboard-karyawan/:id_akun', async (req, res) => {
     console.error('Error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
-});
+})
+
+// API Admin Edit/Konfirmasi Request Kasbon
+app.get('/api/ambil-request-kasbon', async (req, res) => {
+  try {
+    const client = await pool.connect()
+
+    //Ambil data Dashboard Karyawan dengan status request 'wait'
+    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE status_request = \'wait\'';
+    const selectResult = await client.query(selectQuery)
+
+    // Jika ada hasil, maka kirim responnya hasil query
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows);
+    } else {
+
+      // Jika tidak ada data
+      res.status(404).json({ message: 'Tidak ada request menunggu konfirmasi' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+})
 
 
 // Set Port buat server
