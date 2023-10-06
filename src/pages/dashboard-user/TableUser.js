@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
 import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TablePagination from '@mui/material/TablePagination'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
@@ -35,7 +35,6 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-// Get sorting order (asc or desc)
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -43,12 +42,8 @@ function getComparator(order, orderBy) {
 }
 
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
+  if (b[orderBy] < a[orderBy]) return -1;
+  if (b[orderBy] > a[orderBy]) return 1;
 
   return 0;
 }
@@ -56,8 +51,10 @@ function descendingComparator(a, b, orderBy) {
 const TableDataUser = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState([]); // Declare data state
+  const [data, setData] = useState([]);
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
+
+  const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun; // Get id_akun from sessionStorage
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -76,10 +73,10 @@ const TableDataUser = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/ambil-dashboard-user');
+        const response = await fetch(`http://localhost:3001/api/ambil-dashboard-karyawan/${id_akun}`);
         if (response.ok) {
           const result = await response.json();
-          setData(result); // Update data state
+          setData(result);
         } else {
           console.error('Error fetching dashboard user data.');
         }
@@ -87,14 +84,13 @@ const TableDataUser = () => {
         console.error('Error:', error);
       }
     };
-
     fetchData();
-  }, []);
+  }, [id_akun]);
 
-  // Map data to table rows
-  const rows = data.map((row) => createData(row.tanggaljam, row.jumlah, row.metode, row.keterangan, row.status_request, row.status_bayar));
+  const rows = data.map((row) =>
+    createData(row.tanggaljam, row.jumlah, row.metode, row.keterangan, row.status_request, row.status_bayar)
+  );
 
-  // Sorting function
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
   return (
@@ -104,26 +100,15 @@ const TableDataUser = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  sx={{ minWidth: column.minWidth }}
-                >
-                  <div
-                    style={{ display: 'flex', alignItems: 'center' }}
-                    onClick={() => column.sortable && handleSort(column.id)}
-                  >
+                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
                     {column.label}
                     {column.sortable && (
                       <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
                         {column.sortable && (
                           <div style={{ height: '24px' }}>
-                            {sorting.column === column.id && sorting.direction === 'asc' && (
-                              <ArrowUpwardIcon fontSize="small" />
-                            )}
-                            {sorting.column === column.id && sorting.direction === 'desc' && (
-                              <ArrowDownwardIcon fontSize="small" />
-                            )}
+                            {sorting.column === column.id && sorting.direction === 'asc' && <ArrowUpwardIcon fontSize="small" />}
+                            {sorting.column === column.id && sorting.direction === 'desc' && <ArrowDownwardIcon fontSize="small" />}
                           </div>
                         )}
                       </div>
@@ -135,19 +120,19 @@ const TableDataUser = () => {
           </TableHead>
           <TableBody>
             {sortedData.length === 0 ? (
-
-              // Render a "No Data" message when there are no records
-              <TableRow>
-                <TableCell colSpan={columns.length} align="center">
-                  No Data
-                </TableCell>
+              <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
+                {columns.map((column) => (
+                  <TableCell key={column.id} align={column.align}>
+                    {column.format && typeof rows[column.id] === 'number' ? column.format(rows[column.id]) : rows[column.id]}
+                  </TableCell>
+                ))}
               </TableRow>
             ) : (
               sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.namaObat}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
-                      {column.format && typeof value === 'number' ? column.format(value) : value}
+                      {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
                     </TableCell>
                   ))}
                 </TableRow>

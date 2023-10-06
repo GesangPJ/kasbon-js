@@ -40,6 +40,11 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
+// Kirim status server
+app.get('/api/server-status', (req, res) => {
+  res.json({ status: 'Online' });
+})
+
 // Clear semua session data
 app.get('/api/clear-sessions', async (req, res) => {
   try {
@@ -200,10 +205,7 @@ app.get('/api/postgres-status', async (req, res) => {
 })
 
 
-// Kirim status server
-app.get('/api/server-status', (req, res) => {
-  res.json({ status: 'Online' });
-})
+
 
 // Tambah Akun Admin
 app.post('/api/tambah-admin', async (req, res) => {
@@ -242,7 +244,7 @@ app.post('/api/tambah-admin', async (req, res) => {
   }
 })
 
-// Tambah Akun User
+// Tambah Akun User/Karyawan
 app.post('/api/tambah-user', async (req, res) => {
   const { nama, email, password, id_karyawan } = req.body
   const roles = 'user'
@@ -278,48 +280,6 @@ app.post('/api/tambah-user', async (req, res) => {
   }
 });
 
-
-// Ambil Detail Data Obat Generik berdasarkan row yang dipilih user
-app.get('/api/obat-generik/:namaObat', async (req, res) => {
-  const { namaObat } = req.params;
-
-  try {
-    const db = await connectToKatalogObatDB();
-    const obatGenerikCollection = db.collection('obat_generik');
-
-    // Nemuin obat pake nama obat
-    const obat = await obatGenerikCollection.findOne({ namaObat });
-
-    if (!obat) {
-      return res.status(404).json({ error: 'Obat not found' });
-    }
-
-    res.json(obat);
-  } catch (error) {
-    console.error('Error fetching obat generik data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-})
-
-// Ambil Data dari view dashboard_user
-app.get('/api/ambil-dashboard-user', async (req, res) => {
-  try {
-
-    const query = '';
-    const client = await pool.connect();
-
-    const result = await client.query(query);
-
-    client.release();
-
-
-    res.json(result.rows)
-  } catch (error) {
-    console.error('Error retrieving dashboard user data:', error)
-    res.status(500).json({ error: 'Internal Server Error' })
-  }
-})
-
 // API Input Kasbon Karyawan
 app.post('/api/input-kasbon', async (req, res) => {
 
@@ -348,35 +308,31 @@ app.post('/api/input-kasbon', async (req, res) => {
   }
 })
 
-// API Ambil Dashboard_Karyawan berdasarkan id_karyawan
-app.post('/api/ambil-dashboard-karyawan', async (req, res) => {
-  const { id_akun } = req.body
-
+// Ambil Data dashboard karyawan berdasarkan id_akun
+app.get('/api/ambil-dashboard-karyawan/:id_akun', async (req, res) => {
+  const { id_akun } = req.params;
   try {
-    const client = await pool.connect()
+    const client = await pool.connect();
 
-    // Query ambil data
-    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE id_karyawan = $1'
-    const selectResult = await client.query(selectQuery, [id_akun])
+    // Query ambil data dashboard karyawan
+    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE id_karyawan = $1';
+    const selectResult = await client.query(selectQuery, [id_akun]);
+    client.release();
 
-    client.release()
 
-    if (selectResult.rowCount > 0) {
-      // Data found, send the query result
+    // Jika ada hasil, maka kirim responnya hasil query
+    if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows);
     } else {
-      // Data not found, send a message
-      res.status(404).json({ message: 'Data not found' });
+
+      // Jika tidak ada data
+      res.status(404).json({ message: 'Data tidak ada' });
     }
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-})
-
-
-
-
+});
 
 
 // Set Port buat server

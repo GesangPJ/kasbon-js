@@ -91,12 +91,11 @@ const SignPage = () => {
             tanggal_akun: tanggalFormat,
           };
 
-          // Store the session data as a JSON string
+          // Store the session data as a JSON string in session storage
           sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
 
           // Once session data is available, perform routing
           router.push(`/dashboard-${role}`);
-
         } else {
           console.error('Role or id not found');
         }
@@ -107,6 +106,7 @@ const SignPage = () => {
       console.error('Login error:', error);
     }
   };
+
 
 
 
