@@ -19,6 +19,7 @@ import MuiFormControlLabel from '@mui/material/FormControlLabel'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
+import Skeleton from '@mui/material/Skeleton'
 
 import themeConfig from 'src/configs/themeConfig'
 
@@ -125,64 +126,80 @@ const SignPage = () => {
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: (theme) => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ReceiptLongOutlinedIcon color='primary' />
-            <Typography
-              variant='h6'
-              sx={{
-                ml: 3,
-                lineHeight: 1,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                fontSize: '1.5rem !important',
-              }}
-            >
-              {themeConfig.templateName}
-            </Typography>
+            {loading ? (
+              <Skeleton variant="rect" width={40} height={40} sx={{ backgroundColor: 'lightgray', marginRight: 2 }} />
+            ) : (
+              <ReceiptLongOutlinedIcon color='primary' />
+            )}
+            {loading ? (
+              <Skeleton variant="text" width={120} sx={{ backgroundColor: 'lightgray' }} />
+            ) : (
+              <Typography
+                variant='h6'
+                sx={{
+                  ml: 3,
+                  lineHeight: 1,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  fontSize: '1.5rem !important',
+                }}
+              >
+                {themeConfig.templateName}
+              </Typography>
+            )}
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='body2' align='center'>
-              Masuk Ke Akun Anda Untuk Melanjutkan
-            </Typography>
+            {loading ? (
+              <Skeleton variant="text" width={200} sx={{ backgroundColor: 'lightgray' }} />
+            ) : (
+              <Typography variant='body2' align='center'>
+                Masuk Ke Akun Anda Untuk Melanjutkan
+              </Typography>
+            )}
           </Box>
-          <form noValidate autoComplete='off' onSubmit={(e) => e.preventDefault()}>
-            <TextField
-              autoFocus
-              fullWidth
-              id='idakun'
-              label='ID Anda' // Change 'Nama' to 'Username'
-              sx={{ marginBottom: 4 }}
-              value={values.idakun}
-              onChange={handleChange('idakun')}
-            />
-            <FormControl fullWidth>
-              <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
-              <OutlinedInput
-                label='Password'
-                value={values.password}
-                id='auth-login-password'
-                onChange={handleChange('password')}
-                type={values.showPassword ? 'text' : 'password'}
-                endAdornment={
-                  <InputAdornment position='end'>
-                    <IconButton
-                      edge='end'
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      aria-label='toggle password visibility'
-                    >
-                      {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
-                    </IconButton>
-                  </InputAdornment>
-                }
+          {loading ? (
+            <Skeleton variant="text" width={240} height={40} sx={{ backgroundColor: 'lightgray' }} />
+          ) : (
+            <form noValidate autoComplete='off' onSubmit={(e) => e.preventDefault()}>
+              <TextField
+                autoFocus
+                fullWidth
+                id='idakun'
+                label='ID Anda' // Change 'Nama' to 'Username'
+                sx={{ marginBottom: 4 }}
+                value={values.idakun}
+                onChange={handleChange('idakun')}
               />
-            </FormControl>
-            <Box
-              sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
-            ></Box>
-            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
-              Masuk
-            </Button>
-          </form>
+              <FormControl fullWidth>
+                <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
+                <OutlinedInput
+                  label='Password'
+                  value={values.password}
+                  id='auth-login-password'
+                  onChange={handleChange('password')}
+                  type={values.showPassword ? 'text' : 'password'}
+                  endAdornment={
+                    <InputAdornment position='end'>
+                      <IconButton
+                        edge='end'
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        aria-label='toggle password visibility'
+                      >
+                        {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
+              <Box
+                sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
+              ></Box>
+              <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
+                Masuk
+              </Button>
+            </form>
+          )}
         </CardContent>
       </Card>
       <FooterIllustrationsV1 />
