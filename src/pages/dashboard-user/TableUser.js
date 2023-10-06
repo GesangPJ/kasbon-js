@@ -89,7 +89,7 @@ const TableDataUser = () => {
   const [data, setData] = useState([]);
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
 
-  const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun; // Get id_akun from sessionStorage
+  const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
