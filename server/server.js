@@ -357,6 +357,34 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
   }
 })
 
+// API update table request berdasarkan id_request dan menambah id_petugas (admin)
+app.put('/api/update-request/:id', async (req, res) => {
+  const requestId = req.params.id; // Get the ID of the request from the route parameters
+  const { status_request } = req.body; // Get the updated data (status_request) from the request body
+  const id_petugas = req.session.user.id_akun; // Get id_akun from the session storage
+
+  try {
+    // Assuming you're using PostgreSQL for your database
+    const client = await pool.connect();
+
+    // Update the request in your database using SQL
+    const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2 WHERE id_request = $3';
+    const updateValues = [status_request, id_petugas, requestId];
+    const updateResult = await client.query(updateQuery, updateValues);
+
+    client.release();
+
+    if (updateResult.rowCount === 1) {
+      res.status(200).json({ message: 'Request updated successfully' });
+    } else {
+      res.status(404).json({ error: 'Request not found' });
+    }
+  } catch (error) {
+    console.error('Error updating request:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 // Set Port buat server
 const port = process.env.PORT || 3001;
