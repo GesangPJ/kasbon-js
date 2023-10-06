@@ -190,7 +190,7 @@ const TableEditRequest = () => {
       if (updatedRequests[requestId] === 'setuju' || updatedRequests[requestId] === 'tolak') {
         const requestData = {
           status_request: updatedRequests[requestId],
-          id_petugas: id_akun, // Replace idAkun with your actual id from session storage
+          id_petugas: id_akun,
         };
         updatePromises.push(
           fetch(`http://localhost:3001/api/update-request/${requestId}`, {
@@ -261,23 +261,23 @@ const TableEditRequest = () => {
                 </TableRow>
               ) : (
                 sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id_request}>
                     {columns.map((column) => (
                       <TableCell key={column.id} align={column.align}>
                         {column.id === 'confirm' ? (
                           <ToggleButtonGroup
-                            value={rowButtonStates[row.tanggaljam] || []}
+                            value={rowButtonStates[row.id_request] || []}
                             exclusive
-                            onChange={(event, newButtonState) => handleRowButtonChange(newButtonState, row.tanggaljam)}
+                            onChange={(event, newButtonState) => handleRowButtonChange(newButtonState, row.id_request)}
                             aria-label="button group"
                           >
                             <ToggleButton
                               value="setuju"
-                              selected={rowButtonStates[row.tanggaljam] === 'setuju'}
+                              selected={rowButtonStates[row.id_request] === 'setuju'}
                               sx={{
-                                color: rowButtonStates[row.tanggaljam] === 'setuju' ? 'success.main' : 'default',
+                                color: rowButtonStates[row.id_request] === 'setuju' ? 'success.main' : 'default',
                                 '&.Mui-selected': {
-                                  color: rowButtonStates[row.tanggaljam] === 'setuju' ? 'success.main' : 'default',
+                                  color: rowButtonStates[row.id_request] === 'setuju' ? 'success.main' : 'default',
                                 },
                               }}
                             >
@@ -285,11 +285,11 @@ const TableEditRequest = () => {
                             </ToggleButton>
                             <ToggleButton
                               value="tolak"
-                              selected={rowButtonStates[row.tanggaljam] === 'tolak'}
+                              selected={rowButtonStates[row.id_request] === 'tolak'}
                               sx={{
-                                color: rowButtonStates[row.tanggaljam] === 'tolak' ? 'error.main' : 'default',
+                                color: rowButtonStates[row.id_request] === 'tolak' ? 'error.main' : 'default',
                                 '&.Mui-selected': {
-                                  color: rowButtonStates[row.tanggaljam] === 'tolak' ? 'error.main' : 'default',
+                                  color: rowButtonStates[row.id_request] === 'tolak' ? 'error.main' : 'default',
                                 },
                               }}
                             >
