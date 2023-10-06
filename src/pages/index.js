@@ -76,34 +76,27 @@ const SignPage = () => {
         if (data && data.isAdmin !== undefined && data.roles !== '') {
           const role = data.roles;
 
-          // Check if data contains role information
-          if (data && data.isAdmin !== undefined && data.roles !== '') {
-            const role = data.roles
+          const tanggalAkun = new Date(data.tanggal_akun);
+          const jakartaTimezone = 'Asia/Jakarta';
 
-            const tanggalAkun = new Date(data.tanggal_akun);
-            const jakartaTimezone = 'Asia/Jakarta';
+          const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
 
-            const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
+          const sessionData = {
+            id_table: data.id,
+            username: data.username,
+            email: data.email,
+            role,
+            isAdmin: role === 'admin',
+            id_akun: data.id_akun,
+            tanggal_akun: tanggalFormat,
+          };
 
-            const sessionData = {
-              id_table: data.id,
-              username: data.username,
-              email: data.email,
-              role,
-              isAdmin: role === 'admin',
-              id_akun: data.id_akun,
-              tanggal_akun: tanggalFormat,
-            };
+          // Store the session data as a JSON string
+          sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
 
-            // Store the session data as a JSON string
-            sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
+          // Once session data is available, perform routing
+          router.push(`/dashboard-${role}`);
 
-            // Once session data is available, perform routing
-            router.push(`/dashboard-${role}`);
-
-          } else {
-            console.error('Role or id not found');
-          }
         } else {
           console.error('Role or id not found');
         }
