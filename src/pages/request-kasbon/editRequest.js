@@ -35,6 +35,16 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     marginTop: '10px', // Adjust as needed
   },
+  setujuButton: {
+    '&.Mui-selected': {
+      backgroundColor: 'green !important',
+    },
+  },
+  tolakButton: {
+    '&.Mui-selected': {
+      backgroundColor: 'red !important',
+    },
+  },
 }));
 
 const columns = [
@@ -57,7 +67,8 @@ const columns = [
 function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request) {
 
   return {
-    id_request, tanggaljam, jumlah, nama_user, metode, keterangan, status_request, setuju: false,
+    id_request, tanggaljam, jumlah, nama_user, metode, keterangan, status_request,
+    setuju: false,
     tolak: false
   };
 }
@@ -97,6 +108,7 @@ const TableEditRequest = () => {
   const [data, setData] = useState([])
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
   const [sessionData, setSessionData] = useState(null)
+  const [updatedRequests, setUpdatedRequests] = useState({});
 
 
   const handleChangePage = (event, newPage) => {
@@ -236,6 +248,33 @@ const TableEditRequest = () => {
       });
   };
 
+  const handleSave = async () => {
+    // Iterate over the updatedRequests object
+    for (const id_request in updatedRequests) {
+      const status_request = updatedRequests[id_request];
+
+      try {
+        // Make a PUT request to your API endpoint
+        const response = await fetch(`http://localhost:3001/api/update-request/${id_request}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status_request }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(result.message); // Log the success message
+        } else {
+          console.error('Error updating request.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  };
+
   return (
     <div>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -280,33 +319,22 @@ const TableEditRequest = () => {
                       <TableCell key={column.id} align={column.align}>
                         {column.id === 'confirm' ? (
                           <ToggleButtonGroup
-                            value={rowButtonStates[row.id_request] || []}
+                            value={row.setuju ? 'setuju' : row.tolak ? 'tolak' : []}
                             exclusive
-                            onChange={(event, newButtonState) => handleRowButtonChange(newButtonState, row.id_request)}
-                            aria-label="button group"
+                            onChange={(event, newValue) => {
+                              if (newValue === 'setuju') {
+                                // Handle setuju button click
+                                // Update row.setuju state
+                              } else if (newValue === 'tolak') {
+                                // Handle tolak button click
+                                // Update row.tolak state
+                              }
+                            }}
                           >
-                            <ToggleButton
-                              value="setuju"
-                              selected={rowButtonStates[row.id_request] === 'setuju'}
-                              sx={{
-                                color: rowButtonStates[row.id_request] === 'setuju' ? 'success.main' : 'default',
-                                '&.Mui-selected': {
-                                  color: rowButtonStates[row.id_request] === 'setuju' ? 'success.main' : 'default',
-                                },
-                              }}
-                            >
+                            <ToggleButton value="setuju" classes={{ selected: classes.setujuButton }}>
                               <CheckIcon />
                             </ToggleButton>
-                            <ToggleButton
-                              value="tolak"
-                              selected={rowButtonStates[row.id_request] === 'tolak'}
-                              sx={{
-                                color: rowButtonStates[row.id_request] === 'tolak' ? 'error.main' : 'default',
-                                '&.Mui-selected': {
-                                  color: rowButtonStates[row.id_request] === 'tolak' ? 'error.main' : 'default',
-                                },
-                              }}
-                            >
+                            <ToggleButton value="tolak" classes={{ selected: classes.tolakButton }}>
                               <ClearIcon />
                             </ToggleButton>
                           </ToggleButtonGroup>
@@ -337,7 +365,7 @@ const TableEditRequest = () => {
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
 
         <div className={classes.buttonContainer}>
-          <Button type='submit' variant='contained' size='large' onClick={handleSimpanButtonClick}>
+          <Button type='submit' variant='contained' size='large' onClick={handleSave}>
             SIMPAN
           </Button>
         </div>
