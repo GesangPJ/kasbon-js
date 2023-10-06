@@ -11,7 +11,7 @@ const FooterContent = () => {
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
       <Typography variant='caption' sx={{ mr: 2 }}>
-        {`KASBON WEB | © ${new Date().getFullYear()} GESANG TECHNOLOGY`}
+        {`KASBON WEB | © 2023 - ${new Date().getFullYear()} GESANG TECHNOLOGY`}
       </Typography>
       {hidden ? null : (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>
