@@ -9,9 +9,13 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import clsx from 'clsx'
 import { makeStyles } from '@mui/styles'
-import Chip from '@mui/material/Chip'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import CheckIcon from '@mui/icons-material/Check'
+import ClearIcon from '@mui/icons-material/Clear'
+import Button from '@mui/material/Button'
+
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
@@ -24,35 +28,38 @@ const useStyles = makeStyles((theme) => ({
   //warna success/hijau
   successCell: {
     backgroundColor: 'green',
+  },
 
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '10px', // Adjust as needed
   },
 }));
 
 const columns = [
+  { id: 'id_request', label: 'ID', minWidth: 10, sortable: true },
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
   { id: 'nama_user', label: 'Nama Karyawan', minWidth: 10, sortable: true },
-  { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: true },
-  { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
+  { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
+  { id: 'metode', label: 'Metode', minWidth: 10, sortable: false },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'left', sortable: false },
+  {
+    id: 'confirm',
+    label: 'Konfirmasi',
+    minWidth: 10,
+    sortable: false,
+  },
 ];
 
 // Konstruktor row
-function createData(tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_bayar) {
-  let statusChip = null;
+function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request) {
 
-  if (status_request === "wait") {
-    statusChip = (
-      <Chip label="Wait" color="secondary" variant="outlined" />
-    );
-  } else if (status_request === "success") {
-    statusChip = (
-      <Chip label="Success" color="primary" variant="outlined" />
-    );
-  }
-
-  return { tanggaljam, jumlah, nama_user, metode, keterangan, status_request, status_bayar, statusChip };
+  return {
+    id_request, tanggaljam, jumlah, nama_user, metode, keterangan, status_request, setuju: false,
+    tolak: false
+  };
 }
 
 // Sortir
@@ -85,12 +92,12 @@ function descendingComparator(a, b, orderBy) {
 
 // Table dashboard karyawan
 const TableEditRequest = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState([]);
-  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [data, setData] = useState([])
+  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
+  const [sessionData, setSessionData] = useState(null)
 
-  const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun; // Get id_akun from sessionStorage
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -108,42 +115,49 @@ const TableEditRequest = () => {
 
   // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
+    const sessionDataStr = sessionStorage.getItem('sessionData');
+    if (sessionDataStr) {
+      const sessionData = JSON.parse(sessionDataStr);
+      setSessionData(sessionData);
+    }
+
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/ambil-request-kasbon`);
+        const response = await fetch(`http://localhost:3001/api/ambil-request-kasbon`)
         if (response.ok) {
-          const result = await response.json();
-          setData(result);
+          const result = await response.json()
+          setData(result)
         } else {
-          console.error('Error mendapatkan data.');
+          console.error('Error mendapatkan data.')
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
       }
     };
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    }).format(jumlah);
-  };
+    }).format(jumlah)
+  }
 
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
-    const jakartaTimezone = 'Asia/Jakarta';
-    const utcDate = new Date(tanggaljam);
-    const options = { timeZone: jakartaTimezone, hour12: false };
+    const jakartaTimezone = 'Asia/Jakarta'
+    const utcDate = new Date(tanggaljam)
+    const options = { timeZone: jakartaTimezone, hour12: false }
 
-    return utcDate.toLocaleString('id-ID', options);
-  };
+    return utcDate.toLocaleString('id-ID', options)
+  }
 
   // Masukkan data ke baris tabel
   const rows = data.map((row) => {
     return createData(
+      row.id_request,
       formatTanggaljam(row.tanggaljam),
       row.nama_user,
       formatCurrencyIDR(row.jumlah),
@@ -151,76 +165,171 @@ const TableEditRequest = () => {
       row.keterangan,
       row.status_request,
       row.status_bayar,
-      row.statusChip
     );
   });
 
+  const [rowButtonStates, setRowButtonStates] = useState({})
+
   const classes = useStyles();
 
-  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
+  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column))
+
+  const [updatedRequests, setUpdatedRequests] = useState({});
+
+  const handleRowButtonChange = (event, requestId) => {
+    const newButtonState = { ...updatedRequests };
+    newButtonState[requestId] = event;
+    setUpdatedRequests(newButtonState);
+  };
+
+  const handleSimpanButtonClick = () => {
+    const id_akun = sessionData.id_akun
+
+    const updatePromises = [];
+    for (const requestId in updatedRequests) {
+      if (updatedRequests[requestId] === 'setuju' || updatedRequests[requestId] === 'tolak') {
+        const requestData = {
+          status_request: updatedRequests[requestId],
+          id_petugas: id_akun, // Replace idAkun with your actual id from session storage
+        };
+        updatePromises.push(
+          fetch(`http://localhost:3001/api/update-request/${requestId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
+          })
+        );
+      }
+    }
+
+    // Handle the responses of all update requests
+    Promise.all(updatePromises)
+      .then((responses) => {
+        const successResponses = responses.filter((response) => response.ok);
+        console.log(`Updated ${successResponses.length} requests successfully.`);
+
+        // Handle any additional actions after successful updates
+
+        // Clear the updatedRequests state to avoid resending the same updates
+        setUpdatedRequests({});
+      })
+      .catch((error) => {
+        console.error('Error updating requests:', error);
+
+        // Handle errors here
+      });
+  };
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
-                    {column.label}
-                    {column.sortable && (
-                      <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
-                        {column.sortable && (
-                          <div style={{ height: '24px' }}>
-                            {sorting.column === column.id && sorting.direction === 'asc' && <ArrowUpwardIcon fontSize="small" />}
-                            {sorting.column === column.id && sorting.direction === 'desc' && <ArrowDownwardIcon fontSize="small" />}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedData.length === 0 ? (
-              <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
+    <div>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
                 {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align} >
-                    {column.id === 'status_request' ? rows.statusChip : rows[column.id]}
-                    {column.format && typeof rows[column.id] === 'number' ? column.format(rows[column.id]) : rows[column.id]}
+                  <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
+                      {column.label}
+                      {column.sortable && (
+                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
+                          {column.sortable && (
+                            <div style={{ height: '24px' }}>
+                              {sorting.column === column.id && sorting.direction === 'asc' && <ArrowUpwardIcon fontSize="small" />}
+                              {sorting.column === column.id && sorting.direction === 'desc' && <ArrowDownwardIcon fontSize="small" />}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
                 ))}
               </TableRow>
-            ) : (
-              sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
+            </TableHead>
+            <TableBody>
+              {sortedData.length === 0 ? (
+                <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
                   {columns.map((column) => (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.id === 'status_request' ? rows.statusChip : rows[column.id]}
-                      {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
+                    <TableCell
+                      key={column.id}
+                      align={column.align} >
+                      {column.format && typeof rows[column.id] === 'number' ? column.format(rows[column.id]) : rows[column.id]}
                     </TableCell>
                   ))}
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+              ) : (
+                sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
+                    {columns.map((column) => (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.id === 'confirm' ? (
+                          <ToggleButtonGroup
+                            value={rowButtonStates[row.tanggaljam] || []}
+                            exclusive
+                            onChange={(event, newButtonState) => handleRowButtonChange(newButtonState, row.tanggaljam)}
+                            aria-label="button group"
+                          >
+                            <ToggleButton
+                              value="setuju"
+                              selected={rowButtonStates[row.tanggaljam] === 'setuju'}
+                              sx={{
+                                color: rowButtonStates[row.tanggaljam] === 'setuju' ? 'success.main' : 'default',
+                                '&.Mui-selected': {
+                                  color: rowButtonStates[row.tanggaljam] === 'setuju' ? 'success.main' : 'default',
+                                },
+                              }}
+                            >
+                              <CheckIcon />
+                            </ToggleButton>
+                            <ToggleButton
+                              value="tolak"
+                              selected={rowButtonStates[row.tanggaljam] === 'tolak'}
+                              sx={{
+                                color: rowButtonStates[row.tanggaljam] === 'tolak' ? 'error.main' : 'default',
+                                '&.Mui-selected': {
+                                  color: rowButtonStates[row.tanggaljam] === 'tolak' ? 'error.main' : 'default',
+                                },
+                              }}
+                            >
+                              <ClearIcon />
+                            </ToggleButton>
+                          </ToggleButtonGroup>
+                        ) : column.format && typeof rows[column.id] === 'number'
+                          ? column.format(rows[column.id])
+                          : rows[column.id]
+                        }
+                        {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+      <br></br>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+
+        <div className={classes.buttonContainer}>
+          <Button type='submit' variant='contained' size='large' onClick={handleSimpanButtonClick}>
+            SIMPAN
+          </Button>
+        </div>
+      </Paper>
+
+    </div>
   );
 };
 
