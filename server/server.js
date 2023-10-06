@@ -374,6 +374,26 @@ app.post('/api/ambil-dashboard-karyawan', async (req, res) => {
   }
 })
 
+// Ambil Data dashboard karyawan berdasarkan id_akun
+app.get('/api/dashboard-user/:id_akun', async (req, res) => {
+  const { id_akun } = req.params;
+  try {
+    const client = await pool.connect();
+    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE id_karyawan = $1';
+    const selectResult = await client.query(selectQuery, [id_akun]);
+    client.release();
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows);
+    } else {
+      res.status(404).json({ message: 'Data not found' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 
 
