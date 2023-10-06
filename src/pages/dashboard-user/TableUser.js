@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+// frontend components
+import React, { useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
 import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TablePagination from '@mui/material/TablePagination'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
@@ -17,7 +18,7 @@ const columns = [
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'center', sortable: false },
   { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'center', sortable: false },
-};
+];
 
 function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_bayar) {
   return { tanggaljam, jumlah, metode, keterangan, status_request, status_bayar };
@@ -35,42 +36,22 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-// Get sorting order (asc or desc)
 function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+  return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
+  if (b[orderBy] < a[orderBy]) return -1;
+  if (b[orderBy] > a[orderBy]) return 1;
 
   return 0;
 }
 
-const TableDataUser = () => {
+const TableDataUser = ({ id_akun }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState([]); // Declare data state
+  const [data, setData] = useState([]);
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
-  const sessionData = JSON.parse(sessionStorage.getItem('sessionData'));
-  const id_akun = sessionData.id_akun; // Get id_akun from session storage
-
-  useEffect(() => {
-    // Retrieve dashboard data for the user based on id_akun from localStorage
-    const dashboardData = JSON.parse(localStorage.getItem(`dashboard_karyawan_${id_akun}`));
-
-    if (dashboardData) {
-      setData(dashboardData); // Update data state
-    } else {
-      console.error('Dashboard data not found in localStorage.');
-    }
-  }, [id_akun]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -86,10 +67,27 @@ const TableDataUser = () => {
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
   };
 
-  // Map data to table rows
-  const rows = data.map((row) => createData(row.tanggaljam, row.jumlah, row.metode, row.keterangan, row.status_request, row.status_bayar));
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/dashboard-user/${id_akun}`);
+        if (response.ok) {
+          const result = await response.json();
+          setData(result);
+        } else {
+          console.error('Error fetching dashboard user data.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    fetchData();
+  }, [id_akun]);
 
-  // Sorting function
+  const rows = data.map((row) =>
+    createData(row.tanggaljam, row.jumlah, row.metode, row.keterangan, row.status_request, row.status_bayar)
+  );
+
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
   return (
@@ -99,26 +97,15 @@ const TableDataUser = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  sx={{ minWidth: column.minWidth }}
-                >
-                  <div
-                    style={{ display: 'flex', alignItems: 'center' }}
-                    onClick={() => column.sortable && handleSort(column.id)}
-                  >
+                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
                     {column.label}
                     {column.sortable && (
                       <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
                         {column.sortable && (
                           <div style={{ height: '24px' }}>
-                            {sorting.column === column.id && sorting.direction === 'asc' && (
-                              <ArrowUpwardIcon fontSize="small" />
-                            )}
-                            {sorting.column === column.id && sorting.direction === 'desc' && (
-                              <ArrowDownwardIcon fontSize="small" />
-                            )}
+                            {sorting.column === column.id && sorting.direction === 'asc' && <ArrowUpwardIcon fontSize="small" />}
+                            {sorting.column === column.id && sorting.direction === 'desc' && <ArrowDownwardIcon fontSize="small" />}
                           </div>
                         )}
                       </div>
@@ -130,7 +117,6 @@ const TableDataUser = () => {
           </TableHead>
           <TableBody>
             {sortedData.length === 0 ? (
-              // Render a "No Data" message when there are no records
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
                   No Data
@@ -138,7 +124,7 @@ const TableDataUser = () => {
               </TableRow>
             ) : (
               sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.namaObat}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
                       {column.format && typeof value === 'number' ? column.format(value) : value}
