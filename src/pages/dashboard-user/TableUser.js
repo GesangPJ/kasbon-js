@@ -87,9 +87,32 @@ const TableDataUser = () => {
     fetchData();
   }, [id_akun]);
 
-  const rows = data.map((row) =>
-    createData(row.tanggaljam, row.jumlah, row.metode, row.keterangan, row.status_request, row.status_bayar)
-  );
+  const formatCurrencyIDR = (jumlah) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(jumlah);
+  };
+
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta';
+    const utcDate = new Date(tanggaljam);
+    const options = { timeZone: jakartaTimezone, hour12: false };
+
+    return utcDate.toLocaleString('id-ID', options);
+  };
+
+  // Map data to table rows and format tanggaljam
+  const rows = data.map((row) => {
+    return createData(
+      formatTanggaljam(row.tanggaljam),
+      formatCurrencyIDR(row.jumlah),
+      row.metode,
+      row.keterangan,
+      row.status_request,
+      row.status_bayar
+    );
+  });
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
