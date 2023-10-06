@@ -16,4 +16,4 @@ SELECT
 FROM user_kasbon u
 LEFT JOIN request r ON u.id_karyawan = r.id_karyawan
 LEFT JOIN bayar b ON r.id_request = b.id_request
-GROUP BY u.id_karyawan;
+GROUP BY u.id_karyawan, r.id_request; -- Group by id_request
