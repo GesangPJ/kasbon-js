@@ -15,19 +15,14 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import Button from '@mui/material/Button'
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
-  // warna warning/kuning
-  warningCell: {
-    backgroundColor: 'yellow',
-
-  },
-
-  //warna success/hijau
-  successCell: {
-    backgroundColor: 'green',
-
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '10px',
   },
 }));
 
@@ -167,6 +162,15 @@ const TableEditRequest = () => {
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
+  const [radioButtonValues, setRadioButtonValues] = useState({});
+
+  const handleRadioChange = (event, requestId) => {
+    setRadioButtonValues({
+      ...radioButtonValues,
+      [requestId]: event.target.value,
+    });
+  };
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -213,17 +217,17 @@ const TableEditRequest = () => {
                         <FormControl>
                           <RadioGroup
                             row
-                            aria-labelledby="demo-row-radio-buttons-group-label"
-                            name="row-radio-buttons-group"
-                            value={value}
-                            onChange={handleChange}
+                            name={`row-radio-buttons-group-${row.id_request}`}
+                            value={radioButtonValues[row.id_request] || ''}
+                            onChange={(event) => handleRadioChange(event, row.id_request)}
                           >
                             <FormControlLabel value="setuju" control={<Radio />} label="Setuju" />
                             <FormControlLabel value="tolak" control={<Radio />} label="Tolak" />
                           </RadioGroup>
                         </FormControl>
-                      ) : column.format && typeof row[column.id] === 'number' ?
-                        column.format(row[column.id]) : row[column.id]}
+                      ) : column.format && typeof row[column.id] === 'number'
+                        ? column.format(row[column.id])
+                        : row[column.id]}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -241,6 +245,11 @@ const TableEditRequest = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      <div className={classes.buttonContainer}>
+        <Button type="submit" variant="contained" size="large">
+          SIMPAN
+        </Button>
+      </div><br></br>
     </Paper>
   );
 };
