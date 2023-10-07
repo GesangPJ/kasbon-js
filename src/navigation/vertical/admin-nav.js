@@ -60,7 +60,7 @@ const AdminNavigation = () => {
     {
       title: 'Download Data',
       icon: SaveAltOutlinedIcon,
-      path: '/download-data',
+      path: '/download',
       openInNewTab: false
     }
   ]
