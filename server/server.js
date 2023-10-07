@@ -385,6 +385,34 @@ app.put('/api/update-request/:id', async (req, res) => {
   }
 })
 
+// API Ambil data untuk halaman Bayar
+app.post('/api/ambil-data-bayar', async (req, res) => {
+  const id_karyawan = req.body
+
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM dashbaoard_karyawan WHERE status_request = \'sukses\' AND id_karyawan = $1'
+    const selectResult = await client.query(selectQuery, [id_karyawan])
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data bayar menunggu konfirmasi' })
+    }
+
+
+  }
+  catch (error) {
+
+  }
+
+
+
+
+})
+
 // Set Port buat server
 const port = process.env.PORT || 3001;
 app.listen(port, async () => {
