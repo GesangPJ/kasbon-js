@@ -24,6 +24,7 @@ import Button from '@mui/material/Button'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Alert from '@mui/material/Alert'
 
 function createData(id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_bayar) {
   return { id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_bayar };
@@ -34,7 +35,6 @@ const FormBayarKasbon = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [sessionStorage, setSessionStorage] = useState(null)
-  const [sessionData, setSessionData] = useState(null)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [data, setData] = useState([])
@@ -43,28 +43,31 @@ const FormBayarKasbon = () => {
 
   const handleidkaryawanChange = (e) => setidkaryawan(e.target.value)
 
+  const [sessionData, setSessionData] = useState(null)
+
   useEffect(() => {
     const fetchSessionData = async () => {
-      // Ambil SessionData dari Session Storage
-      const sessionDataStr = sessionStorage.getItem('sessionData');
-      if (sessionDataStr) {
-        const sessionData = JSON.parse(sessionDataStr);
-        setSessionData(sessionData);
+      // Check if sessionStorage is available before trying to access it
+      if (sessionStorage) {
+        const sessionDataStr = sessionStorage.getItem('sessionData');
+        if (sessionDataStr) {
+          const sessionData = JSON.parse(sessionDataStr);
+          setSessionData(sessionData);
+        }
       }
     };
     fetchSessionData();
-
   }, []);
 
 
   //const id_akun = sessionStorage.getItem('id_akun')
 
   const handleSubmitID = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!id_karyawan) {
       // Display Error jika ada yang tidak diisi
-      setErrorMessage('ID Karyawan harus di input terlebih dahulu');
+      setErrorMessage('ID Karyawan harus diinput terlebih dahulu');
 
       return;
     }
@@ -75,39 +78,33 @@ const FormBayarKasbon = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(id_karyawan),
-      })
+        body: JSON.stringify({ id_karyawan }), // Make sure to pass an object with id_karyawan
+      });
+
       if (response.ok) {
-        setSuccessMessage(`Permintaan data berhasil dikirim.`)
-        setidkaryawan('')
+        setSuccessMessage('Permintaan data berhasil dikirim.');
+        setidkaryawan('');
         setTimeout(() => {
           setSuccessMessage('');
         }, 5000);
 
         const result = await response.json();
         setData(result);
-
       } else {
-        console.error('Error mengirim permintaan data.')
-        setErrorMessage(`Gagal mengirim permintaan data`)
+        console.error('Error mengirim permintaan data.');
+        setErrorMessage('Gagal mengirim permintaan data');
         setTimeout(() => {
-          setErrorMessage('')
-        }, 5000)
+          setErrorMessage('');
+        }, 5000);
       }
-
-    }
-    catch (error) {
-      console.error('Error:', error)
-      setErrorMessage(`Internal Server Error`)
+    } catch (error) {
+      console.error('Error:', error);
+      setErrorMessage('Internal Server Error');
       setTimeout(() => {
-        setErrorMessage('')
-      }, 5000)
-
+        setErrorMessage('');
+      }, 5000);
     }
-
-
-
-  }
+  };
 
   const rows = data.map((row) => {
     return createData(
@@ -148,8 +145,6 @@ const FormBayarKasbon = () => {
     });
   };
 
-
-
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -160,32 +155,40 @@ const FormBayarKasbon = () => {
         </Typography>
       </Grid>
       <Grid item xs={12}>
-        <TextField
-          fullWidth
-          type='text'
-          label='ID Karyawan'
-          name='id_karyawan'
-          placeholder='ID Karyawan'
-          helperText='Masukkan ID Karyawan'
-          value={id_karyawan}
-          onChange={handleidkaryawanChange}
-        />
+        <form onSubmit={handleSubmitID}>
+          <Grid item xs={4}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <TextField
+                fullWidth
+                type="text"
+                label="ID Karyawan"
+                name="id_karyawan"
+                placeholder="ID Karyawan"
+                helperText="Masukkan ID Karyawan"
+                value={id_karyawan}
+                onChange={handleidkaryawanChange}
+              />
+            </Box>
+          </Grid>
+          <Grid item xs={7}>
+            <Button type="button" variant="contained" size="large" onClick={handleSubmitID}>
+              Lihat Data
+            </Button>
+          </Grid>
+        </form>
       </Grid>
-      <Grid item xs={12}>
-        <Box
-          sx={{
-            gap: 5,
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Button type='submit' variant='contained' size='large'>
-            Lihat Data
-          </Button>
-        </Box>
-      </Grid>
+      {errorMessage && (
+        <Alert severity="error">{errorMessage}</Alert>
+      )}
+      {successMessage && (
+        <Alert severity="success">{successMessage}</Alert>
+      )}
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Tabel Bayar Kasbon' titleTypographyProps={{ variant: 'h6' }} />
