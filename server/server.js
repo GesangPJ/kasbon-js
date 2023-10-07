@@ -395,7 +395,7 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
   try {
     const client = await pool.connect()
 
-    const selectQuery = 'SELECT * FROM dashbaoard_karyawan WHERE status_request = \'sukses\' AND id_karyawan = $1'
+    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE status_request = \'sukses\' AND id_karyawan = $1'
     const selectResult = await client.query(selectQuery, [id_karyawan])
     client.release()
 
@@ -404,11 +404,9 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
     } else {
       res.status(404).json({ message: 'Tidak ada data bayar menunggu konfirmasi' })
     }
-
-
   }
   catch (error) {
-
+    console.error('Error :', error)
   }
 
 })
