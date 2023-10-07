@@ -18,7 +18,7 @@ import FormLabel from '@mui/material/FormLabel'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
