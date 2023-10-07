@@ -50,10 +50,10 @@ const AdminNavigation = () => {
       openInNewTab: false
     },
     {
-      title: 'Edit Obat Herbal',
+      title: 'Dokumentasi',
       icon: ModeEdit,
-      path: '/edit-obat-herbal',
-      openInNewTab: false
+      path: '/dokumentasi',
+      openInNewTab: true
     }
   ]
 }
