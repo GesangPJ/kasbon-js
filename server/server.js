@@ -390,13 +390,14 @@ app.put('/api/update-request/:id_request', async (req, res) => {
 
 // API Ambil data untuk halaman Bayar
 app.post('/api/ambil-data-bayar', async (req, res) => {
-  const id_karyawan = req.body
+  const id_karyawan = req.body.id_karyawan;
 
   try {
     const client = await pool.connect()
 
-    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE status_request = \'sukses\' AND id_karyawan = $1'
-    const selectResult = await client.query(selectQuery, [id_karyawan])
+    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE status_request = \'sukses\' AND id_karyawan = $1';
+    const selectResult = await client.query(selectQuery, [id_karyawan]);
+
     client.release()
 
     if (selectResult.rows.length > 0) {
@@ -408,6 +409,11 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
   catch (error) {
     console.error('Error :', error)
   }
+
+})
+
+//API Tambah Bayar
+app.post('/api/tambah-bayar', async (req, res) => {
 
 })
 
