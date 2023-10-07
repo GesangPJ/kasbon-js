@@ -25,10 +25,25 @@ const FormKasbon = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
-  const handlejumlahChange = (e) => setjumlah(e.target.value)
+  //const handlejumlahChange = (e) => setjumlah(e.target.value)
   const handlemetodeChange = (e) => setmetode(e.target.value)
   const handleketeranganChange = (e) => setketerangan(e.target.value)
   const [sessionData, setSessionData] = useState(null)
+
+  const handlejumlahChange = (e) => {
+    const inputValue = e.target.value;
+
+    // Use regular expression to allow only numbers
+    if (/^\d*$/.test(inputValue)) {
+      setjumlah(inputValue);
+    } else {
+      // Display an error message or prevent input, depending on your preference
+      setErrorMessage('Hanya boleh angka pada input nilai!');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 5000);
+    }
+  };
 
   useEffect(() => {
     // Mengambil session storage
@@ -47,7 +62,10 @@ const FormKasbon = () => {
     // validasi form
     if (!jumlah || !metode || !keterangan) {
       // Display Error jika ada yang tidak diisi
-      setErrorMessage('Semua harus diisi!');
+      setErrorMessage('Semua kolom harus diisi!');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 5000);
 
       return;
     }
@@ -55,6 +73,9 @@ const FormKasbon = () => {
     // Validasi panjang keterangan
     if (keterangan.length > 255) {
       setErrorMessage('Keterangan tidak boleh melebihi 255 karakter');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 5000);
 
       return;
     }
