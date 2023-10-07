@@ -34,7 +34,6 @@ const columns = [
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'left', sortable: false },
   { id: 'b_tombol', label: '', minWidth: 10, align: 'left', sortable: false },
 ];
 
@@ -154,7 +153,6 @@ const TableEditRequest = () => {
       row.metode,
       row.keterangan,
       row.status_request,
-      row.status_bayar,
     );
   });
 
