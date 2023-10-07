@@ -11,7 +11,7 @@ SELECT
     COALESCE(
         GREATEST(
             MAX(r.tanggaljam),
-            MAX(b.tanggal)
+            MAX(b.tanggaljam)
         ),
         '1970-01-01'::timestamp
     ) AS tanggaljam,
