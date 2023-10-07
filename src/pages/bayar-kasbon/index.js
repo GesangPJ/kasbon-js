@@ -25,9 +25,48 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Alert from '@mui/material/Alert'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
-function createData(id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_bayar) {
-  return { id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_bayar };
+const columns = [
+  { id: 'tanggaljam', label: 'Tanggal Jam', minWidth: 10, sortable: true },
+  { id: 'nama_user', label: 'Nama Karyawan', minWidth: 10, sortable: true },
+  { id: 'jumlah', label: 'Jumlah', minWidth: 10, sortable: false },
+  { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
+  { id: 'keterangan', label: 'Keterangan', minWidth: 10, sortable: false },
+  { id: 'status_b', label: 'Status Bayar', minWidth: 10, sortable: false },
+  { id: 'status_bayar', label: 'Sudah Lunas?', minWidth: 10, sortable: true },
+];
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+
+    return a[1] - b[1];
+  });
+
+  return stabilizedThis.map((el) => el[0]);
+}
+
+// Komparasi sortir
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+// Komparasi sortir descending
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) return -1;
+  if (b[orderBy] > a[orderBy]) return 1;
+
+  return 0;
+}
+
+function createData(id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar) {
+  return { id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar };
 }
 
 const FormBayarKasbon = () => {
@@ -58,6 +97,11 @@ const FormBayarKasbon = () => {
 
 
   const [sessionData, setSessionData] = useState(null)
+
+  const handleSort = (columnId) => {
+    const isAsc = sorting.column === columnId && sorting.direction === 'asc';
+    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
+  };
 
   useEffect(() => {
     const fetchSessionData = async () => {
@@ -144,7 +188,9 @@ const FormBayarKasbon = () => {
       row.nama_user,
       formatCurrencyIDR(row.jumlah),
       row.metode,
+      row.status_b,
       row.keterangan,
+
     );
   });
 
@@ -158,16 +204,16 @@ const FormBayarKasbon = () => {
   };
 
   const handleSimpan = async (id_request) => {
-    const status_bayar = radioButtonValues[id_request]; // Get the status_bayar directly from radioButtonValues
+    const status_b = radioButtonValues[id_request]; // ambil nilai radiobutton per baris berdasarkan id_request
     const id_akun = sessionData.id_akun;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/tambah-bayar/${id_request}`, {
+      const response = await fetch(`http://localhost:3001/api/edit-bayar/${id_request}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status_bayar, id_petugas: id_akun }),
+        body: JSON.stringify({ status_b, id_petugas: id_akun }),
       });
 
       if (response.ok) {
@@ -191,6 +237,8 @@ const FormBayarKasbon = () => {
       console.error('Error:', error);
     }
   };
+
+  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
   return (
     <Grid container spacing={6}>
@@ -248,22 +296,55 @@ const FormBayarKasbon = () => {
               <TableHead>
                 <TableRow>
 
-                  <TableCell align="left">Tanggal Jam</TableCell>
-                  <TableCell align="left">Nama Karyawan</TableCell>
+                  <TableCell
+                    align="left"
+                    onClick={() => handleSort('tanggaljam')} // Add onClick to handle sorting
+                  >Tanggal Jam {sorting.column === 'tanggaljam' ? (
+                    sorting.direction === 'asc' ? (
+                      <KeyboardArrowDownIcon />
+                    ) : (
+                      <KeyboardArrowUpIcon />
+                    )
+                  ) : null}
+                  </TableCell>
+                  <TableCell
+                    align="left"
+                    onClick={() => handleSort('nama_user')} // Add onClick to handle sorting
+                  >
+                    Nama Karyawan
+                    {sorting.column === 'nama_user' ? (
+                      sorting.direction === 'asc' ? (
+                        <KeyboardArrowDownIcon />
+                      ) : (
+                        <KeyboardArrowUpIcon />
+                      )
+                    ) : null}
+                  </TableCell>
                   <TableCell align="left">Jumlah</TableCell>
-                  <TableCell align="left">Metode</TableCell>
+                  <TableCell
+                    align="left"
+                    onClick={() => handleSort('metode')} // Add onClick to handle sorting
+                  >
+                    Metode
+                    {sorting.column === 'metode' ? (
+                      sorting.direction === 'asc' ? (
+                        <KeyboardArrowDownIcon />
+                      ) : (
+                        <KeyboardArrowUpIcon />
+                      )
+                    ) : null}
+                  </TableCell>
                   <TableCell align="left">Keterangan</TableCell>
                   <TableCell align="left" id="b_tombol">Sudah Lunas?</TableCell>
                   <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                {sortedData.map((row) => (
                   <TableRow
                     key={row.id_request}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-
                     <TableCell align="left">{row.tanggaljam}</TableCell>
                     <TableCell align="left">{row.nama_user}</TableCell>
                     <TableCell align="left">{row.jumlah}</TableCell>

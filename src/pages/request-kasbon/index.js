@@ -20,7 +20,7 @@ const RequestKasbonAdmin = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Tabel Request Kasbon' titleTypographyProps={{ variant: 'h6' }} />
+          <CardHeader title='' titleTypographyProps={{ variant: 'h6' }} />
           <TableEditRequest />
         </Card>
       </Grid>
