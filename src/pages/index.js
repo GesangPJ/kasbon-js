@@ -19,11 +19,8 @@ import MuiFormControlLabel from '@mui/material/FormControlLabel'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
-
 import themeConfig from 'src/configs/themeConfig'
-
 import BlankLayout from 'src/@core/layouts/BlankLayout'
-
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Receipt } from '@mui/icons-material'
 
@@ -116,9 +113,6 @@ const SignPage = () => {
 
   }, []);
 
-
-
-
   const theme = useTheme();
 
   const handleClickShowPassword = () => {
@@ -134,9 +128,7 @@ const SignPage = () => {
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: (theme) => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-
             <ReceiptLongOutlinedIcon color='primary' />
-
             <Typography
               variant='h6'
               sx={{
@@ -151,13 +143,10 @@ const SignPage = () => {
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-
             <Typography variant='body2' align='center'>
               Masuk Ke Akun Anda Untuk Melanjutkan
             </Typography>
-
           </Box>
-
           <form noValidate autoComplete='off' onSubmit={(e) => e.preventDefault()}>
             <TextField
               autoFocus
