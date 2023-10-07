@@ -359,9 +359,9 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
 
 // API upadate Request berdasarkan id_request
 app.put('/api/update-request/:id_request', async (req, res) => {
-  const requestId = req.params.id_request; // Get the ID of the request from the route parameters
-  const { status_request } = req.body; // Get the updated data (status_request) from the request body
-  const id_petugas = req.session.user.id_akun; // Get id_akun from the session storage
+  const requestId = req.params.id_request;
+  const { status_request } = req.body;
+  const id_petugas = req.session.admin.id_akun;
 
   try {
     const client = await pool.connect();
