@@ -170,10 +170,10 @@ const TableEditRequest = () => {
     });
   };
 
-  const handleSimpan = async () => {
+  const handleSimpan = async (id_request) => {
     // Construct the request body with the updated status_request value
     const requestBody = {
-      status_request: radioButtonValues[requestId],
+      status_request: radioButtonValues,
     };
 
     try {
@@ -290,12 +290,7 @@ const TableEditRequest = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
       <div className={classes.buttonContainer}>
-        <Button
-          type="submit"
-          variant="contained"
-          size="large"
-          onClick={handleSimpan} // Call handleSimpan when the button is clicked
-        />
+        <Button type="submit" variant="contained" size="large" onClick={() => handleSimpan(row.id_request)}>Simpan</Button>
       </div><br></br>
       {errorMessage && (
         <Alert severity="error">{errorMessage}</Alert>
