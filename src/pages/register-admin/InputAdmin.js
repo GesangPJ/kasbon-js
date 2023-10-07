@@ -23,9 +23,37 @@ const FormAdmin = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   const handlepasswordChange = (e) => setpassword(e.target.value)
-  const handlenamaChange = (e) => setnama(e.target.value)
   const handleemailChange = (e) => setemail(e.target.value)
-  const handleidpetugasChange = (e) => setidpetugas(e.target.value)
+
+  const handleidpetugasChange = (e) => {
+    const inputValue = e.target.value
+
+    // Use a regular expression to allow only numbers and letters
+    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
+      setidpetugas(inputValue)
+    } else {
+      // Display an error message or prevent input, depending on your preference
+      setErrorMessage('ID hanya boleh huruf dan angka!')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
+  }
+
+  const handlenamaChange = (e) => {
+    const inputValue = e.target.value
+
+    // Use a regular expression to allow only numbers and letters
+    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
+      setnama(inputValue)
+    } else {
+      // Display an error message or prevent input, depending on your preference
+      setErrorMessage('Nama hanya boleh huruf dan angka!')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
+  }
 
   const handleChange = (event) => {
     setRoles(event.target.value);
