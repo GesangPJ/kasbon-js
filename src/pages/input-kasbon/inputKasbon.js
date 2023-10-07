@@ -27,7 +27,7 @@ const FormKasbon = () => {
   const handlejumlahChange = (e) => setjumlah(e.target.value)
   const handlemetodeChange = (e) => setmetode(e.target.value)
   const handleketeranganChange = (e) => setketerangan(e.target.value)
-  const [sessionData, setSessionData] = useState(null);
+  const [sessionData, setSessionData] = useState(null)
 
   useEffect(() => {
     // Mengambil session storage
@@ -41,7 +41,7 @@ const FormKasbon = () => {
 
   // Submit ke api
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // validasi form
     if (!jumlah || !metode || !keterangan) {
@@ -96,7 +96,7 @@ const FormKasbon = () => {
     } catch (error) {
       console.error('Error:', error);
     }
-  };
+  }
 
   const [metode, setmetode] = React.useState('');
 
