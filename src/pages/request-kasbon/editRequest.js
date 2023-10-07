@@ -278,24 +278,21 @@ const TableEditRequest = () => {
                   ) : null}
                 </TableCell>
                 <TableCell align="left">Keterangan</TableCell>
-                <TableCell align="left" id="status_request">Request</TableCell>
-                <TableCell align="left" id="b_tombol">Konfirmasi</TableCell>
+                <TableCell align="left" id="b_tombol">Konfirmasi Request</TableCell>
                 <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {sortedData.map((row) => ( // Change 'rows' to 'sortedData'
                 <TableRow
                   key={row.id_request}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-
                   <TableCell align="left">{row.tanggaljam}</TableCell>
                   <TableCell align="left">{row.nama_user}</TableCell>
                   <TableCell align="left">{row.jumlah}</TableCell>
                   <TableCell align="left">{row.metode}</TableCell>
                   <TableCell align="left">{row.keterangan}</TableCell>
-                  <TableCell align="left">{row.status_request}</TableCell>
                   <TableCell align="left">
                     <FormControl>
                       <RadioGroup
