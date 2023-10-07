@@ -19,14 +19,8 @@ const DataAdmin = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Kasbon' titleTypographyProps={{ variant: 'h6' }} />
+          <CardHeader title='' titleTypographyProps={{ variant: 'h6' }} />
           <TableDataAdmin />
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title='Kasbon' titleTypographyProps={{ variant: 'h6' }} />
-          <Typography variant='body2'>Data Admin</Typography>
         </Card>
       </Grid>
     </Grid>
