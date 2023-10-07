@@ -65,15 +65,15 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
-function createData(id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar) {
-  return { id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar };
+function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar) {
+  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar };
 }
 
 const FormBayarKasbon = () => {
   const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const [sessionStorage, setSessionStorage] = useState(null)
+  const [sessionData, setSessionData] = useState(null)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [data, setData] = useState([])
@@ -95,9 +95,6 @@ const FormBayarKasbon = () => {
     }
   }
 
-
-  const [sessionData, setSessionData] = useState(null)
-
   const handleSort = (columnId) => {
     const isAsc = sorting.column === columnId && sorting.direction === 'asc';
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
@@ -105,20 +102,17 @@ const FormBayarKasbon = () => {
 
   useEffect(() => {
     const fetchSessionData = async () => {
-      // Check if sessionStorage is available before trying to access it
-      if (sessionStorage) {
-        const sessionDataStr = sessionStorage.getItem('sessionData');
-        if (sessionDataStr) {
-          const sessionData = JSON.parse(sessionDataStr);
-          setSessionData(sessionData);
-        }
+      // Ambil SessionData dari Session Storage
+      const sessionDataStr = sessionStorage.getItem('sessionData');
+      if (sessionDataStr) {
+        const sessionData = JSON.parse(sessionDataStr);
+        setSessionData(sessionData);
       }
     };
+
     fetchSessionData();
+
   }, []);
-
-
-  //const id_akun = sessionStorage.getItem('id_akun')
 
   const handleSubmitID = async (e) => {
     e.preventDefault();
@@ -188,7 +182,6 @@ const FormBayarKasbon = () => {
       row.nama_user,
       formatCurrencyIDR(row.jumlah),
       row.metode,
-      row.status_b,
       row.keterangan,
 
     );
@@ -204,38 +197,46 @@ const FormBayarKasbon = () => {
   };
 
   const handleSimpan = async (id_request) => {
-    const status_b = radioButtonValues[id_request]; // ambil nilai radiobutton per baris berdasarkan id_request
-    const id_akun = sessionData.id_akun;
+    if (sessionData && sessionData.id_akun) {
+      const status_b = radioButtonValues[id_request]; // ambil nilai radiobutton per baris berdasarkan id_request
+      const id_akun = sessionData.id_akun;
 
-    try {
-      const response = await fetch(`http://localhost:3001/api/edit-bayar/${id_request}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status_b, id_petugas: id_akun }),
-      });
+      try {
+        const response = await fetch(`http://localhost:3001/api/edit-bayar/${id_request}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status_b, id_petugas: id_akun }),
+        });
 
-      if (response.ok) {
-        setSuccessMessage(`Data request berhasil diupdate.`);
-        setTimeout(() => {
-          setSuccessMessage('');
-        }, 1000);
-        console.log('Data request berhasil diupdate');
+        if (response.ok) {
+          setSuccessMessage(`Data request berhasil diupdate.`);
+          setTimeout(() => {
+            setSuccessMessage('');
+          }, 1000);
+          console.log('Data request berhasil diupdate');
 
-        // Refresh the page after a successful update
-        window.location.reload();
-      } else {
-        setErrorMessage(`Gagal mengirim update data request`);
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+          // Refresh the page after a successful update
+          window.location.reload();
+        } else {
+          setErrorMessage(`Gagal mengirim update data request`);
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
 
-        console.error('Error update data request');
+          console.error('Error update data request');
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
-    } catch (error) {
-      console.error('Error:', error);
+    } else {
+      // Handle the case where sessionData is null or doesn't have id_akun
+      console.error('Session data is missing or incomplete');
+
+      // You can set an error message or take appropriate action here.
     }
+
   };
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
