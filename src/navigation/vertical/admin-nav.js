@@ -8,6 +8,8 @@ import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlin
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined'
 import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined'
 import PaidIcon from '@mui/icons-material/Paid'
+import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
+import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined'
 
 const AdminNavigation = () => {
   return [
@@ -51,9 +53,15 @@ const AdminNavigation = () => {
     },
     {
       title: 'Dokumentasi',
-      icon: ModeEdit,
+      icon: TextSnippetOutlinedIcon,
       path: '/dokumentasi',
-      openInNewTab: true
+      openInNewTab: false
+    },
+    {
+      title: 'Download Data',
+      icon: SaveAltOutlinedIcon,
+      path: '/download-data',
+      openInNewTab: false
     }
   ]
 }
