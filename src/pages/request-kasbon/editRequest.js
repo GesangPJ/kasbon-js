@@ -237,6 +237,7 @@ const TableEditRequest = () => {
           <TableHead>
             <TableRow>
               <TableCell align="left" id="id_request">ID</TableCell>
+              <TableCell align="left">Tanggal Jam</TableCell>
               <TableCell align="left">Nama Karyawan</TableCell>
               <TableCell align="left">Nilai</TableCell>
               <TableCell align="left">Metode</TableCell>
@@ -253,6 +254,7 @@ const TableEditRequest = () => {
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">{row.id_request}</TableCell>
+                <TableCell align="left">{row.tanggaljam}</TableCell>
                 <TableCell align="left">{row.nama_user}</TableCell>
                 <TableCell align="left">{row.jumlah}</TableCell>
                 <TableCell align="left">{row.metode}</TableCell>
