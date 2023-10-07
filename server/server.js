@@ -375,12 +375,15 @@ app.put('/api/update-request/:id_request', async (req, res) => {
 
     if (updateResult.rowCount === 1) {
       res.status(200).json({ message: 'Request berhasil diupdate' });
+      console.log('Update request berhasil')
     } else {
       res.status(404).json({ error: 'Request tidak ditemukan' });
+      console.log('Update Request tidak ditemukan data')
     }
   } catch (error) {
     console.error('Error updating request:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error' })
+    console.log('Update Request tidak berhasil')
   }
 });
 
@@ -406,9 +409,6 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
   catch (error) {
 
   }
-
-
-
 
 })
 
