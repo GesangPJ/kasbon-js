@@ -233,11 +233,44 @@ const TableEditRequest = () => {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-
-              <TableCell align="left">Tanggal Jam</TableCell>
-              <TableCell align="left">Nama Karyawan</TableCell>
+              <TableCell
+                align="left"
+                onClick={() => handleSort('tanggaljam')} // Add onClick to handle sorting
+              >Tanggal Jam {sorting.column === 'tanggaljam' ? (
+                sorting.direction === 'asc' ? (
+                  <ArrowDownwardIcon />
+                ) : (
+                  <ArrowUpwardIcon />
+                )
+              ) : null}
+              </TableCell>
+              <TableCell
+                align="left"
+                onClick={() => handleSort('nama_user')} // Add onClick to handle sorting
+              >
+                Nama Karyawan
+                {sorting.column === 'nama_user' ? (
+                  sorting.direction === 'asc' ? (
+                    <ArrowDownwardIcon />
+                  ) : (
+                    <ArrowUpwardIcon />
+                  )
+                ) : null}
+              </TableCell>
               <TableCell align="left">Nilai</TableCell>
-              <TableCell align="left">Metode</TableCell>
+              <TableCell
+                align="left"
+                onClick={() => handleSort('metode')} // Add onClick to handle sorting
+              >
+                Metode
+                {sorting.column === 'metode' ? (
+                  sorting.direction === 'asc' ? (
+                    <ArrowDownwardIcon />
+                  ) : (
+                    <ArrowUpwardIcon />
+                  )
+                ) : null}
+              </TableCell>
               <TableCell align="left">Keterangan</TableCell>
               <TableCell align="left" id="status_request">Request</TableCell>
               <TableCell align="left" id="b_tombol">Konfirmasi</TableCell>
