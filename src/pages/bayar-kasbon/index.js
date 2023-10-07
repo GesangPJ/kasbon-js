@@ -21,6 +21,9 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -38,26 +41,17 @@ const FormBayarKasbon = () => {
   const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const [sessionData, setSessionData] = useState(null)
+  const [sessionStorage, setSessionStorage] = useState(null)
 
 
   const handleidkaryawanChange = (e) => setidkaryawan(e.target.value)
 
   useEffect(() => {
-    // Mengambil session storage
-    const sessionDataStr = sessionStorage.getItem('sessionData');
-    if (sessionDataStr) {
-      const sessionData = JSON.parse(sessionDataStr);
-      setSessionData(sessionData);
-    }
-
-
-
-
 
   }, []);
 
-  const id_akun = sessionData.id_akun
+
+  //const id_akun = sessionStorage.getItem('id_akun')
 
   const handleSubmitID = async (e) => {
     e.preventDefault()
@@ -110,6 +104,33 @@ const FormBayarKasbon = () => {
   }
 
 
+  // Format mata uang ke rupiah
+  const formatCurrencyIDR = (jumlah) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(jumlah);
+  };
+
+  // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta';
+    const utcDate = new Date(tanggaljam);
+    const options = { timeZone: jakartaTimezone, hour12: false };
+
+    return utcDate.toLocaleString('id-ID', options);
+  };
+
+  const [radioButtonValues, setRadioButtonValues] = useState({});
+
+  const handleRadioChange = (event, requestId) => {
+    setRadioButtonValues({
+      ...radioButtonValues,
+      [requestId]: event.target.value,
+    });
+  };
+
+
 
   return (
     <Grid container spacing={6}>
@@ -143,7 +164,7 @@ const FormBayarKasbon = () => {
           }}
         >
           <Button type='submit' variant='contained' size='large'>
-            Kirim
+            Lihat Data
           </Button>
         </Box>
       </Grid>
@@ -154,11 +175,12 @@ const FormBayarKasbon = () => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Dessert (100g serving)</TableCell>
-                  <TableCell align="right">Calories</TableCell>
-                  <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                  <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                  <TableCell align="right">Protein&nbsp;(g)</TableCell>
+                  <TableCell align="left" id="id_request">ID</TableCell>
+                  <TableCell align="left">Tanggal Jam</TableCell>
+                  <TableCell align="left">Jumlah</TableCell>
+                  <TableCell align="left">Metode</TableCell>
+                  <TableCell align="left">Keterangan</TableCell>
+                  <TableCell align="left" id="b_tombol">Bayar</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -170,19 +192,46 @@ const FormBayarKasbon = () => {
                     <TableCell component="th" scope="row">
                       {row.name}
                     </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
+                    <TableCell align="left">{row.calories}</TableCell>
+                    <TableCell align="left">{row.fat}</TableCell>
+                    <TableCell align="left">{row.carbs}</TableCell>
+                    <TableCell align="left">{row.protein}</TableCell>
+                    <TableCell aligh="left">
+                      <FormControl>
+                        <RadioGroup
+                          row
+                          name={`row-radio-buttons-group-${row.id_request}`}
+                          value={radioButtonValues[row.id_request] || ''}
+                          onChange={(event) => handleRadioChange(event, row.id_request)}
+                        >
+                          <FormControlLabel value="lunas" control={<Radio />} label="Lunas" />
+                          <FormControlLabel value="belum" control={<Radio />} label="Belum" />
+                        </RadioGroup>
+                      </FormControl>
+
+
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-
-
-
         </Card>
+      </Grid>
+      <Grid item xs={12}>
+        <Box
+          sx={{
+            gap: 5,
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Button type='submit' variant='contained' size='large'>
+            Simpan
+          </Button>
+        </Box>
       </Grid>
     </Grid>
   )
