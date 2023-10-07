@@ -441,7 +441,7 @@ app.put('/api/edit-bayar/:id_request', async (req, res) => {
   try {
     const client = await pool.connect()
 
-    const updateQuery = 'UPDATE request PUT status_b = $1, id_petugas = $2 WHERE id_request = $3'
+    const updateQuery = 'UPDATE request SET status_b = $1, id_petugas = $2, tanggaljam=NOW() WHERE id_request = $3'
     const updateValues = [status_b, id_petugas, requestId]
     const updateResult = await client.query(updateQuery, updateValues)
 
