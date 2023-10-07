@@ -15,29 +15,27 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 
 const columns = [
-  { id: 'tanggaljam', label: 'Tanggal Jam', minWidth: 170, sortable: true },
-  { id: 'latin', label: 'Jumlah', minWidth: 100, sortable: true },
-  { id: 'komposisi', label: 'Metode Pembayaran', minWidth: 50, sortable: true },
-  {
-    id: 'kegunaanUtama',
-    label: 'Status Request',
-    minWidth: 170,
-    align: 'left',
-    sortable: true,
-  },
-  {
-    id: 'aksi',
-    label: 'Status Pembayaran',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toFixed(2),
-    sortable: false, // No sorting for this column
-  },
+  { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
+  { id: 'nama_user', label: 'Nama Karyawan', minWidth: 10, sortable: true },
+  { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
+  { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
+  { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_b', label: 'Bayar', minWidth: 10, align: 'left', sortable: false },
+  { id: 'nama_admin', label: 'Nama Admin', minWidth: 10, align: 'left', sortable: false },
 ];
 
-function createData(namaObat, komposisi, latin, kegunaanUtama) {
-  return { namaObat, komposisi, latin, kegunaanUtama };
+
+//function createData(nama_user, nama_admin, status_request, tanggaljam, jumlah, metode, keterangan, status_b) {
+// return { nama_user, nama_admin, status_request, tanggaljam, jumlah, metode, keterangan, status_b };
+//}
+
+function createData(tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin) {
+  return { tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin }
 }
+
+
+
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -73,7 +71,7 @@ const TableDataAdmin = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]); // Declare data state
-  const [sorting, setSorting] = useState({ column: 'namaObat', direction: 'asc' });
+  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
   const router = useRouter();
 
   const handleChangePage = (event, newPage) => {
@@ -103,15 +101,33 @@ const TableDataAdmin = () => {
     );
   };
 
+
+  // Format mata uang ke rupiah
+  const formatCurrencyIDR = (jumlah) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(jumlah);
+  };
+
+  // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta';
+    const utcDate = new Date(tanggaljam);
+    const options = { timeZone: jakartaTimezone, hour12: false };
+
+    return utcDate.toLocaleString('id-ID', options);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('');
+        const response = await fetch('http://localhost:3001/api/ambil-dashboard-komplit');
         if (response.ok) {
           const result = await response.json();
           setData(result); // Update data state
         } else {
-          console.error('Error fetching obat herbal data.');
+          console.error('Error mengambil dashboard admin.');
         }
       } catch (error) {
         console.error('Error:', error);
@@ -121,7 +137,30 @@ const TableDataAdmin = () => {
     fetchData();
   }, []);
 
-  const rows = data.map((row) => createData(row.namaObat, row.komposisi, row.latin, row.kegunaanUtama));
+  const rows = data.map((row) => {
+    const {
+      tanggaljam,
+      nama_user,
+      jumlah,
+      metode,
+      status_request,
+      status_b,
+      keterangan,
+      nama_admin,
+    } = row;
+
+    return createData(
+      formatTanggaljam(tanggaljam),
+      nama_user,
+      formatCurrencyIDR(jumlah),
+      metode,
+      keterangan,
+      status_request,
+      status_b,
+      nama_admin,
+    );
+  });
+
 
   // Sorting function
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
@@ -164,14 +203,13 @@ const TableDataAdmin = () => {
           </TableHead>
           <TableBody>
             {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.namaObat}>
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
                 {columns.map((column) => {
                   const value = row[column.id];
                   if (column.id === 'aksi') {
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {column.format && typeof value === 'number' ? column.format(value) : value}
-                        {handleDetailClick(row.namaObat)}
                       </TableCell>
                     );
                   }
