@@ -30,28 +30,32 @@ const useStyles = makeStyles((theme) => ({
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
-  { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: true },
+  { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_b', label: 'Status', minWidth: 10, align: 'left', sortable: false },
 ];
 
 // Konstruktor row
-function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_bayar) {
+function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_b) {
   let statusChip = null;
 
-  if (status_request === "wait") {
+  if (status_request === 'wait') {
     statusChip = (
-      <Chip label="Wait" color="secondary" variant="outlined" />
+      <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" />
     );
-  } else if (status_request === "success") {
+  } else if (status_request === 'success') {
     statusChip = (
-      <Chip label="Success" color="primary" variant="outlined" />
+      <Chip label="Success" className={classes.successCell} color="primary" variant="outlined" />
+    );
+  } else if (status_request === 'tolak') {
+    statusChip = (
+      <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" />
     );
   }
 
-  return { tanggaljam, jumlah, metode, keterangan, status_request, status_bayar, statusChip };
+  return { tanggaljam, jumlah, metode, keterangan, status_request, status_b, statusChip };
 }
 
 // Sortir
@@ -84,12 +88,13 @@ function descendingComparator(a, b, orderBy) {
 
 // Table dashboard karyawan
 const TableDataUser = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState([]);
-  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [data, setData] = useState([])
+  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
+  const [sessionData, setSessionData] = useState(null)
 
-  const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
+  //const [sessionStorage, setSessionStorage] = useState(null)
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -105,10 +110,25 @@ const TableDataUser = () => {
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
   };
 
+
+
   // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
+
+    const fetchSessionData = async () => {
+      // Ambil SessionData dari Session Storage
+      const sessionDataStr = sessionStorage.getItem('sessionData');
+      if (sessionDataStr) {
+        const sessionData = JSON.parse(sessionDataStr);
+        setSessionData(sessionData);
+      }
+    };
+
+
     const fetchData = async () => {
+
       try {
+        const id_akun = sessionData.id_akun
         const response = await fetch(`http://localhost:3001/api/ambil-dashboard-karyawan/${id_akun}`);
         if (response.ok) {
           const result = await response.json();
@@ -121,7 +141,8 @@ const TableDataUser = () => {
       }
     };
     fetchData();
-  }, [id_akun]);
+    fetchSessionData();
+  }, []);
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
@@ -148,10 +169,12 @@ const TableDataUser = () => {
       row.metode,
       row.keterangan,
       row.status_request,
-      row.status_bayar,
+      row.status_b,
       row.statusChip
     );
   });
+
+
 
   const classes = useStyles();
 
@@ -186,11 +209,23 @@ const TableDataUser = () => {
             {sortedData.length === 0 ? (
               <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
                 {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align} >
-                    {column.id === 'status_request' ? rows.statusChip : rows[column.id]}
-                    {column.format && typeof rows[column.id] === 'number' ? column.format(rows[column.id]) : rows[column.id]}
+                  <TableCell key={column.id} align={column.align}>
+                    {column.id === 'status_request' ? (
+                      rows.status_request === 'wait' ? (
+                        <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'white' }} />
+                      ) : rows.status_request === 'success' ? (
+                        <Chip label="Success" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                      ) : rows.status_request === 'tolak' ? (
+                        <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
+                      ) : (
+                        rows.status_request
+                      )
+                    ) : column.format && typeof rows[column.id] === 'number' ? (
+                      column.format(row[column.id])
+                    ) : (
+                      rows[column.id]
+                    )
+                    }
                   </TableCell>
                 ))}
               </TableRow>
@@ -199,13 +234,27 @@ const TableDataUser = () => {
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
-                      {column.id === 'status_request' ? rows.statusChip : rows[column.id]}
-                      {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
+                      {column.id === 'status_request' ? (
+                        row.status_request === 'wait' ? (
+                          <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" />
+                        ) : row.status_request === 'sukses' ? (
+                          <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" />
+                        ) : (
+                          row.status_request
+                        )
+                      ) : column.format && typeof row[column.id] === 'number' ? (
+                        column.format(row[column.id])
+                      ) : (
+                        row[column.id]
+                      )
+                      }
                     </TableCell>
-                  ))}
+                  ))
+                  }
                 </TableRow>
               ))
-            )}
+            )
+            }
           </TableBody>
         </Table>
       </TableContainer>
