@@ -25,11 +25,6 @@ const navigation = () => {
     },
     {
       sectionTitle: 'Lainnya'
-    },
-    {
-      title: 'Akun User',
-      icon: ManageAccountsOutlinedIcon,
-      path: '/akun-user'
     }
   ]
 }
