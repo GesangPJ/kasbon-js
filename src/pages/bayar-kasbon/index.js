@@ -41,7 +41,21 @@ const FormBayarKasbon = () => {
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
 
 
-  const handleidkaryawanChange = (e) => setidkaryawan(e.target.value)
+  const handleidkaryawanChange = (e) => {
+    const inputValue = e.target.value
+
+    // Use a regular expression to allow only numbers and letters
+    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
+      setidkaryawan(inputValue)
+    } else {
+      // Display an error message or prevent input, depending on your preference
+      setErrorMessage('ID Hanya boleh huruf dan angka!')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
+  }
+
 
   const [sessionData, setSessionData] = useState(null)
 
@@ -180,12 +194,15 @@ const FormBayarKasbon = () => {
 
   return (
     <Grid container spacing={6}>
+
       <Grid item xs={12}>
+
         <Typography variant='h5'>
           <Link href=''>
             Bayar Kasbon
           </Link>
         </Typography>
+
       </Grid>
       <Grid item xs={12}>
         <form onSubmit={handleSubmitID}>
@@ -208,14 +225,15 @@ const FormBayarKasbon = () => {
                 onChange={handleidkaryawanChange}
               />
             </Box>
-          </Grid>
+          </Grid><br></br>
           <Grid item xs={7}>
             <Button type="button" variant="contained" size="large" onClick={handleSubmitID}>
               Lihat Data
             </Button>
           </Grid>
         </form>
-      </Grid>
+
+      </Grid><br></br>
       {errorMessage && (
         <Alert severity="error">{errorMessage}</Alert>
       )}
