@@ -395,7 +395,7 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
   try {
     const client = await pool.connect()
 
-    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE status_request = \'sukses\' AND id_karyawan = $1';
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND id_karyawan = $1';
     const selectResult = await client.query(selectQuery, [id_karyawan]);
 
     client.release()
@@ -434,16 +434,29 @@ app.get('/api/ambil-dashboard-komplit', async (req, res) => {
 })
 
 //API Tambah Bayar
-app.post('/api/tambah-bayar', async (req, res) => {
-
-
+app.put('/api/edit-bayar/:id_request', async (req, res) => {
+  const { status_b, id_petugas } = req.body
+  const requestId = req.params.id_request
 
   try {
     const client = await pool.connect()
 
+    const updateQuery = 'UPDATE request PUT status_b = $1, id_petugas = $2 WHERE id_request = $3'
+    const updateValues = [status_b, id_petugas, requestId]
+    const updateResult = await client.query(updateQuery, updateValues)
+
+    if (updateResult.rowCount === 1) {
+      res.status(200).json({ message: 'Pembayaran berhasil diubah' });
+      console.log('Update bayar berhasil')
+    } else {
+      res.status(404).json({ error: 'Request tidak ditemukan' });
+      console.log('Update bayar tidak ditemukan data')
+    }
   }
   catch (error) {
-
+    console.error('Error update bayar :', error);
+    res.status(500).json({ error: 'Internal Server Error' })
+    console.log('Update bayar tidak berhasil')
   }
 })
 
