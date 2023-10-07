@@ -368,7 +368,7 @@ app.put('/api/update-request/:id_request', async (req, res) => {
     const client = await pool.connect();
 
     // Update the request in your database using SQL
-    const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2, tanggaljam = NOW() WHERE id_request = $3';
+    const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2, status_b=\'belum\', tanggaljam = NOW() WHERE id_request = $3';
     const updateValues = [status_request, id_petugas, requestId];
     const updateResult = await client.query(updateQuery, updateValues);
 
@@ -415,6 +415,15 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
 //API Tambah Bayar
 app.post('/api/tambah-bayar', async (req, res) => {
 
+
+
+  try {
+    const client = await pool.connect()
+
+  }
+  catch (error) {
+
+  }
 })
 
 // Set Port buat server
