@@ -17,12 +17,6 @@ const FooterContent = () => {
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>
           <Link
             target='_blank'
-            href='/license'
-          >
-            License
-          </Link>
-          <Link
-            target='_blank'
             href='https://github.com/GesangPJ/katalog-obat'
           >
             About
