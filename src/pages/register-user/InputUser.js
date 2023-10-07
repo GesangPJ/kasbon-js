@@ -22,10 +22,38 @@ const FormUser = () => {
   const [errorMessage, setErrorMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
+  const handleidkaryawanChange = (e) => {
+    const inputValue = e.target.value
+
+    // Use a regular expression to allow only numbers and letters
+    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
+      setidkaryawan(inputValue)
+    } else {
+      // Display an error message or prevent input, depending on your preference
+      setErrorMessage('ID hanya boleh huruf dan angka!')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
+  }
+
+  const handlenamaChange = (e) => {
+    const inputValue = e.target.value
+
+    // Use a regular expression to allow only numbers and letters
+    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
+      setnama(inputValue)
+    } else {
+      // Display an error message or prevent input, depending on your preference
+      setErrorMessage('Nama hanya boleh huruf dan angka!')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
+  }
+
   const handlepasswordChange = (e) => setpassword(e.target.value)
-  const handlenamaChange = (e) => setnama(e.target.value)
   const handleemailChange = (e) => setemail(e.target.value)
-  const handleidkaryawanChange = (e) => setidkaryawan(e.target.value)
 
   const handleChange = (event) => {
     setRoles(event.target.value);
