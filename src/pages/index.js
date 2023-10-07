@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -19,11 +19,8 @@ import MuiFormControlLabel from '@mui/material/FormControlLabel'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
-
 import themeConfig from 'src/configs/themeConfig'
-
 import BlankLayout from 'src/@core/layouts/BlankLayout'
-
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Receipt } from '@mui/icons-material'
 
@@ -46,6 +43,8 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
 }))
 
 const SignPage = () => {
+  const [loading, setLoading] = useState(true)
+
   const [values, setValues] = useState({
     idakun: '', // Change 'name' to 'username'
     password: '',
@@ -106,9 +105,13 @@ const SignPage = () => {
       console.error('Login error:', error);
     }
   };
+  useEffect(() => {
+    // Simulate loading the login form
+    setTimeout(() => {
+      setLoading(false);
+    }, 2500);
 
-
-
+  }, []);
 
   const theme = useTheme();
 
@@ -183,6 +186,7 @@ const SignPage = () => {
               Masuk
             </Button>
           </form>
+
         </CardContent>
       </Card>
       <FooterIllustrationsV1 />

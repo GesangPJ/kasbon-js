@@ -18,6 +18,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Select from '@mui/material/Select'
 import OutlinedInput from '@mui/material/OutlinedInput'
 
+
 const FormKasbon = () => {
   const [jumlah, setjumlah] = useState('')
   const [keterangan, setketerangan] = useState('')
@@ -27,7 +28,7 @@ const FormKasbon = () => {
   const handlejumlahChange = (e) => setjumlah(e.target.value)
   const handlemetodeChange = (e) => setmetode(e.target.value)
   const handleketeranganChange = (e) => setketerangan(e.target.value)
-  const [sessionData, setSessionData] = useState(null);
+  const [sessionData, setSessionData] = useState(null)
 
   useEffect(() => {
     // Mengambil session storage
@@ -41,7 +42,7 @@ const FormKasbon = () => {
 
   // Submit ke api
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // validasi form
     if (!jumlah || !metode || !keterangan) {
@@ -96,7 +97,7 @@ const FormKasbon = () => {
     } catch (error) {
       console.error('Error:', error);
     }
-  };
+  }
 
   const [metode, setmetode] = React.useState('');
 

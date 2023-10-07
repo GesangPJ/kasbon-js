@@ -6,11 +6,12 @@ SELECT
         FROM user_kasbon uk
         WHERE uk.id_karyawan = u.id_karyawan
         LIMIT 1
-    ) AS nama_user, -- Include nama_user from user_kasbon
+    ) AS nama_user,
+    r.id_request, -- Include id_request
     COALESCE(
         GREATEST(
             MAX(r.tanggaljam),
-            MAX(b.tanggal)
+            MAX(b.tanggaljam)
         ),
         '1970-01-01'::timestamp
     ) AS tanggaljam,
@@ -22,4 +23,4 @@ SELECT
 FROM user_kasbon u
 LEFT JOIN request r ON u.id_karyawan = r.id_karyawan
 LEFT JOIN bayar b ON r.id_request = b.id_request
-GROUP BY u.id_karyawan, r.id_request; -- Include nama_user in GROUP BY
+GROUP BY u.id_karyawan, r.id_request; -- Include id_request in GROUP BY

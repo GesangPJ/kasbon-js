@@ -357,6 +357,61 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
   }
 })
 
+// API upadate Request berdasarkan id_request
+app.put('/api/update-request/:id_request', async (req, res) => {
+  const requestId = req.params.id_request;
+  const { status_request, id_petugas } = req.body;
+
+  //const id_petugas = req.session.admin.id_akun;
+
+  try {
+    const client = await pool.connect();
+
+    // Update the request in your database using SQL
+    const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2, tanggaljam = NOW() WHERE id_request = $3';
+    const updateValues = [status_request, id_petugas, requestId];
+    const updateResult = await client.query(updateQuery, updateValues);
+
+    client.release();
+
+    if (updateResult.rowCount === 1) {
+      res.status(200).json({ message: 'Request berhasil diupdate' });
+      console.log('Update request berhasil')
+    } else {
+      res.status(404).json({ error: 'Request tidak ditemukan' });
+      console.log('Update Request tidak ditemukan data')
+    }
+  } catch (error) {
+    console.error('Error updating request:', error);
+    res.status(500).json({ error: 'Internal Server Error' })
+    console.log('Update Request tidak berhasil')
+  }
+});
+
+// API Ambil data untuk halaman Bayar
+app.post('/api/ambil-data-bayar', async (req, res) => {
+  const id_karyawan = req.body
+
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM dashbaoard_karyawan WHERE status_request = \'sukses\' AND id_karyawan = $1'
+    const selectResult = await client.query(selectQuery, [id_karyawan])
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data bayar menunggu konfirmasi' })
+    }
+
+
+  }
+  catch (error) {
+
+  }
+
+})
 
 // Set Port buat server
 const port = process.env.PORT || 3001;

@@ -9,50 +9,48 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import clsx from 'clsx'
 import { makeStyles } from '@mui/styles'
-import Chip from '@mui/material/Chip'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
-  // warna warning/kuning
-  warningCell: {
-    backgroundColor: 'yellow',
-
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '10px',
+  },
+  simpanButton: {
+    position: 'sticky',
+    bottom: 0,
+    backgroundColor: 'white', // Set the background color to match the table
   },
 
-  //warna success/hijau
-  successCell: {
-    backgroundColor: 'green',
 
-  },
 }));
 
 const columns = [
+  { id: 'id_request', label: 'ID', minWidth: 10, sortable: true },
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
   { id: 'nama_user', label: 'Nama Karyawan', minWidth: 10, sortable: true },
   { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: true },
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_bayar', label: 'Status', minWidth: 10, align: 'left', sortable: false },
+  { id: 'b_tombol', label: '', minWidth: 10, align: 'left', sortable: false },
+  { id: 'simpan', label: 'simpan', minWidth: 10, align: 'left', sortable: false },
 ];
 
 // Konstruktor row
-function createData(tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_bayar) {
-  let statusChip = null;
+function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_bayar) {
 
-  if (status_request === "wait") {
-    statusChip = (
-      <Chip label="Wait" color="secondary" variant="outlined" />
-    );
-  } else if (status_request === "success") {
-    statusChip = (
-      <Chip label="Success" color="primary" variant="outlined" />
-    );
-  }
 
-  return { tanggaljam, jumlah, nama_user, metode, keterangan, status_request, status_bayar, statusChip };
+  return { id_request, tanggaljam, jumlah, nama_user, metode, keterangan, status_request, status_bayar };
 }
 
 // Sortir
@@ -89,8 +87,14 @@ const TableEditRequest = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
+  const [sessionData, setSessionData] = useState(null);
+  const [value, setValue] = React.useState('female');
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun; // Get id_akun from sessionStorage
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -108,6 +112,20 @@ const TableEditRequest = () => {
 
   // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
+    const fetchSessionData = async () => {
+      // Ambil SessionData dari Session Storage
+      const sessionDataStr = sessionStorage.getItem('sessionData');
+      if (sessionDataStr) {
+        const sessionData = JSON.parse(sessionDataStr);
+        setSessionData(sessionData);
+      }
+
+      // Fetch data
+      fetchData();
+    };
+
+
+
     const fetchData = async () => {
       try {
         const response = await fetch(`http://localhost:3001/api/ambil-request-kasbon`);
@@ -122,6 +140,7 @@ const TableEditRequest = () => {
       }
     };
     fetchData();
+    fetchSessionData();
   }, []);
 
   // Format mata uang ke rupiah
@@ -144,14 +163,13 @@ const TableEditRequest = () => {
   // Masukkan data ke baris tabel
   const rows = data.map((row) => {
     return createData(
+      row.id_request,
       formatTanggaljam(row.tanggaljam),
       row.nama_user,
       formatCurrencyIDR(row.jumlah),
       row.metode,
       row.keterangan,
       row.status_request,
-      row.status_bayar,
-      row.statusChip
     );
   });
 
@@ -159,67 +177,117 @@ const TableEditRequest = () => {
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
+  const [radioButtonValues, setRadioButtonValues] = useState({});
+
+  const handleRadioChange = (event, requestId) => {
+    setRadioButtonValues({
+      ...radioButtonValues,
+      [requestId]: event.target.value,
+    });
+  };
+
+  // Mengirim update ke API
+  const handleSimpan = async (id_request) => {
+    // Menggunakan tombol SIMPAN untuk mengambil id_request
+    const status_request = radioButtonValues[id_request];
+    const id_akun = sessionData.id_akun
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/update-request/${id_request}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status_request, id_petugas: id_akun }),
+      });
+
+      if (response.ok) {
+        setSuccessMessage(`Data request berhasil diupdate.`);
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 1000);
+        console.log('Data request berhasil diupdate');
+
+        // Refresh the page after a successful update
+        window.location.reload();
+      } else {
+        setErrorMessage(`Gagal mengirim update data request`);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+
+        console.error('Error update data request');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
+      {errorMessage && (
+        <Alert severity="error">{errorMessage}</Alert>
+      )}
+      {successMessage && (
+        <Alert severity="success">{successMessage}</Alert>
+      )}
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
-                    {column.label}
-                    {column.sortable && (
-                      <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
-                        {column.sortable && (
-                          <div style={{ height: '24px' }}>
-                            {sorting.column === column.id && sorting.direction === 'asc' && <ArrowUpwardIcon fontSize="small" />}
-                            {sorting.column === column.id && sorting.direction === 'desc' && <ArrowDownwardIcon fontSize="small" />}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-              ))}
+              <TableCell align="left" id="id_request">ID</TableCell>
+              <TableCell align="left">Nama Karyawan</TableCell>
+              <TableCell align="left">Nilai</TableCell>
+              <TableCell align="left">Metode</TableCell>
+              <TableCell align="left">Keterangan</TableCell>
+              <TableCell align="left" id="status_request">Request</TableCell>
+              <TableCell align="left" id="b_tombol">Konfirmasi</TableCell>
+              <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedData.length === 0 ? (
-              <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align} >
-                    {column.id === 'status_request' ? rows.statusChip : rows[column.id]}
-                    {column.format && typeof rows[column.id] === 'number' ? column.format(rows[column.id]) : rows[column.id]}
-                  </TableCell>
-                ))}
+            {rows.map((row) => (
+              <TableRow
+                key={row.id_request}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">{row.id_request}</TableCell>
+                <TableCell align="left">{row.nama_user}</TableCell>
+                <TableCell align="left">{row.jumlah}</TableCell>
+                <TableCell align="left">{row.metode}</TableCell>
+                <TableCell align="left">{row.keterangan}</TableCell>
+                <TableCell align="left">{row.status_request}</TableCell>
+                <TableCell aligh="left">
+                  <FormControl>
+                    <RadioGroup
+                      row
+                      name={`row-radio-buttons-group-${row.id_request}`}
+                      value={radioButtonValues[row.id_request] || ''}
+                      onChange={(event) => handleRadioChange(event, row.id_request)}
+                    >
+                      <FormControlLabel value="sukses" control={<Radio />} label="Setuju" />
+                      <FormControlLabel value="tolak" control={<Radio />} label="Tolak" />
+                    </RadioGroup>
+                  </FormControl>
+                </TableCell>
+                <TableCell align="left">
+                  <Button type='submit' variant='contained' size='large' onClick={() => handleSimpan(row.id_request)}>
+                    Simpan
+                  </Button>
+                </TableCell>
               </TableRow>
-            ) : (
-              sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
-                  {columns.map((column) => (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.id === 'status_request' ? rows.statusChip : rows[column.id]}
-                      {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            )}
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      <br></br>
+      {errorMessage && (
+        <Alert severity="error">{errorMessage}</Alert>
+      )}
+      {successMessage && (
+        <Alert severity="success">{successMessage}</Alert>
+      )}
     </Paper>
   );
 };
