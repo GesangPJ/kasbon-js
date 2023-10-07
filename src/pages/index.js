@@ -23,6 +23,7 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Receipt } from '@mui/icons-material'
+import Alert from '@mui/material/Alert'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -44,6 +45,8 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
 
 const SignPage = () => {
   const [loading, setLoading] = useState(true)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const [values, setValues] = useState({
     idakun: '', // Change 'name' to 'username'
@@ -58,6 +61,15 @@ const SignPage = () => {
   };
 
   const handleLogin = async () => {
+    if (!values.idakun || !values.password) {
+      // Display an error message if either field is empty
+      setErrorMessage('Semua kolom harus diisi !')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+
+      return;
+    }
     try {
       const response = await fetch('http://localhost:3001/api/masuk', {
         method: 'POST',
@@ -93,16 +105,32 @@ const SignPage = () => {
           // Store the session data as a JSON string in session storage
           sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
 
-          // Once session data is available, perform routing
+          // Jika sukses
           router.push(`/dashboard-${role}`);
-        } else {
+        }
+        else {
           console.error('Role or id not found');
         }
-      } else {
-        console.error('Login error:', response.statusText);
+      } else if (response.status === 401) {
+        // Jika data akun tidak ketemu
+        setErrorMessage('Data tidak valid. Mohon cek kembali ID Dan Password.')
+        setTimeout(() => {
+          setErrorMessage('')
+        }, 5000)
+      }
+      else {
+        console.error('Login error:', response.statusText)
+        setErrorMessage('Login Error : ', response.statusText)
+        setTimeout(() => {
+          setErrorMessage('')
+        }, 3000)
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Login error:', error)
+      setErrorMessage('Internal Server Error')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 3000)
     }
   };
   useEffect(() => {
@@ -127,6 +155,12 @@ const SignPage = () => {
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: (theme) => `${theme.spacing(12, 9, 7)} !important` }}>
+          {errorMessage && (
+            <Alert severity="error">{errorMessage}</Alert>
+          )}
+          {successMessage && (
+            <Alert severity="success">{successMessage}</Alert>
+          )}<br></br>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <ReceiptLongOutlinedIcon color='primary' />
             <Typography
