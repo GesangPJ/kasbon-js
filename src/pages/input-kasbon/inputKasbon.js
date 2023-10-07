@@ -29,6 +29,7 @@ const FormKasbon = () => {
   const handlemetodeChange = (e) => setmetode(e.target.value)
   const handleketeranganChange = (e) => setketerangan(e.target.value)
   const [sessionData, setSessionData] = useState(null)
+  const [sessionStorage, setSessionStorage] = useState(null)
 
   const handlejumlahChange = (e) => {
     const inputValue = e.target.value;
