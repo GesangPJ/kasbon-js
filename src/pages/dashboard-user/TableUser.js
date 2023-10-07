@@ -43,15 +43,15 @@ function createData(tanggaljam, jumlah, metode, keterangan, status_request, stat
 
   if (status_request === 'wait') {
     statusChip = (
-      <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" />
+      <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'white' }} />
     );
   } else if (status_request === 'success') {
     statusChip = (
-      <Chip label="Success" className={classes.successCell} color="primary" variant="outlined" />
+      <Chip label="Success" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
     );
   } else if (status_request === 'tolak') {
     statusChip = (
-      <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" />
+      <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" labelStyle={{ color: 'white' }} />
     );
   }
 
@@ -94,7 +94,7 @@ const TableDataUser = () => {
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
   const [sessionData, setSessionData] = useState(null)
 
-  //const [sessionStorage, setSessionStorage] = useState(null)
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -115,20 +115,11 @@ const TableDataUser = () => {
   // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
 
-    const fetchSessionData = async () => {
-      // Ambil SessionData dari Session Storage
-      const sessionDataStr = sessionStorage.getItem('sessionData');
-      if (sessionDataStr) {
-        const sessionData = JSON.parse(sessionDataStr);
-        setSessionData(sessionData);
-      }
-    };
-
-
     const fetchData = async () => {
 
       try {
-        const id_akun = sessionData.id_akun
+        const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
+
         const response = await fetch(`http://localhost:3001/api/ambil-dashboard-karyawan/${id_akun}`);
         if (response.ok) {
           const result = await response.json();
@@ -141,7 +132,6 @@ const TableDataUser = () => {
       }
     };
     fetchData();
-    fetchSessionData();
   }, []);
 
   // Format mata uang ke rupiah
