@@ -25,6 +25,12 @@ SELECT
         )
         LIMIT 1
     ) AS nama_admin, -- Include nama_admin from admin_kasbon
+    (
+        SELECT req.status_request
+        FROM request req
+        WHERE req.id_request = r.id_request
+        LIMIT 1
+    ) AS status_request, -- Include status_request from request
     COALESCE(
         MAX(r.tanggaljam),
         '1970-01-01'::timestamp
