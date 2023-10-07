@@ -10,12 +10,13 @@ import TablePagination from '@mui/material/TablePagination'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
 import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
@@ -80,6 +81,8 @@ const TableEditRequest = () => {
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
   const [sessionData, setSessionData] = useState(null);
   const [value, setValue] = React.useState('female');
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -141,8 +144,6 @@ const TableEditRequest = () => {
     return utcDate.toLocaleString('id-ID', options);
   };
 
-
-
   // Masukkan data ke baris tabel
   const rows = data.map((row) => {
     return createData(
@@ -169,8 +170,53 @@ const TableEditRequest = () => {
     });
   };
 
+  const handleSimpan = async () => {
+    // Construct the request body with the updated status_request value
+    const requestBody = {
+      status_request: radioButtonValues[requestId],
+    };
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/update-request/${id_request}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        setSuccessMessage(`Data request berhasil diupdate.`)
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 1000);
+        console.log('Data request berhasil diupdate');
+
+        // Refresh the page after a successful update
+        window.location.reload();
+      } else {
+        setErrorMessage(`Gagal mengirim update data request`)
+        setTimeout(() => {
+          setErrorMessage('')
+        }, 3000)
+
+        console.error('Error update data request');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+
+
+    }
+  };
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+      {errorMessage && (
+        <Alert severity="error">{errorMessage}</Alert>
+      )}
+      {successMessage && (
+        <Alert severity="success">{successMessage}</Alert>
+      )}
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -244,10 +290,19 @@ const TableEditRequest = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
       <div className={classes.buttonContainer}>
-        <Button type="submit" variant="contained" size="large">
-          SIMPAN
-        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          onClick={handleSimpan} // Call handleSimpan when the button is clicked
+        />
       </div><br></br>
+      {errorMessage && (
+        <Alert severity="error">{errorMessage}</Alert>
+      )}
+      {successMessage && (
+        <Alert severity="success">{successMessage}</Alert>
+      )}
     </Paper>
   );
 };
