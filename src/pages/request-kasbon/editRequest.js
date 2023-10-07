@@ -17,6 +17,8 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +40,7 @@ const columns = [
   { id: 'id_request', label: 'ID', minWidth: 10, sortable: true },
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
   { id: 'nama_user', label: 'Nama Karyawan', minWidth: 10, sortable: true },
-  { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: true },
+  { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
@@ -222,105 +224,104 @@ const TableEditRequest = () => {
 
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <div>
       {errorMessage && (
         <Alert severity="error">{errorMessage}</Alert>
       )}
       {successMessage && (
         <Alert severity="success">{successMessage}</Alert>
       )}
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell
-                align="left"
-                onClick={() => handleSort('tanggaljam')} // Add onClick to handle sorting
-              >Tanggal Jam {sorting.column === 'tanggaljam' ? (
-                sorting.direction === 'asc' ? (
-                  <ArrowDownwardIcon />
-                ) : (
-                  <ArrowUpwardIcon />
-                )
-              ) : null}
-              </TableCell>
-              <TableCell
-                align="left"
-                onClick={() => handleSort('nama_user')} // Add onClick to handle sorting
-              >
-                Nama Karyawan
-                {sorting.column === 'nama_user' ? (
-                  sorting.direction === 'asc' ? (
-                    <ArrowDownwardIcon />
-                  ) : (
-                    <ArrowUpwardIcon />
-                  )
-                ) : null}
-              </TableCell>
-              <TableCell align="left">Nilai</TableCell>
-              <TableCell
-                align="left"
-                onClick={() => handleSort('metode')} // Add onClick to handle sorting
-              >
-                Metode
-                {sorting.column === 'metode' ? (
-                  sorting.direction === 'asc' ? (
-                    <ArrowDownwardIcon />
-                  ) : (
-                    <ArrowUpwardIcon />
-                  )
-                ) : null}
-              </TableCell>
-              <TableCell align="left">Keterangan</TableCell>
-              <TableCell align="left" id="status_request">Request</TableCell>
-              <TableCell align="left" id="b_tombol">Konfirmasi</TableCell>
-              <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.id_request}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
 
-                <TableCell align="left">{row.tanggaljam}</TableCell>
-                <TableCell align="left">{row.nama_user}</TableCell>
-                <TableCell align="left">{row.jumlah}</TableCell>
-                <TableCell align="left">{row.metode}</TableCell>
-                <TableCell align="left">{row.keterangan}</TableCell>
-                <TableCell align="left">{row.status_request}</TableCell>
-                <TableCell aligh="left">
-                  <FormControl>
-                    <RadioGroup
-                      row
-                      name={`row-radio-buttons-group-${row.id_request}`}
-                      value={radioButtonValues[row.id_request] || ''}
-                      onChange={(event) => handleRadioChange(event, row.id_request)}
-                    >
-                      <FormControlLabel value="sukses" control={<Radio />} label="Setuju" />
-                      <FormControlLabel value="tolak" control={<Radio />} label="Tolak" />
-                    </RadioGroup>
-                  </FormControl>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+
+              <TableRow>
+                <TableCell
+                  align="left"
+                  onClick={() => handleSort('tanggaljam')} // Add onClick to handle sorting
+                >Tanggal Jam {sorting.column === 'tanggaljam' ? (
+                  sorting.direction === 'asc' ? (
+                    <KeyboardArrowDownIcon />
+                  ) : (
+                    <KeyboardArrowUpIcon />
+                  )
+                ) : null}
                 </TableCell>
-                <TableCell align="left">
-                  <Button type='submit' variant='contained' size='large' onClick={() => handleSimpan(row.id_request)}>
-                    Simpan
-                  </Button>
+                <TableCell
+                  align="left"
+                  onClick={() => handleSort('nama_user')} // Add onClick to handle sorting
+                >
+                  Nama Karyawan
+                  {sorting.column === 'nama_user' ? (
+                    sorting.direction === 'asc' ? (
+                      <KeyboardArrowDownIcon />
+                    ) : (
+                      <KeyboardArrowUpIcon />
+                    )
+                  ) : null}
                 </TableCell>
+                <TableCell align="left">Nilai</TableCell>
+                <TableCell
+                  align="left"
+                  onClick={() => handleSort('metode')} // Add onClick to handle sorting
+                >
+                  Metode
+                  {sorting.column === 'metode' ? (
+                    sorting.direction === 'asc' ? (
+                      <KeyboardArrowDownIcon />
+                    ) : (
+                      <KeyboardArrowUpIcon />
+                    )
+                  ) : null}
+                </TableCell>
+                <TableCell align="left">Keterangan</TableCell>
+                <TableCell align="left" id="status_request">Request</TableCell>
+                <TableCell align="left" id="b_tombol">Konfirmasi</TableCell>
+                <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <br></br>
-      {errorMessage && (
-        <Alert severity="error">{errorMessage}</Alert>
-      )}
-      {successMessage && (
-        <Alert severity="success">{successMessage}</Alert>
-      )}
-    </Paper>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow
+                  key={row.id_request}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+
+                  <TableCell align="left">{row.tanggaljam}</TableCell>
+                  <TableCell align="left">{row.nama_user}</TableCell>
+                  <TableCell align="left">{row.jumlah}</TableCell>
+                  <TableCell align="left">{row.metode}</TableCell>
+                  <TableCell align="left">{row.keterangan}</TableCell>
+                  <TableCell align="left">{row.status_request}</TableCell>
+                  <TableCell align="left">
+                    <FormControl>
+                      <RadioGroup
+                        row
+                        name={`row-radio-buttons-group-${row.id_request}`}
+                        value={radioButtonValues[row.id_request] || ''}
+                        onChange={(event) => handleRadioChange(event, row.id_request)}
+                      >
+                        <FormControlLabel value="sukses" control={<Radio />} label="Setuju" />
+                        <FormControlLabel value="tolak" control={<Radio />} label="Tolak" />
+                      </RadioGroup>
+                    </FormControl>
+                  </TableCell>
+                  <TableCell align="left">
+                    <Button type='submit' variant='contained' size='large' onClick={() => handleSimpan(row.id_request)}>
+                      Simpan
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+      </Paper>
+    </div>
   );
 };
 
