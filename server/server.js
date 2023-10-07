@@ -412,6 +412,27 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
 
 })
 
+// API Dashboard Admin (Menggunakan VIEW dashboard_komplit)
+app.get('/api/ambil-dashboard-komplit', async (req, res) => {
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM dashboard_komplit'
+    const selectResult = await client.query(selectQuery)
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data, harap hubungi admin' })
+    }
+  }
+  catch (error) {
+    console.error('Error Ambil dashboard_komplit :', error)
+  }
+})
+
 //API Tambah Bayar
 app.post('/api/tambah-bayar', async (req, res) => {
 
