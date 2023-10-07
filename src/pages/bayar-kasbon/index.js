@@ -25,28 +25,34 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+function createData(id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_bayar) {
+  return { id_bayar, tanggaljam, nama_user, jumlah, metode, keterangan, status_bayar };
 }
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 const FormBayarKasbon = () => {
   const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [sessionStorage, setSessionStorage] = useState(null)
+  const [sessionData, setSessionData] = useState(null)
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [data, setData] = useState([])
+  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
 
 
   const handleidkaryawanChange = (e) => setidkaryawan(e.target.value)
 
   useEffect(() => {
+    const fetchSessionData = async () => {
+      // Ambil SessionData dari Session Storage
+      const sessionDataStr = sessionStorage.getItem('sessionData');
+      if (sessionDataStr) {
+        const sessionData = JSON.parse(sessionDataStr);
+        setSessionData(sessionData);
+      }
+    };
+    fetchSessionData();
 
   }, []);
 
@@ -102,6 +108,18 @@ const FormBayarKasbon = () => {
 
 
   }
+
+  const rows = data.map((row) => {
+    return createData(
+      row.id_bayar,
+      formatTanggaljam(row.tanggaljam),
+      row.nama_user,
+      formatCurrencyIDR(row.jumlah),
+      row.metode,
+      row.keterangan,
+    );
+  });
+
 
 
   // Format mata uang ke rupiah
@@ -186,16 +204,17 @@ const FormBayarKasbon = () => {
               <TableBody>
                 {rows.map((row) => (
                   <TableRow
-                    key={row.name}
+                    key={row.id_bayar}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {row.name}
+                      {row.id_bayar}
                     </TableCell>
-                    <TableCell align="left">{row.calories}</TableCell>
-                    <TableCell align="left">{row.fat}</TableCell>
-                    <TableCell align="left">{row.carbs}</TableCell>
-                    <TableCell align="left">{row.protein}</TableCell>
+                    <TableCell align="left">{row.tanggaljam}</TableCell>
+                    <TableCell align="left">{row.nama_user}</TableCell>
+                    <TableCell align="left">{row.jumlah}</TableCell>
+                    <TableCell align="left">{row.metode}</TableCell>
+                    <TableCell align="left">{row.keterangan}</TableCell>
                     <TableCell aligh="left">
                       <FormControl>
                         <RadioGroup
@@ -205,11 +224,9 @@ const FormBayarKasbon = () => {
                           onChange={(event) => handleRadioChange(event, row.id_request)}
                         >
                           <FormControlLabel value="lunas" control={<Radio />} label="Lunas" />
-                          <FormControlLabel value="belum" control={<Radio />} label="Belum" />
+                          <FormControlLabel value="belum" control={<Radio />} label="Belum Lunas" />
                         </RadioGroup>
                       </FormControl>
-
-
                     </TableCell>
                   </TableRow>
                 ))}
