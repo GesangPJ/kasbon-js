@@ -123,8 +123,6 @@ const TableEditRequest = () => {
       }
     };
 
-
-
     const fetchData = async () => {
       try {
         const response = await fetch(`http://localhost:3001/api/ambil-request-kasbon`);
