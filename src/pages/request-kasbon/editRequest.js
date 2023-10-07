@@ -25,6 +25,13 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     marginTop: '10px',
   },
+  simpanButton: {
+    position: 'sticky',
+    bottom: 0,
+    backgroundColor: 'white', // Set the background color to match the table
+  },
+
+
 }));
 
 const columns = [
@@ -36,6 +43,7 @@ const columns = [
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
   { id: 'b_tombol', label: '', minWidth: 10, align: 'left', sortable: false },
+  { id: 'simpan', label: 'simpan', minWidth: 10, align: 'left', sortable: false },
 ];
 
 // Konstruktor row
@@ -104,12 +112,19 @@ const TableEditRequest = () => {
 
   // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
-    // Ambil session storage
-    const sessionDataStr = sessionStorage.getItem('sessionData');
-    if (sessionDataStr) {
-      const sessionData = JSON.parse(sessionDataStr);
-      setSessionData(sessionData);
-    }
+    const fetchSessionData = async () => {
+      // Ambil SessionData dari Session Storage
+      const sessionDataStr = sessionStorage.getItem('sessionData');
+      if (sessionDataStr) {
+        const sessionData = JSON.parse(sessionDataStr);
+        setSessionData(sessionData);
+      }
+
+      // Fetch data
+      fetchData();
+    };
+
+
 
     const fetchData = async () => {
       try {
@@ -125,6 +140,7 @@ const TableEditRequest = () => {
       }
     };
     fetchData();
+    fetchSessionData();
   }, []);
 
   // Format mata uang ke rupiah
@@ -170,14 +186,11 @@ const TableEditRequest = () => {
     });
   };
 
-  const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
-
+  // Mengirim update ke API
   const handleSimpan = async (id_request) => {
-    // Construct the request body with the updated status_request value
-    const requestBody = {
-      status_request: radioButtonValues,
-      id_petugas: id_akun,
-    };
+    // Menggunakan tombol SIMPAN untuk mengambil id_request
+    const status_request = radioButtonValues[id_request];
+    const id_akun = sessionData.id_akun
 
     try {
       const response = await fetch(`http://localhost:3001/api/update-request/${id_request}`, {
@@ -185,11 +198,11 @@ const TableEditRequest = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({ status_request, id_petugas: id_akun }),
       });
 
       if (response.ok) {
-        setSuccessMessage(`Data request berhasil diupdate.`)
+        setSuccessMessage(`Data request berhasil diupdate.`);
         setTimeout(() => {
           setSuccessMessage('');
         }, 1000);
@@ -198,19 +211,18 @@ const TableEditRequest = () => {
         // Refresh the page after a successful update
         window.location.reload();
       } else {
-        setErrorMessage(`Gagal mengirim update data request`)
+        setErrorMessage(`Gagal mengirim update data request`);
         setTimeout(() => {
-          setErrorMessage('')
-        }, 3000)
+          setErrorMessage('');
+        }, 3000);
 
         console.error('Error update data request');
       }
     } catch (error) {
       console.error('Error:', error);
-
-
     }
   };
+
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -220,81 +232,56 @@ const TableEditRequest = () => {
       {successMessage && (
         <Alert severity="success">{successMessage}</Alert>
       )}
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
-                    {column.label}
-                    {column.sortable && (
-                      <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
-                        {column.sortable && (
-                          <div style={{ height: '24px' }}>
-                            {sorting.column === column.id && sorting.direction === 'asc' && <ArrowUpwardIcon fontSize="small" />}
-                            {sorting.column === column.id && sorting.direction === 'desc' && <ArrowDownwardIcon fontSize="small" />}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-              ))}
+              <TableCell align="left" id="id_request">ID</TableCell>
+              <TableCell align="left">Nama Karyawan</TableCell>
+              <TableCell align="left">Nilai</TableCell>
+              <TableCell align="left">Metode</TableCell>
+              <TableCell align="left">Keterangan</TableCell>
+              <TableCell align="left" id="status_request">Request</TableCell>
+              <TableCell align="left" id="b_tombol">Konfirmasi</TableCell>
+              <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedData.length === 0 ? (
-              <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align} >
-
-                    {column.format && typeof rows[column.id] === 'number' ? column.format(rows[column.id]) : rows[column.id]}
-                  </TableCell>
-                ))}
+            {rows.map((row) => (
+              <TableRow
+                key={row.id_request}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">{row.id_request}</TableCell>
+                <TableCell align="left">{row.nama_user}</TableCell>
+                <TableCell align="left">{row.jumlah}</TableCell>
+                <TableCell align="left">{row.metode}</TableCell>
+                <TableCell align="left">{row.keterangan}</TableCell>
+                <TableCell align="left">{row.status_request}</TableCell>
+                <TableCell aligh="left">
+                  <FormControl>
+                    <RadioGroup
+                      row
+                      name={`row-radio-buttons-group-${row.id_request}`}
+                      value={radioButtonValues[row.id_request] || ''}
+                      onChange={(event) => handleRadioChange(event, row.id_request)}
+                    >
+                      <FormControlLabel value="sukses" control={<Radio />} label="Setuju" />
+                      <FormControlLabel value="tolak" control={<Radio />} label="Tolak" />
+                    </RadioGroup>
+                  </FormControl>
+                </TableCell>
+                <TableCell align="left">
+                  <Button type='submit' variant='contained' size='large' onClick={() => handleSimpan(row.id_request)}>
+                    Simpan
+                  </Button>
+                </TableCell>
               </TableRow>
-            ) : (
-              sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
-                  {columns.map((column) => (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.id === 'b_tombol' ? (
-                        <FormControl>
-                          <RadioGroup
-                            row
-                            name={`row-radio-buttons-group-${row.id_request}`}
-                            value={radioButtonValues[row.id_request] || ''}
-                            onChange={(event) => handleRadioChange(event, row.id_request)}
-                          >
-                            <FormControlLabel value="setuju" control={<Radio />} label="Setuju" />
-                            <FormControlLabel value="tolak" control={<Radio />} label="Tolak" />
-                          </RadioGroup>
-                        </FormControl>
-                      ) : column.format && typeof row[column.id] === 'number'
-                        ? column.format(row[column.id])
-                        : row[column.id]}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            )}
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-      <div className={classes.buttonContainer}>
-        <Button type="submit" variant="contained" size="large" onClick={() => handleSimpan(rows.id_request)}>Simpan</Button>
-      </div><br></br>
+      <br></br>
       {errorMessage && (
         <Alert severity="error">{errorMessage}</Alert>
       )}
