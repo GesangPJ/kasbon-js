@@ -106,19 +106,6 @@ const FormBayarKasbon = () => {
     }
   };
 
-  const rows = data.map((row) => {
-    return createData(
-      row.id_bayar,
-      formatTanggaljam(row.tanggaljam),
-      row.nama_user,
-      formatCurrencyIDR(row.jumlah),
-      row.metode,
-      row.keterangan,
-    );
-  });
-
-
-
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
     return new Intl.NumberFormat('id-ID', {
@@ -136,6 +123,17 @@ const FormBayarKasbon = () => {
     return utcDate.toLocaleString('id-ID', options);
   };
 
+  const rows = data.map((row) => {
+    return createData(
+      row.id_request,
+      formatTanggaljam(row.tanggaljam),
+      row.nama_user,
+      formatCurrencyIDR(row.jumlah),
+      row.metode,
+      row.keterangan,
+    );
+  });
+
   const [radioButtonValues, setRadioButtonValues] = useState({});
 
   const handleRadioChange = (event, requestId) => {
@@ -143,6 +141,42 @@ const FormBayarKasbon = () => {
       ...radioButtonValues,
       [requestId]: event.target.value,
     });
+  };
+
+  const handleSimpan = async (id_request) => {
+    // Menggunakan tombol SIMPAN untuk mengambil id_request
+    const status_request = radioButtonValues[id_request];
+    const id_akun = sessionData.id_akun
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/update-request/${id_request}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status_request, id_petugas: id_akun }),
+      });
+
+      if (response.ok) {
+        setSuccessMessage(`Data request berhasil diupdate.`);
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 1000);
+        console.log('Data request berhasil diupdate');
+
+        // Refresh the page after a successful update
+        window.location.reload();
+      } else {
+        setErrorMessage(`Gagal mengirim update data request`);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+
+        console.error('Error update data request');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -198,21 +232,21 @@ const FormBayarKasbon = () => {
                 <TableRow>
                   <TableCell align="left" id="id_request">ID</TableCell>
                   <TableCell align="left">Tanggal Jam</TableCell>
+                  <TableCell align="left">Nama Karyawan</TableCell>
                   <TableCell align="left">Jumlah</TableCell>
                   <TableCell align="left">Metode</TableCell>
                   <TableCell align="left">Keterangan</TableCell>
-                  <TableCell align="left" id="b_tombol">Bayar</TableCell>
+                  <TableCell align="left" id="b_tombol">Sudah Lunas?</TableCell>
+                  <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row) => (
                   <TableRow
-                    key={row.id_bayar}
+                    key={row.id_request}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell component="th" scope="row">
-                      {row.id_bayar}
-                    </TableCell>
+                    <TableCell component="th" scope="row">{row.id_request}</TableCell>
                     <TableCell align="left">{row.tanggaljam}</TableCell>
                     <TableCell align="left">{row.nama_user}</TableCell>
                     <TableCell align="left">{row.jumlah}</TableCell>
@@ -231,6 +265,11 @@ const FormBayarKasbon = () => {
                         </RadioGroup>
                       </FormControl>
                     </TableCell>
+                    <TableCell align="left">
+                      <Button type='submit' variant='contained' size='large' onClick={() => handleSimpan(row.id_request)}>
+                        Simpan
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -248,9 +287,6 @@ const FormBayarKasbon = () => {
             justifyContent: 'space-between',
           }}
         >
-          <Button type='submit' variant='contained' size='large'>
-            Simpan
-          </Button>
         </Box>
       </Grid>
     </Grid>
