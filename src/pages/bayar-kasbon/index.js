@@ -144,17 +144,16 @@ const FormBayarKasbon = () => {
   };
 
   const handleSimpan = async (id_request) => {
-    // Menggunakan tombol SIMPAN untuk mengambil id_request
-    const status_request = radioButtonValues[id_request];
-    const id_akun = sessionData.id_akun
+    const status_bayar = radioButtonValues[id_request]; // Get the status_bayar directly from radioButtonValues
+    const id_akun = sessionData.id_akun;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/update-request/${id_request}`, {
+      const response = await fetch(`http://localhost:3001/api/tambah-bayar/${id_request}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status_request, id_petugas: id_akun }),
+        body: JSON.stringify({ status_bayar, id_petugas: id_akun }),
       });
 
       if (response.ok) {
@@ -230,7 +229,7 @@ const FormBayarKasbon = () => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell align="left" id="id_request">ID</TableCell>
+
                   <TableCell align="left">Tanggal Jam</TableCell>
                   <TableCell align="left">Nama Karyawan</TableCell>
                   <TableCell align="left">Jumlah</TableCell>
@@ -246,7 +245,7 @@ const FormBayarKasbon = () => {
                     key={row.id_request}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell component="th" scope="row">{row.id_request}</TableCell>
+
                     <TableCell align="left">{row.tanggaljam}</TableCell>
                     <TableCell align="left">{row.nama_user}</TableCell>
                     <TableCell align="left">{row.jumlah}</TableCell>
