@@ -1,5 +1,4 @@
 const express = require('express')
-const { connectToKatalogObatDB, client } = require('./mongoDB')
 const cors = require('cors')
 const session = require('express-session')
 const { pool, PostgresStatus } = require('./postgres')
@@ -13,13 +12,15 @@ app.use(express.json())
 app.use(cookieParser())
 
 
-// Configure express-session for session management
+// Konfigurasi express-session untuk kelola session (Express-session management)
 app.use(
   session({
     store: new pgSession({
       pool: pool,
       tableName: 'sessions',
     }),
+
+    // Pengaturan session dan cookie
     secret: 'zXBVUQI0XCO24vcOc7leDCRJDI26QvSN',
     resave: false,
     saveUninitialized: true,
@@ -27,9 +28,9 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
     },
   })
-);
+)
 
-
+// Menentukan izin akses ke server API
 const corsOptions = {
   origin: 'http://localhost:3000', // Be cautious when using '*' in a production environment.
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -42,70 +43,74 @@ app.use(cors(corsOptions))
 
 // Kirim status server
 app.get('/api/server-status', (req, res) => {
-  res.json({ status: 'Online' });
+  res.json({ status: 'Online' })
 })
 
-// Clear semua session data
+// Hapus semua session data di table session postgres
 app.get('/api/clear-sessions', async (req, res) => {
   try {
     const client = await pool.connect();
-    const clearSessionsQuery = 'DELETE FROM sessions';
-    await client.query(clearSessionsQuery);
-    client.release();
-    res.send('Session data cleared');
+    const clearSessionsQuery = 'DELETE FROM sessions'
+    await client.query(clearSessionsQuery)
+    client.release()
+    res.send('Session data cleared')
   } catch (error) {
-    console.error('Error clearing session data:', error);
-    res.status(500).send('Internal Server Error');
+    console.error('Error clearing session data:', error)
+    res.status(500).send('Internal Server Error')
   }
-});
+})
 
 // Logout
 app.get('/api/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error('Error during logout:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error during logout:', err)
+      res.status(500).json({ error: 'Internal Server Error' })
     } else {
       // Redirect to the login page after successful logout
-      res.status(200).json({ message: 'Logged out successfully' });
+      res.status(200).json({ message: 'Logged out successfully' })
     }
-  });
+  })
 })
 
 // API Masuk
 app.post('/api/masuk', async (req, res) => {
-  const { idakun, password } = req.body;
-  const jakartaTimezone = 'Asia/Jakarta';
+  const { idakun, password } = req.body
+  const jakartaTimezone = 'Asia/Jakarta'
 
   try {
-    const client = await pool.connect();
 
-    // Check user credentials in the user_kasbon table
-    const userQuery = 'SELECT id_user, nama_user, email_user, tanggal, roles_user, id_karyawan FROM user_kasbon WHERE id_karyawan = $1 AND password_user = $2';
-    const userResult = await client.query(userQuery, [idakun, password]);
+    // Koneksi ke PostgreSQL
+    const client = await pool.connect()
+
+    // Cek kredensial pada tabel user_kasbon
+    const userQuery = 'SELECT id_user, nama_user, email_user, tanggal, roles_user, id_karyawan FROM user_kasbon WHERE id_karyawan = $1 AND password_user = $2'
+    const userResult = await client.query(userQuery, [idakun, password])
 
     if (userResult.rows.length > 0) {
-      const user = userResult.rows[0];
-      console.log('User login data:', user);
+      const user = userResult.rows[0]
+      console.log('User login data:', user)
 
-      // Ensure that req.session.user is an object
+      // Pastikan bahwa session adalah objek
       if (!req.session.user) {
         req.session.user = {};
       }
-      const tanggalAkun = new Date(user.tanggal);
-      const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
+      const tanggalAkun = new Date(user.tanggal)
+      const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
 
+      // Simpan session ke backend
       req.session.user = {
         id: user.id_user,
-        username: user.nama_user, // Add the 'username' field
+        username: user.nama_user,
         email: user.email_user,
         roles: user.roles_user,
         isAdmin: false,
         tanggal_akun: tanggalFormat,
-      };
+      }
 
-      client.release();
+      client.release()
 
+      // Jika sukses, kirim respon status dan kirim data session ke frontend
       res.status(200).json({
         id: user.id_user,
         username: user.nama_user,
@@ -114,26 +119,27 @@ app.post('/api/masuk', async (req, res) => {
         isAdmin: false,
         id_akun: user.id_karyawan,
         tanggal_akun: user.tanggal,
-      });
+      })
 
-      console.log('Session User Data:', req.session.user);
+      console.log('Session User Data:', req.session.user)
 
-      return;
+      return
     }
 
-    // Check admin credentials in the admin_kasbon table
-    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, tanggal, roles_admin, id_petugas FROM admin_kasbon WHERE id_petugas = $1 AND password_admin = $2';
-    const adminResult = await client.query(adminQuery, [idakun, password]);
+    // Cek kredensial untuk tabel admin_kasbon
+    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, tanggal, roles_admin, id_petugas FROM admin_kasbon WHERE id_petugas = $1 AND password_admin = $2'
+    const adminResult = await client.query(adminQuery, [idakun, password])
 
+    // Jika Data ditemukan
     if (adminResult.rows.length > 0) {
-      const admin = adminResult.rows[0];
+      const admin = adminResult.rows[0]
 
-      // Ensure that req.session.admin is an object
+      // Pastikan bahwa session adalah objek
       if (!req.session.admin) {
-        req.session.admin = {};
+        req.session.admin = {}
       }
-      const tanggalAkun = new Date(admin.tanggal);
-      const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
+      const tanggalAkun = new Date(admin.tanggal)
+      const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
 
       req.session.admin = {
         id: admin.id_admin,
@@ -143,7 +149,7 @@ app.post('/api/masuk', async (req, res) => {
         isAdmin: true,
         id_akun: admin.id_petugas,
         tanggal_akun: tanggalFormat,
-      };
+      }
 
       client.release();
 
@@ -155,57 +161,56 @@ app.post('/api/masuk', async (req, res) => {
         isAdmin: true,
         id_akun: admin.id_petugas,
         tanggal_akun: admin.tanggal,
-      });
+      })
 
-      console.log('Session Admin Data:', req.session.admin);
+      console.log('Session Admin Data:', req.session.admin)
 
-      return;
+      return
     }
 
-    // Invalid credentials
-    client.release();
-    res.status(401).json({ error: 'Invalid credentials' });
+    // Jika kredensial tidak valid/akun tidak ditemukan
+    client.release()
+    res.status(401).json({ error: 'Invalid credentials' })
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Login error:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
   }
-});
+})
 
+// API Ambil session
 app.get('/api/get-session', async (req, res) => {
-  // Log the session ID for debugging
-  console.log('Session ID:', req.sessionID);
+  // Debug Session ID
+  console.log('Session ID:', req.sessionID)
 
-  // Check the user's role and retrieve the session data from the corresponding session object
+  // cek role akun dan ambil data session sesuai role
   if (req.session.user) {
-    sessionUser = req.session.user;
+    sessionUser = req.session.user
 
-    res.json(sessionUser);
+    res.json(sessionUser)
   } else if (req.session.admin) {
-    sessionAdmin = req.session.admin;
+    sessionAdmin = req.session.admin
 
-    res.json(sessionAdmin);
+    res.json(sessionAdmin)
   } else {
 
-    res.json({ error: 'Session data not found' });
+    // Jika tidak ketemu, kirim pesan
+    res.json({ error: 'Session data tidak ditemukan!' })
   }
-});
+})
 
 // Kirim Status PostgreSQL
 app.get('/api/postgres-status', async (req, res) => {
   try {
     // cek postgresql status
-    await PostgresStatus();
+    await PostgresStatus()
 
     // Respond with a JSON status
-    res.json({ isConnected: true });
+    res.json({ isConnected: true })
   } catch (error) {
-    console.error('Error checking PostgreSQL status:', error);
-    res.json({ isConnected: false });
+    console.error('Error checking PostgreSQL status:', error)
+    res.json({ isConnected: false })
   }
 })
-
-
-
 
 // Tambah Akun Admin
 app.post('/api/tambah-admin', async (req, res) => {
@@ -227,7 +232,6 @@ app.post('/api/tambah-admin', async (req, res) => {
     }
 
     // Lanjut jika tidak ada
-
     const insertQuery = 'INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin, id_petugas) VALUES ($1, $2, $3, NOW(), $4, $5)';
     const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_petugas])
 
@@ -312,11 +316,11 @@ app.post('/api/input-kasbon', async (req, res) => {
 app.get('/api/ambil-dashboard-karyawan/:id_akun', async (req, res) => {
   const { id_akun } = req.params;
   try {
-    const client = await pool.connect();
+    const client = await pool.connect()
 
     // Query ambil data dashboard karyawan
-    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE id_karyawan = $1';
-    const selectResult = await client.query(selectQuery, [id_akun]);
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE id_karyawan = $1'
+    const selectResult = await client.query(selectQuery, [id_akun])
     client.release();
 
 
