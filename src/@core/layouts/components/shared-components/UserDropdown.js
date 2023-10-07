@@ -49,6 +49,7 @@ const UserDropdown = () => {
     setAnchorEl(null);
   };
 
+  // Fungsi Tombol Logout
   const handleLogout = async () => {
     try {
       await fetch('http://localhost:3001/api/logout', {
@@ -59,15 +60,15 @@ const UserDropdown = () => {
       // hapus session storage saat logout
       sessionStorage.clear();
 
-      // Redirect to the login page after successful logout
-      router.push('/'); // Replace with your login page URL
+      // Arahkan ke login
+      router.push('/');
     } catch (error) {
       console.error('Error during logout:', error);
 
-      // Handle logout error, if necessary
+
     }
 
-    setAnchorEl(null); // Close the dropdown
+    setAnchorEl(null); // tutup dropdown
   };
 
 
@@ -88,7 +89,7 @@ const UserDropdown = () => {
   const [sessionData, setSessionData] = useState(null);
 
   useEffect(() => {
-    // Retrieve the session data from session storage
+    // Ambil Data session dari session storage
     const sessionDataStr = sessionStorage.getItem('sessionData');
     if (sessionDataStr) {
       const sessionData = JSON.parse(sessionDataStr);
