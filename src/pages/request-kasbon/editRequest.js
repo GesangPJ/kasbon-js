@@ -119,9 +119,6 @@ const TableEditRequest = () => {
         const sessionData = JSON.parse(sessionDataStr);
         setSessionData(sessionData);
       }
-
-      // Fetch data
-      fetchData();
     };
 
 
