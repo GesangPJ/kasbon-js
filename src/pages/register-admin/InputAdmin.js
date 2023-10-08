@@ -26,14 +26,14 @@ const FormAdmin = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // Validate the form fields
     if (!nama || !email || !password || !id_petugas) {
       // Display an error message if any field is empty
-      setErrorMessage('Semua kolom harus diisi!');
+      setErrorMessage('Semua kolom harus diisi!')
 
-      return;
+      return
     }
 
     const AkunData = {
@@ -41,7 +41,7 @@ const FormAdmin = () => {
       email,
       password,
       id_petugas,
-    };
+    }
 
     try {
       const response = await fetch(`${API_URL}/api/tambah-admin`, {
@@ -50,22 +50,22 @@ const FormAdmin = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(AkunData),
-      });
+      })
 
       if (response.ok) {
-        setSuccessMessage(`Admin: ${nama} Id: ${id_petugas} berhasil ditambahkan.`);
+        setSuccessMessage(`Admin: ${nama} Id: ${id_petugas} berhasil ditambahkan.`)
         setnama('')
         setemail('')
         setpassword('')
         setidpetugas('')
         setTimeout(() => {
-          setSuccessMessage('');
-        }, 5000);
+          setSuccessMessage('')
+        }, 5000)
       } else {
-        console.error('Error menambahkan Admin.');
+        console.error('Error menambahkan Admin.')
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     }
   }
 
@@ -210,7 +210,7 @@ const FormAdmin = () => {
         )}
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default FormAdmin;
+export default FormAdmin
