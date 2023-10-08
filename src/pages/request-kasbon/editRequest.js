@@ -126,20 +126,21 @@ const TableEditRequest = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`${API_URL}/ambil-request-kasbon`);
+        const response = await fetch(`${API_URL}/api/ambil-request-kasbon`)
         if (response.ok) {
-          const result = await response.json();
-          setData(result);
+          const result = await response.json()
+          setData(result)
         } else {
-          console.error('Error mendapatkan data.');
+          console.error('Error:', response.status, response.statusText)
         }
       } catch (error) {
         console.error('Error:', error);
       }
-    };
-    fetchData();
-    fetchSessionData();
-  }, []);
+    }
+
+    fetchData()
+    fetchSessionData()
+  }, [])
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
