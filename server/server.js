@@ -344,7 +344,7 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
     const client = await pool.connect()
 
     //Ambil data Dashboard Karyawan dengan status request 'wait'
-    const selectQuery = 'SELECT * FROM dashboard_karyawan WHERE status_request = \'wait\'';
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'wait\'';
     const selectResult = await client.query(selectQuery)
 
     // Jika ada hasil, maka kirim responnya hasil query
