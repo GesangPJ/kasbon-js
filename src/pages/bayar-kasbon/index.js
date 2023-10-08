@@ -183,6 +183,7 @@ const FormBayarKasbon = () => {
       formatCurrencyIDR(row.jumlah),
       row.metode,
       row.keterangan,
+      row.status_b,
 
     );
   });
@@ -336,6 +337,7 @@ const FormBayarKasbon = () => {
                     ) : null}
                   </TableCell>
                   <TableCell align="left">Keterangan</TableCell>
+                  <TableCell align="left">Status Bayar</TableCell>
                   <TableCell align="left" id="b_tombol">Sudah Lunas?</TableCell>
                   <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
                 </TableRow>
@@ -351,6 +353,7 @@ const FormBayarKasbon = () => {
                     <TableCell align="left">{row.jumlah}</TableCell>
                     <TableCell align="left">{row.metode}</TableCell>
                     <TableCell align="left">{row.keterangan}</TableCell>
+                    <TableCell align="left">{row.status_b}</TableCell>
                     <TableCell aligh="left">
                       <FormControl>
                         <RadioGroup
