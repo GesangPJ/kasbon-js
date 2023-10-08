@@ -80,14 +80,3 @@ export const handleRadioChange = (event, requestId, radioButtonValues, setRadioB
     [requestId]: event.target.value,
   })
 }
-
-// Untuk fungsi page berikutnya pada tabel sticky header
-export const handleChangePage = (event, newPage) => {
-  setPage(newPage);
-};
-
-// Untuk fungsi row berikutnya pada tabel sticky header
-export const handleChangeRowsPerPage = (event) => {
-  setRowsPerPage(+event.target.value);
-  setPage(0);
-};
