@@ -113,7 +113,7 @@ const TableEditRequest = () => {
   const handleSort = (columnId) => {
     const isAsc = sorting.column === columnId && sorting.direction === 'asc'
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
-  };
+  }
 
   // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
