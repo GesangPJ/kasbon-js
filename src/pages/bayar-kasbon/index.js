@@ -300,15 +300,18 @@ const FormBayarKasbon = () => {
     }));
   };
 
-  const handleSimpanSemua = async () => {
-    if (sessionData && sessionData.id_akun) {
-      const requestsToUpdate = [];
+  // Validasi apakah semua tombol radio dipilih
+  const isAllRadioButtonsSelected = () => {
+    return rows.every((row) => radioButtonValues[row.id_request] === 'lunas' || radioButtonValues[row.id_request] === 'belum');
+  };
 
-      // Iterate over the rows and create an array of objects with id_request and status_b
-      sortedData.forEach((row) => {
-        const status_b = radioButtonValues[row.id_request];
-        requestsToUpdate.push({ id_request: row.id_request, status_b });
-      });
+  const handleSimpanSemua = async () => {
+    if (sessionData && sessionData.id_akun && isAllRadioButtonsSelected()) {
+      const updates = rows.map((row) => ({
+        id_request: row.id_request,
+        status_b: radioButtonValues[row.id_request],
+        id_petugas: sessionData.id_akun,
+      }))
 
       try {
         const response = await fetch(`${API_URL}/api/edit-bayar-batch`, {
@@ -316,43 +319,40 @@ const FormBayarKasbon = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ requests: requestsToUpdate, id_petugas: sessionData.id_akun }),
-        });
+          body: JSON.stringify({ requests: updates }),
+        })
 
         if (response.ok) {
-          setSuccessMessage(`Data request berhasil diupdate.`)
+          // Jika sukses mengirim data
+          setSuccessMessage(`Data berhasil diupdate semua.`)
+          window.location.reload() // Reload halaman
           setTimeout(() => {
             setSuccessMessage('')
-          }, 1000);
-          console.log('Data request berhasil diupdate')
-          window.location.reload();
+          }, 1000)
 
-          // Update the local data with the modified status_b values
-          const updatedDataCopy = [...sortedData];
-          updatedDataCopy.forEach((row) => {
-            const updatedRequest = requestsToUpdate.find((request) => request.id_request === row.id_request);
-            if (updatedRequest) {
-              row.status_b = updatedRequest.status_b;
-            }
-          });
-
-          // Reset the radio button values
-          setRadioButtonValues({});
+          // Kosongkan radiobutton
+          setRadioButtonValues({})
         } else {
-          setErrorMessage(`Gagal mengirim update data request`);
+          // Jika error mengirim data
+          setErrorMessage(`Gagal update data.`)
           setTimeout(() => {
-            setErrorMessage('');
-          }, 3000);
+            setErrorMessage('')
+          }, 3000)
 
-          console.error('Error update data request');
+          console.error('Error in batch update')
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
       }
-    } else {
-      console.error('Session data is missing or incomplete');
     }
-  };
+
+    else {
+      setErrorMessage('Semua tombol radio di setiap baris harus dipilih')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 3000)
+    }
+  }
 
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
@@ -503,10 +503,21 @@ const FormBayarKasbon = () => {
         >
         </Box>
       </Grid>
+      {errorMessage && (
+        <Alert severity="error">{errorMessage}</Alert>
+      )}
+      {successMessage && (
+        <Alert severity="success">{successMessage}</Alert>
+      )}
       <Grid item xs={12}>
         <Button type='submit' variant='contained' size='large' onClick={handleSimpanSemua}>
           Simpan Semua
         </Button>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="caption">
+          Harap mengisi semua konfirmasi "sudah lunas?" sebelum tekan tombol simpan semua
+        </Typography>
       </Grid>
     </Grid>
   )
