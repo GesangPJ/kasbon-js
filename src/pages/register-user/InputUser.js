@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import FormControl from '@mui/material/FormControl'
+import API_URL from 'src/configs/api'
 
 const FormUser = () => {
   const [nama, setnama] = useState('')
@@ -78,7 +79,7 @@ const FormUser = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3001/api/tambah-user', {
+      const response = await fetch(`${API_URL}/api/tambah-user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
