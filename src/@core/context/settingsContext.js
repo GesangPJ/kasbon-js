@@ -20,6 +20,8 @@ export const SettingsProvider = ({ children }) => {
   // ** State
   const [settings, setSettings] = useState({ ...initialSettings })
 
+  console.log('settings:', settings)
+
   const saveSettings = updatedSettings => {
     setSettings(updatedSettings)
   }
