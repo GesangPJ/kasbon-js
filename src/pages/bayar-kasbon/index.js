@@ -95,6 +95,7 @@ const FormBayarKasbon = () => {
   const [radioButtonValues, setRadioButtonValues] = useState({})
   const classes = useStyles()
   const [updatedData, setUpdatedData] = useState([])
+  const [selectedRows, setSelectedRows] = useState({})
 
 
   const getStatusChips = (status) => {
@@ -240,6 +241,8 @@ const FormBayarKasbon = () => {
     });
   };
 
+
+
   const handleSimpan = async (id_request) => {
     if (sessionData && sessionData.id_akun) {
       const status_b = radioButtonValues[id_request]; // ambil nilai radiobutton per baris berdasarkan id_request
@@ -287,6 +290,49 @@ const FormBayarKasbon = () => {
       }
     } else {
       console.error('Session data is missing or incomplete');
+    }
+  };
+
+  const handleRowSelect = (id_request, value) => {
+    setSelectedRows((prevSelectedRows) => ({
+      ...prevSelectedRows,
+      [id_request]: value,
+    }));
+  };
+
+  const handleSimpanSemua = async () => {
+    try {
+      const updates = Object.keys(selectedRows).map((id_request) => {
+        const status_b = radioButtonValues[id_request];
+
+        return handleSimpan(id_request, status_b);
+      });
+
+      Promise.all(updates)
+        .then((results) => {
+          // Handle success and results (if needed)
+          console.log('Batch update success:', results);
+
+          // Update the local data with the modified status_b
+          const updatedDataCopy = [...updatedData];
+          results.forEach((result) => {
+            const updatedRowIndex = updatedDataCopy.findIndex((row) => row.id_request === result.id_request);
+            if (updatedRowIndex !== -1) {
+              updatedDataCopy[updatedRowIndex].status_b = result.status_b;
+            }
+          });
+          setUpdatedData(updatedDataCopy);
+
+          // Reset the radio button values
+          setRadioButtonValues({});
+        })
+        .catch((error) => {
+          // Handle errors (if needed)
+          console.error('Batch update error:', error);
+        });
+    } catch (error) {
+      // Handle any other errors (if needed)
+      console.error('Error:', error);
     }
   };
 
@@ -449,6 +495,11 @@ const FormBayarKasbon = () => {
           }}
         >
         </Box>
+      </Grid>
+      <Grid item xs={12}>
+        <Button variant="contained" onClick={handleSimpanSemua}>
+          Simpan Semua
+        </Button>
       </Grid>
     </Grid>
   )
