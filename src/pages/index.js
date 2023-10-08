@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
