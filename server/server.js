@@ -289,12 +289,13 @@ app.post('/api/input-kasbon', async (req, res) => {
 
   const { jumlah, metode, keterangan, id_akun } = req.body
   const request_status = 'wait'
+  const status_b = 'belum'
 
   try {
     const client = await pool.connect()
 
-    const insertQuery = 'INSERT INTO request (jumlah, metode, tanggaljam, id_karyawan, status_request, keterangan, status_b = \'belum\' )  VALUES ($1, $2, NOW(), $3, $4, $5)'
-    const insertResult = await client.query(insertQuery, [jumlah, metode, id_akun, request_status, keterangan])
+    const insertQuery = 'INSERT INTO request (jumlah, metode, tanggaljam, id_karyawan, status_request, keterangan, status_b)  VALUES ($1, $2, NOW(), $3, $4, $5, $6)'
+    const insertResult = await client.query(insertQuery, [jumlah, metode, id_akun, request_status, keterangan, status_b])
 
     client.release()
 
