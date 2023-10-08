@@ -390,7 +390,7 @@ const FormBayarKasbon = () => {
                           onChange={(event) => handleRadioChange(event, row.id_request)}
                         >
                           <FormControlLabel value="lunas" control={<Radio />} label="Lunas" />
-                          <FormControlLabel value="belum" control={<Radio />} label="Belum Lunas" />
+                          <FormControlLabel value="belum" control={<Radio />} label="Belum" />
                         </RadioGroup>
                       </FormControl>
                     </TableCell>
