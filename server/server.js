@@ -37,7 +37,7 @@ const corsOptions = {
   credentials: true,
   preflightContinue: false,
   optionsSuccessStatus: 204,
-};
+}
 
 app.use(cors(corsOptions))
 
@@ -315,27 +315,27 @@ app.post('/api/input-kasbon', async (req, res) => {
 
 // Ambil Data dashboard karyawan berdasarkan id_akun
 app.get('/api/ambil-dashboard-karyawan/:id_akun', async (req, res) => {
-  const { id_akun } = req.params;
+  const { id_akun } = req.params
   try {
     const client = await pool.connect()
 
     // Query ambil data dashboard karyawan
     const selectQuery = 'SELECT * FROM dashboard_komplit WHERE id_karyawan = $1'
     const selectResult = await client.query(selectQuery, [id_akun])
-    client.release();
+    client.release()
 
 
     // Jika ada hasil, maka kirim responnya hasil query
     if (selectResult.rows.length > 0) {
-      res.status(200).json(selectResult.rows);
+      res.status(200).json(selectResult.rows)
     } else {
 
       // Jika tidak ada data
-      res.status(404).json({ message: 'Data tidak ada' });
+      res.status(404).json({ message: 'Data tidak ada' })
     }
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 })
 
@@ -345,7 +345,7 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
     const client = await pool.connect()
 
     //Ambil data Dashboard Karyawan dengan status request 'wait'
-    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'wait\'';
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'wait\''
     const selectResult = await client.query(selectQuery)
 
     // Jika ada hasil, maka kirim responnya hasil query
@@ -353,36 +353,37 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
       res.status(200).json(selectResult.rows)
       console.log('Data request berhasil dikirim')
     } else {
-      res.status(404).json({ message: 'Tidak ada request menunggu konfirmasi' });
+      res.status(404).json({ message: 'Tidak ada request menunggu konfirmasi' })
     }
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error('Error:', error)
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 })
 
 // API upadate Request berdasarkan id_request
 app.put('/api/update-request/:id_request', async (req, res) => {
-  const requestId = req.params.id_request;
-  const { status_request, id_petugas } = req.body;
-
-  //const id_petugas = req.session.admin.id_akun;
+  const requestId = req.params.id_request
+  const { status_request, id_petugas } = req.body
 
   try {
-    const client = await pool.connect();
+    // Buka koneksi ke Postgres
+    const client = await pool.connect()
 
-    // Update the request in your database using SQL
-    const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2, status_b=\'belum\', tanggaljam = NOW() WHERE id_request = $3';
-    const updateValues = [status_request, id_petugas, requestId];
-    const updateResult = await client.query(updateQuery, updateValues);
+    // Query Update request
+    const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2, status_b=\'belum\', tanggaljam = NOW() WHERE id_request = $3'
+    const updateValues = [status_request, id_petugas, requestId]
+    const updateResult = await client.query(updateQuery, updateValues)
 
-    client.release();
+    client.release()
 
     if (updateResult.rowCount === 1) {
-      res.status(200).json({ message: 'Request berhasil diupdate' });
+      // Jika sukses
+      res.status(200).json({ message: 'Request berhasil diupdate' })
       console.log('Update request berhasil')
     } else {
-      res.status(404).json({ error: 'Request tidak ditemukan' });
+      // Jika tidak menemukan data yang tepat
+      res.status(404).json({ error: 'Request tidak ditemukan' })
       console.log('Update Request tidak ditemukan data')
     }
   } catch (error) {
@@ -464,52 +465,55 @@ app.put('/api/edit-bayar/:id_request', async (req, res) => {
   }
 })
 
-// API for batch update
+// API update data bayar sekaligus
 app.put('/api/edit-bayar-batch', async (req, res) => {
-  const updates = req.body.requests; // An array of updates
+  const updates = req.body.requests // Array update dari frontend
 
   try {
-    const client = await pool.connect();
 
-    // Create an array to hold promises for each update
+    //Buka koneksi ke Postgres
+    const client = await pool.connect()
+
+    // Membuat array untuk menyimpan promise setiap update
     const updatePromises = updates.map(async (update) => {
-      const { status_b, id_petugas, id_request } = update;
+      const { status_b, id_petugas, id_request } = update
 
-      const updateQuery = 'UPDATE request SET status_b = $1, id_petugas = $2, tanggaljam = NOW() WHERE id_request = $3';
-      const updateValues = [status_b, id_petugas, id_request];
-      const updateResult = await client.query(updateQuery, updateValues);
+      // Query Update tabel request
+      const updateQuery = 'UPDATE request SET status_b = $1, id_petugas = $2, tanggaljam = NOW() WHERE id_request = $3'
+      const updateValues = [status_b, id_petugas, id_request]
+      const updateResult = await client.query(updateQuery, updateValues)
 
       if (updateResult.rowCount !== 1) {
-        // Handle errors or unsuccessful updates
-        return { error: 'Failed to update request with id ' + id_request };
+        //Jika Error
+        return { error: 'Failed to update request with id ' + id_request }
       }
 
-      return null; // Successful update
+      return null // Update sukses
     });
 
-    // Wait for all update promises to complete
-    const updateResults = await Promise.all(updatePromises);
+    // Menunggu semua update selesai
+    const updateResults = await Promise.all(updatePromises)
 
-    // Check for errors in the results
-    const errors = updateResults.filter((result) => result && result.error);
+    // Cek apakah ada error
+    const errors = updateResults.filter((result) => result && result.error)
 
     if (errors.length > 0) {
-      // Some updates failed
-      res.status(500).json({ errors });
+      // Jika gagal update
+      res.status(500).json({ errors })
     } else {
-      // All updates were successful
-      res.status(200).json({ message: 'Batch updates completed successfully' });
+      // Saat update sukses
+      res.status(200).json({ message: 'Batch update data bayar berhasil' })
     }
   } catch (error) {
-    console.error('Error updating batch:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error batch update bayar :', error)
+    res.status(500).json({ error: 'Internal Server Error' })
   }
-});
+})
 
 // Set Port buat server
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3001
 app.listen(port, async () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`)
 
   await PostgresStatus()
 
