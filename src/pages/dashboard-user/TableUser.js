@@ -138,13 +138,18 @@ const TableDataUser = () => {
   // Untuk fungsi page berikutnya pada tabel sticky header
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
+  }
 
   // Untuk fungsi row berikutnya pada tabel sticky header
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
-  };
+  }
+
+  const handleSort = (columnId) => {
+    const isAsc = sorting.column === columnId && sorting.direction === 'asc'
+    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
+  }
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
