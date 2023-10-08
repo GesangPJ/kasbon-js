@@ -42,7 +42,7 @@ const columns = [
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: true },
   { id: 'status_b', label: 'Bayar', minWidth: 10, align: 'left', sortable: true },
-  { id: 'nama_admin', label: 'Nama Admin', minWidth: 10, align: 'left', sortable: false },
+  { id: 'nama_admin', label: 'Petugas', minWidth: 10, align: 'left', sortable: false },
 ]
 
 function createData(tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin) {
