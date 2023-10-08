@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { getSession } from 'next-auth/client'; // If you are using NextAuth.js for session management
 
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
