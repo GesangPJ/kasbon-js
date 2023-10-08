@@ -1,18 +1,36 @@
-import { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import Link from 'next/dist/client/link';
-import { useRouter } from 'next/router';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { useState, useEffect } from 'react'
+import Button from '@mui/material/Button'
+import Link from 'next/dist/client/link'
+import { useRouter } from 'next/router'
+import Paper from '@mui/material/Paper'
+import Table from '@mui/material/Table'
+import TableRow from '@mui/material/TableRow'
+import TableHead from '@mui/material/TableHead'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TablePagination from '@mui/material/TablePagination'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import { makeStyles } from '@mui/styles'
+import Chip from '@mui/material/Chip'
 
+const useStyles = makeStyles((theme) => ({
+  // warna warning/kuning
+  warningCell: {
+    backgroundColor: 'yellow',
+  },
+
+  // warna success/hijau
+  successCell: {
+    backgroundColor: 'green',
+  },
+
+  // warna error/merah
+  errorCell: {
+    backgroundColor: 'red',
+  },
+}))
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
@@ -23,7 +41,7 @@ const columns = [
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_b', label: 'Bayar', minWidth: 10, align: 'left', sortable: false },
   { id: 'nama_admin', label: 'Nama Admin', minWidth: 10, align: 'left', sortable: false },
-];
+]
 
 
 //function createData(nama_user, nama_admin, status_request, tanggaljam, jumlah, metode, keterangan, status_b) {
@@ -35,7 +53,7 @@ function createData(tanggaljam, nama_user, jumlah, metode, keterangan, status_re
 }
 
 
-
+// Fungsi Sortir
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -43,12 +61,12 @@ function stableSort(array, comparator) {
     if (order !== 0) return order;
 
     return a[1] - b[1];
-  });
+  })
 
-  return stabilizedThis.map((el) => el[0]);
+  return stabilizedThis.map((el) => el[0])
 }
 
-// Get sorting order (asc or desc)
+// Sortir order
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -67,6 +85,8 @@ function descendingComparator(a, b, orderBy) {
 }
 
 const TableDataAdmin = () => {
+  const classes = useStyles();
+
   // ** States
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -216,7 +236,22 @@ const TableDataAdmin = () => {
 
                   return (
                     <TableCell key={column.id} align={column.align}>
-                      {column.format && typeof value === 'number' ? column.format(value) : value}
+                      {column.id === 'status_request' ? (
+                        row.status_request === 'wait' ? (
+                          <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
+                        ) : row.status_request === 'sukses' ? (
+                          <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                        ) : row.status_request === 'tolak' ? (
+                          <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
+                        ) : (
+                          row.status_request
+                        )
+                      ) : column.format && typeof row[column.id] === 'number' ? (
+                        column.format(row[column.id])
+                      ) : (
+                        row[column.id]
+                      )
+                      }
                     </TableCell>
                   );
                 })}
