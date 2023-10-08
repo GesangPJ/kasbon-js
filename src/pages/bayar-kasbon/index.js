@@ -23,10 +23,10 @@ import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import API_URL from 'src/configs/api'
-import { styled } from '@mui/material/styles'
-import Chip from 'src/@core/theme/overrides/chip'
+import { makeStyles } from '@mui/styles'
+import Chip from '@mui/material/Chip'
 
-const useStyles = styled((theme) => ({
+const useStyles = makeStyles((theme) => ({
   // warna warning/kuning
   warningCell: {
     backgroundColor: 'yellow',
