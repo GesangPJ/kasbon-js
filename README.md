@@ -38,7 +38,7 @@ Website untuk manajemen Kasbon
 
 Login Page for Desktop
 
-<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/mobile-login.png" width = "412" height = "915" >
+<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/mobile-login.png" width = "112" height = "515" >
 
 Login Page in mobile mode
 
