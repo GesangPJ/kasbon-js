@@ -4,7 +4,7 @@ module.exports = {
   trailingSlash: true,
   reactStrictMode: false,
   experimental: {
-    pageDataCollectionTimeout: 10000,
+    pageDataCollectionTimeout: 100000,
     esmExternals: false,
     jsconfigPaths: false // enables it for both jsconfig.json and tsconfig.json
   },
