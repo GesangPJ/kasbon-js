@@ -14,6 +14,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
+import API_URL from 'src/configs/api'
 
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuning
@@ -108,20 +109,6 @@ const TableDataAdmin = () => {
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
   };
 
-  const handleDetailClick = (namaObat) => {
-    // Construct the link with the target="_blank" attribute
-    return (
-      <Link href={`/detail-obat-herbal?namaObat=${namaObat}`} passHref>
-        <a target="_blank">
-          <Button variant='contained' color='primary'>
-            Detail
-          </Button>
-        </a>
-      </Link>
-    );
-  };
-
-
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
     return new Intl.NumberFormat('id-ID', {
@@ -142,7 +129,7 @@ const TableDataAdmin = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/ambil-dashboard-komplit');
+        const response = await fetch(`${API_URL}/api/ambil-dashboard-komplit`);
         if (response.ok) {
           const result = await response.json();
           setData(result); // Update data state
