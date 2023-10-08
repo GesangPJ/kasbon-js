@@ -38,11 +38,11 @@ const columns = [
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
   { id: 'status_b', label: 'Status', minWidth: 10, align: 'left', sortable: false },
-];
+]
 
 // Konstruktor row
 function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_b) {
-  return { tanggaljam, jumlah, metode, keterangan, status_request, status_b };
+  return { tanggaljam, jumlah, metode, keterangan, status_request, status_b }
 }
 
 // Komparasi sortir
@@ -57,7 +57,7 @@ function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) return -1
   if (b[orderBy] > a[orderBy]) return 1
 
-  return 0;
+  return 0
 }
 
 function stableSort(array, comparator) {
@@ -67,14 +67,14 @@ function stableSort(array, comparator) {
     if (order !== 0) return order
 
     return a[1] - b[1]
-  });
+  })
 
   return stabilizedThis.map((el) => el[0])
 }
 
 // Table dashboard karyawan
 const TableDataUser = () => {
-  const classes = useStyles();
+  const classes = useStyles()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [data, setData] = useState([])
@@ -89,36 +89,36 @@ const TableDataUser = () => {
       try {
         const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
 
-        const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
+        const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`)
         if (response.ok) {
-          const result = await response.json();
-          setData(result);
+          const result = await response.json()
+          setData(result)
         } else {
-          console.error('Error fetching dashboard user data.');
+          console.error('Error fetching dashboard user data.')
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    }).format(jumlah);
-  };
+    }).format(jumlah)
+  }
 
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
-    const jakartaTimezone = 'Asia/Jakarta';
-    const utcDate = new Date(tanggaljam);
-    const options = { timeZone: jakartaTimezone, hour12: false };
+    const jakartaTimezone = 'Asia/Jakarta'
+    const utcDate = new Date(tanggaljam)
+    const options = { timeZone: jakartaTimezone, hour12: false }
 
-    return utcDate.toLocaleString('id-ID', options);
-  };
+    return utcDate.toLocaleString('id-ID', options)
+  }
 
   // Masukkan data ke baris tabel
   const rows = data.map((row) => {
@@ -130,20 +130,20 @@ const TableDataUser = () => {
       row.status_request,
       row.status_b,
       row.statusChip
-    );
-  });
+    )
+  })
 
-  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
+  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column))
 
   // Untuk fungsi page berikutnya pada tabel sticky header
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setPage(newPage)
   }
 
   // Untuk fungsi row berikutnya pada tabel sticky header
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+    setRowsPerPage(+event.target.value)
+    setPage(0)
   }
 
   const handleSort = (columnId) => {
@@ -248,7 +248,7 @@ const TableDataUser = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </Paper>
-  );
-};
+  )
+}
 
-export default TableDataUser;
+export default TableDataUser
