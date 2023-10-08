@@ -11,6 +11,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
+import API_URL from 'src/configs/api'
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
@@ -41,23 +42,6 @@ const columns = [
 
 // Konstruktor row
 function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_b) {
-  let statusChip = null;
-
-  /*
-    if (status_request === 'wait') {
-      statusChip = (
-        <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'white' }} />
-      );
-    } else if (status_request === 'success') {
-      statusChip = (
-        <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-      );
-    } else if (status_request === 'tolak') {
-      statusChip = (
-        <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" labelStyle={{ color: 'white' }} />
-      );
-    }
-  */
   return { tanggaljam, jumlah, metode, keterangan, status_request, status_b };
 }
 
@@ -124,7 +108,7 @@ const TableDataUser = () => {
       try {
         const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
 
-        const response = await fetch(`http://localhost:3001/api/ambil-dashboard-karyawan/${id_akun}`);
+        const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
         if (response.ok) {
           const result = await response.json();
           setData(result);
