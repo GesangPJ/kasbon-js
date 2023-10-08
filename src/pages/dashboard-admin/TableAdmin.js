@@ -61,7 +61,7 @@ function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) return -1
   if (b[orderBy] > a[orderBy]) return 1
 
-  return 0;
+  return 0
 }
 
 function stableSort(array, comparator) {
@@ -71,55 +71,55 @@ function stableSort(array, comparator) {
     if (order !== 0) return order
 
     return a[1] - b[1]
-  });
+  })
 
   return stabilizedThis.map((el) => el[0])
 }
 
 const TableDataAdmin = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
   // ** States
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState([]); // Declare data state
-  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
-  const router = useRouter();
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [data, setData] = useState([])
+  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
+  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/ambil-dashboard-komplit`);
+        const response = await fetch(`${API_URL}/api/ambil-dashboard-komplit`)
         if (response.ok) {
-          const result = await response.json();
-          setData(result); // Update data state
+          const result = await response.json()
+          setData(result) // Update data state
         } else {
-          console.error('Error mengambil dashboard admin.');
+          console.error('Error mengambil dashboard admin.')
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
       }
-    };
+    }
 
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    }).format(jumlah);
-  };
+    }).format(jumlah)
+  }
 
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
-    const jakartaTimezone = 'Asia/Jakarta';
-    const utcDate = new Date(tanggaljam);
-    const options = { timeZone: jakartaTimezone, hour12: false };
+    const jakartaTimezone = 'Asia/Jakarta'
+    const utcDate = new Date(tanggaljam)
+    const options = { timeZone: jakartaTimezone, hour12: false }
 
-    return utcDate.toLocaleString('id-ID', options);
-  };
+    return utcDate.toLocaleString('id-ID', options)
+  }
 
   const rows = data.map((row) => {
     const {
@@ -131,7 +131,7 @@ const TableDataAdmin = () => {
       status_b,
       keterangan,
       nama_admin,
-    } = row;
+    } = row
 
     return createData(
       formatTanggaljam(tanggaljam),
@@ -142,27 +142,27 @@ const TableDataAdmin = () => {
       status_request,
       status_b,
       nama_admin,
-    );
-  });
+    )
+  })
 
   // Untuk fungsi page berikutnya pada tabel sticky header
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
 
   // Untuk fungsi row berikutnya pada tabel sticky header
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+    setRowsPerPage(+event.target.value)
+    setPage(0)
+  }
 
   // Sorting function
-  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
+  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column))
 
   const handleSort = (columnId) => {
-    const isAsc = sorting.column === columnId && sorting.direction === 'asc';
-    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
-  };
+    const isAsc = sorting.column === columnId && sorting.direction === 'asc'
+    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
+  }
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -204,13 +204,13 @@ const TableDataAdmin = () => {
             {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
                 {columns.map((column) => {
-                  const value = row[column.id];
+                  const value = row[column.id]
                   if (column.id === 'aksi') {
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {column.format && typeof value === 'number' ? column.format(value) : value}
                       </TableCell>
-                    );
+                    )
                   }
 
                   return (
@@ -239,7 +239,7 @@ const TableDataAdmin = () => {
                         row[column.id]
                       )}
                     </TableCell>
-                  );
+                  )
                 })}
               </TableRow>
             ))}
@@ -256,7 +256,7 @@ const TableDataAdmin = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </Paper>
-  );
+  )
 }
 
-export default TableDataAdmin;
+export default TableDataAdmin
