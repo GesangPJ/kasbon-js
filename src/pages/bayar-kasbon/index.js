@@ -93,7 +93,9 @@ const FormBayarKasbon = () => {
   const [data, setData] = useState([])
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
   const [radioButtonValues, setRadioButtonValues] = useState({})
-  const classes = useStyles();
+  const classes = useStyles()
+  const [updatedData, setUpdatedData] = useState([])
+
 
   const getStatusChips = (status) => {
     if (status === 'belum') {
@@ -259,8 +261,19 @@ const FormBayarKasbon = () => {
           }, 1000);
           console.log('Data request berhasil diupdate');
 
-          // Refresh the page after a successful update
-          window.location.reload();
+          // Update the local data with the modified status_b
+          const updatedDataCopy = [...updatedData];
+          const updatedRowIndex = updatedDataCopy.findIndex((row) => row.id_request === id_request);
+          if (updatedRowIndex !== -1) {
+            updatedDataCopy[updatedRowIndex].status_b = status_b;
+            setUpdatedData(updatedDataCopy);
+          }
+
+          // Reset the radio button value
+          setRadioButtonValues({
+            ...radioButtonValues,
+            [id_request]: status_b,
+          });
         } else {
           setErrorMessage(`Gagal mengirim update data request`);
           setTimeout(() => {
@@ -275,8 +288,8 @@ const FormBayarKasbon = () => {
     } else {
       console.error('Session data is missing or incomplete');
     }
-
   };
+
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
@@ -331,7 +344,6 @@ const FormBayarKasbon = () => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-
                   <TableCell
                     align="left"
                     onClick={() => handleSort('tanggaljam')} // Add onClick to handle sorting
@@ -377,37 +389,50 @@ const FormBayarKasbon = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedData.map((row) => (
-                  <TableRow
-                    key={row.id_request}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell align="left">{row.tanggaljam}</TableCell>
-                    <TableCell align="left">{row.nama_user}</TableCell>
-                    <TableCell align="left">{row.jumlah}</TableCell>
-                    <TableCell align="left">{row.metode}</TableCell>
-                    <TableCell align="left">{row.keterangan}</TableCell>
-                    <TableCell align="left">{getStatusChips(row.status_b)}</TableCell>
-                    <TableCell aligh="left">
-                      <FormControl>
-                        <RadioGroup
-                          row
-                          name={`row-radio-buttons-group-${row.id_request}`}
-                          value={radioButtonValues[row.id_request] || ''}
-                          onChange={(event) => handleRadioChange(event, row.id_request)}
+                {sortedData.map((row) => {
+                  // Check if the row exists in the updatedData array
+                  const updatedRow = updatedData.find((updatedRow) => updatedRow.id_request === row.id_request);
+
+                  // Use the updated row if it exists, otherwise use the original row
+                  const dataRow = updatedRow || row;
+
+                  return (
+                    <TableRow
+                      key={dataRow.id_request}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell align="left">{row.tanggaljam}</TableCell>
+                      <TableCell align="left">{row.nama_user}</TableCell>
+                      <TableCell align="left">{row.jumlah}</TableCell>
+                      <TableCell align="left">{row.metode}</TableCell>
+                      <TableCell align="left">{row.keterangan}</TableCell>
+                      <TableCell align="left">{getStatusChips(row.status_b)}</TableCell>
+                      <TableCell aligh="left">
+                        <FormControl>
+                          <RadioGroup
+                            row
+                            name={`row-radio-buttons-group-${row.id_request}`}
+                            value={radioButtonValues[row.id_request] || ''}
+                            onChange={(event) => handleRadioChange(event, row.id_request)}
+                          >
+                            <FormControlLabel value="lunas" control={<Radio />} label="Lunas" />
+                            <FormControlLabel value="belum" control={<Radio />} label="Belum" />
+                          </RadioGroup>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="left">
+                        <Button
+                          type='submit'
+                          variant='contained'
+                          size='large'
+                          onClick={() => handleSimpan(row.id_request)}
                         >
-                          <FormControlLabel value="lunas" control={<Radio />} label="Lunas" />
-                          <FormControlLabel value="belum" control={<Radio />} label="Belum" />
-                        </RadioGroup>
-                      </FormControl>
-                    </TableCell>
-                    <TableCell align="left">
-                      <Button type='submit' variant='contained' size='large' onClick={() => handleSimpan(row.id_request)}>
-                        Simpan
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          Simpan
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </TableContainer>
