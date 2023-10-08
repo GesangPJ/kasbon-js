@@ -57,35 +57,35 @@ const columns = [
 ]
 
 function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar) {
-  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar };
+  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar }
 }
 
 // Sortir
 function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+  const stabilizedThis = array.map((el, index) => [el, index])
   stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
+    const order = comparator(a[0], b[0])
+    if (order !== 0) return order
 
-    return a[1] - b[1];
-  });
+    return a[1] - b[1]
+  })
 
-  return stabilizedThis.map((el) => el[0]);
+  return stabilizedThis.map((el) => el[0])
 }
 
 // Komparasi sortir
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+    : (a, b) => -descendingComparator(a, b, orderBy)
 }
 
 // Komparasi sortir descending
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) return -1;
-  if (b[orderBy] > a[orderBy]) return 1;
+  if (b[orderBy] < a[orderBy]) return -1
+  if (b[orderBy] > a[orderBy]) return 1
 
-  return 0;
+  return 0
 }
 
 const FormBayarKasbon = () => {
@@ -111,7 +111,7 @@ const FormBayarKasbon = () => {
           variant="outlined"
           style={{ color: 'black' }}
         />
-      );
+      )
     } else if (status === 'lunas') {
       return (
         <Chip
@@ -121,12 +121,12 @@ const FormBayarKasbon = () => {
           variant="outlined"
           style={{ color: 'white' }}
         />
-      );
+      )
 
     } else {
-      return status;
+      return status
     }
-  };
+  }
 
   // Validasi ID Karyawan hanya huruf dan angka
   const handleidkaryawanChange = (e) => {
@@ -156,11 +156,11 @@ const FormBayarKasbon = () => {
   }, [])
 
   const handleSubmitID = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!id_karyawan) {
       // Display Error jika ada yang tidak diisi
-      setErrorMessage('ID Karyawan harus diinput terlebih dahulu');
+      setErrorMessage('ID Karyawan harus diinput terlebih dahulu')
 
       return
     }
@@ -200,7 +200,7 @@ const FormBayarKasbon = () => {
         }, 5000)
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
       setErrorMessage('Internal Server Error')
       setTimeout(() => {
         setErrorMessage('')
@@ -310,7 +310,7 @@ const FormBayarKasbon = () => {
   }
 
 
-  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
+  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column))
 
   return (
     <Grid container spacing={6}>
@@ -410,10 +410,10 @@ const FormBayarKasbon = () => {
                 {sortedData.map((row) => {
 
                   // Cek apakah baris yg dipilih ada di updatedData
-                  const updatedRow = updatedData.find((updatedRow) => updatedRow.id_request === row.id_request);
+                  const updatedRow = updatedData.find((updatedRow) => updatedRow.id_request === row.id_request)
 
                   // Menggunakan UpdateRow jika ada
-                  const dataRow = updatedRow || row;
+                  const dataRow = updatedRow || row
 
                   return (
                     <TableRow
