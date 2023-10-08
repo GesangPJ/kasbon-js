@@ -19,6 +19,7 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import API_URL from 'src/configs/api'
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
@@ -125,7 +126,7 @@ const TableEditRequest = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/ambil-request-kasbon`);
+        const response = await fetch(`${API_URL}/ambil-request-kasbon`);
         if (response.ok) {
           const result = await response.json();
           setData(result);
@@ -190,7 +191,7 @@ const TableEditRequest = () => {
     const id_akun = sessionData.id_akun
 
     try {
-      const response = await fetch(`http://localhost:3001/api/update-request/${id_request}`, {
+      const response = await fetch(`${API_URL}/api/update-request/${id_request}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
