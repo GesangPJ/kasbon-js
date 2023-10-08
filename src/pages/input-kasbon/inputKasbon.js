@@ -30,16 +30,16 @@ const FormKasbon = () => {
   //const handlejumlahChange = (e) => setjumlah(e.target.value)
   const handlemetodeChange = (e) => setmetode(e.target.value)
   const handleketeranganChange = (e) => setketerangan(e.target.value)
-  const [sessionData, setSessionData] = useState(null);
+  const [sessionData, setSessionData] = useState(null)
 
   useEffect(() => {
     // Get session data from sessionStorage
-    const sessionDataStr = sessionStorage.getItem('sessionData');
+    const sessionDataStr = sessionStorage.getItem('sessionData')
     if (sessionDataStr) {
-      const data = JSON.parse(sessionDataStr);
-      setSessionData(data);
+      const data = JSON.parse(sessionDataStr)
+      setSessionData(data)
     }
-  }, []);
+  }, [])
 
 
   // Submit ke api
@@ -55,27 +55,27 @@ const FormKasbon = () => {
       return
     }
 
-    const id_akun = sessionData.id_akun;
+    const id_akun = sessionData.id_akun
 
     // validasi form
     if (!jumlah || !metode || !keterangan) {
       // Display Error jika ada yang tidak diisi
-      setErrorMessage('Semua kolom harus diisi!');
+      setErrorMessage('Semua kolom harus diisi!')
       setTimeout(() => {
-        setErrorMessage('');
-      }, 5000);
+        setErrorMessage('')
+      }, 5000)
 
-      return;
+      return
     }
 
     // Validasi panjang keterangan
     if (keterangan.length > 255) {
-      setErrorMessage('Keterangan tidak boleh melebihi 255 karakter');
+      setErrorMessage('Keterangan tidak boleh melebihi 255 karakter')
       setTimeout(() => {
-        setErrorMessage('');
-      }, 5000);
+        setErrorMessage('')
+      }, 5000)
 
-      return;
+      return
     }
 
     // Konstruksi Data Kasbon untuk dikirim
@@ -101,36 +101,36 @@ const FormKasbon = () => {
         setmetode('')
         setketerangan('')
         setTimeout(() => {
-          setSuccessMessage('');
-        }, 5000);
+          setSuccessMessage('')
+        }, 5000)
       } else {
         console.error('Error menambahkan Kasbon.')
         setErrorMessage(`Gagal mengirim permintaan`)
         setTimeout(() => {
-          setErrorMessage('');
-        }, 5000);
+          setErrorMessage('')
+        }, 5000)
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     }
   }
 
   const [metode, setmetode] = React.useState('')
 
   const handlejumlahChange = (e) => {
-    const inputValue = e.target.value;
+    const inputValue = e.target.value
 
     // Use regular expression to allow only numbers
     if (/^\d*$/.test(inputValue)) {
-      setjumlah(inputValue);
+      setjumlah(inputValue)
     } else {
       // Display an error message or prevent input, depending on your preference
-      setErrorMessage('Hanya boleh angka pada input nilai!');
+      setErrorMessage('Hanya boleh angka pada input nilai!')
       setTimeout(() => {
-        setErrorMessage('');
-      }, 5000);
+        setErrorMessage('')
+      }, 5000)
     }
-  };
+  }
 
   return (
     <Card>
@@ -212,7 +212,7 @@ const FormKasbon = () => {
         )}
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default FormKasbon;
+export default FormKasbon
