@@ -28,8 +28,7 @@ const FormKasbon = () => {
   //const handlejumlahChange = (e) => setjumlah(e.target.value)
   const handlemetodeChange = (e) => setmetode(e.target.value)
   const handleketeranganChange = (e) => setketerangan(e.target.value)
-  const [sessionData, setSessionData] = useState(null)
-  const [sessionStorage, setSessionStorage] = useState(null)
+  const [sessionData, setSessionData] = useState(null);
 
   const handlejumlahChange = (e) => {
     const inputValue = e.target.value;
@@ -47,11 +46,11 @@ const FormKasbon = () => {
   };
 
   useEffect(() => {
-    // Mengambil session storage
+    // Get session data from sessionStorage
     const sessionDataStr = sessionStorage.getItem('sessionData');
     if (sessionDataStr) {
-      const sessionData = JSON.parse(sessionDataStr);
-      setSessionData(sessionData);
+      const data = JSON.parse(sessionDataStr);
+      setSessionData(data);
     }
   }, []);
 
@@ -59,6 +58,17 @@ const FormKasbon = () => {
   // Submit ke api
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (!sessionData || !sessionData.id_akun) {
+      setErrorMessage('Session data is not available. Please log in.')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+
+      return
+    }
+
+    const id_akun = sessionData.id_akun;
 
     // validasi form
     if (!jumlah || !metode || !keterangan) {
@@ -82,7 +92,6 @@ const FormKasbon = () => {
     }
 
     // Mengambil id_akun dari Session Storage
-    const id_akun = sessionData.id_akun
 
     // Konstruksi Data Kasbon untuk dikirim
     const KasbonData = {
