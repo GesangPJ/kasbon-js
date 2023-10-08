@@ -15,16 +15,23 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
 import API_URL from 'src/configs/api'
-import {
-  getComparator,
-  descendingComparator,
-  stableSort,
-  formatCurrencyIDR,
-  formatTanggaljam,
-  handleSort,
-  handleRadioChange,
-  useStyles
-} from 'src/pages/tableUtils'
+
+const useStyles = makeStyles((theme) => ({
+  // warna warning/kuning
+  warningCell: {
+    backgroundColor: 'yellow',
+  },
+
+  // warna success/hijau
+  successCell: {
+    backgroundColor: 'green',
+  },
+
+  // warna error/merah
+  errorCell: {
+    backgroundColor: 'red',
+  },
+}))
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
@@ -32,13 +39,40 @@ const columns = [
   { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_b', label: 'Bayar', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: true },
+  { id: 'status_b', label: 'Bayar', minWidth: 10, align: 'left', sortable: true },
   { id: 'nama_admin', label: 'Nama Admin', minWidth: 10, align: 'left', sortable: false },
 ]
 
 function createData(tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin) {
   return { tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin }
+}
+
+// Komparasi sortir
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy)
+}
+
+// Komparasi sortir descending
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) return -1
+  if (b[orderBy] > a[orderBy]) return 1
+
+  return 0;
+}
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index])
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0])
+    if (order !== 0) return order
+
+    return a[1] - b[1]
+  });
+
+  return stabilizedThis.map((el) => el[0])
 }
 
 const TableDataAdmin = () => {
@@ -50,15 +84,6 @@ const TableDataAdmin = () => {
   const [data, setData] = useState([]); // Declare data state
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
   const router = useRouter();
-
-  // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
-  const formatTanggaljam = (tanggaljam) => {
-    const jakartaTimezone = 'Asia/Jakarta';
-    const utcDate = new Date(tanggaljam);
-    const options = { timeZone: jakartaTimezone, hour12: false };
-
-    return utcDate.toLocaleString('id-ID', options);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,6 +102,23 @@ const TableDataAdmin = () => {
 
     fetchData();
   }, []);
+
+  // Format mata uang ke rupiah
+  const formatCurrencyIDR = (jumlah) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(jumlah);
+  };
+
+  // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta';
+    const utcDate = new Date(tanggaljam);
+    const options = { timeZone: jakartaTimezone, hour12: false };
+
+    return utcDate.toLocaleString('id-ID', options);
+  };
 
   const rows = data.map((row) => {
     const {
@@ -115,6 +157,11 @@ const TableDataAdmin = () => {
 
   // Sorting function
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
+
+  const handleSort = (columnId) => {
+    const isAsc = sorting.column === columnId && sorting.direction === 'asc';
+    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
+  };
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -177,12 +224,19 @@ const TableDataAdmin = () => {
                         ) : (
                           row.status_request
                         )
+                      ) : column.id === 'status_b' ? (
+                        row.status_b === 'lunas' ? (
+                          <Chip label="Lunas" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                        ) : row.status_b === 'belum' ? (
+                          <Chip label="Belum" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
+                        ) : (
+                          row.status_b
+                        )
                       ) : column.format && typeof row[column.id] === 'number' ? (
                         column.format(row[column.id])
                       ) : (
                         row[column.id]
-                      )
-                      }
+                      )}
                     </TableCell>
                   );
                 })}
