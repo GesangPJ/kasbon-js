@@ -20,18 +20,22 @@ import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import API_URL from 'src/configs/api'
-import {
-  getComparator,
-  descendingComparator,
-  stableSort,
-  formatCurrencyIDR,
-  formatTanggaljam,
-  handleSort,
-  handleRadioChange,
-  handleChangePage,
-  handleChangeRowsPerPage,
-  useStyles
-} from 'src/pages/tableUtils'
+
+// Menggunakan style untuk edit style cell table nanti
+const useStyles = makeStyles((theme) => ({
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '10px',
+  },
+  simpanButton: {
+    position: 'sticky',
+    bottom: 0,
+    backgroundColor: 'white', // Set the background color to match the table
+  },
+
+
+}));
 
 const columns = [
   { id: 'id_request', label: 'ID', minWidth: 10, sortable: true },
@@ -52,6 +56,34 @@ function createData(id_request, tanggaljam, nama_user, jumlah, metode, keteranga
   return { id_request, tanggaljam, jumlah, nama_user, metode, keterangan, status_request, status_bayar };
 }
 
+// Sortir
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+
+    return a[1] - b[1];
+  });
+
+  return stabilizedThis.map((el) => el[0]);
+}
+
+// Komparasi sortir
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+// Komparasi sortir descending
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) return -1;
+  if (b[orderBy] > a[orderBy]) return 1;
+
+  return 0;
+}
+
 // Table dashboard karyawan
 const TableEditRequest = () => {
   const [page, setPage] = useState(0);
@@ -65,6 +97,20 @@ const TableEditRequest = () => {
 
   const handleChange = (event) => {
     setValue(event.target.value);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  const handleSort = (columnId) => {
+    const isAsc = sorting.column === columnId && sorting.direction === 'asc';
+    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
   };
 
   // Ambil data dari API/ambil-dashboard-karyawan
@@ -95,6 +141,23 @@ const TableEditRequest = () => {
     fetchSessionData();
   }, []);
 
+  // Format mata uang ke rupiah
+  const formatCurrencyIDR = (jumlah) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(jumlah);
+  };
+
+  // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta';
+    const utcDate = new Date(tanggaljam);
+    const options = { timeZone: jakartaTimezone, hour12: false };
+
+    return utcDate.toLocaleString('id-ID', options);
+  };
+
   // Masukkan data ke baris tabel
   const rows = data.map((row) => {
     return createData(
@@ -113,6 +176,13 @@ const TableEditRequest = () => {
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
   const [radioButtonValues, setRadioButtonValues] = useState({});
+
+  const handleRadioChange = (event, requestId) => {
+    setRadioButtonValues({
+      ...radioButtonValues,
+      [requestId]: event.target.value,
+    });
+  };
 
   // Mengirim update ke API
   const handleSimpan = async (id_request) => {
