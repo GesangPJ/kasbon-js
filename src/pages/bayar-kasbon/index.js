@@ -1,4 +1,6 @@
-// Impor MUI Grid
+// Bayar Kasbon
+// Halaman untuk konfirmasi pembayaran
+
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
@@ -51,7 +53,7 @@ const columns = [
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, sortable: false },
   { id: 'status_b', label: 'Status Bayar', minWidth: 10, sortable: false },
   { id: 'status_bayar', label: 'Sudah Lunas?', minWidth: 10, sortable: true },
-];
+]
 
 function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar) {
   return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar };
@@ -93,7 +95,10 @@ const FormBayarKasbon = () => {
   const [data, setData] = useState([])
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
   const [radioButtonValues, setRadioButtonValues] = useState({})
-  const classes = useStyles();
+  const classes = useStyles()
+  const [updatedData, setUpdatedData] = useState([])
+  const [selectedRows, setSelectedRows] = useState({})
+
 
   const getStatusChips = (status) => {
     if (status === 'belum') {
@@ -117,20 +122,19 @@ const FormBayarKasbon = () => {
         />
       );
 
-      // Add more conditions for other status values if needed
     } else {
-      return status; // Return the status value as is if it doesn't match any condition
+      return status;
     }
   };
 
+  // Validasi ID Karyawan hanya huruf dan angka
   const handleidkaryawanChange = (e) => {
     const inputValue = e.target.value
 
-    // Use a regular expression to allow only numbers and letters
     if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
       setidkaryawan(inputValue)
     } else {
-      // Display an error message or prevent input, depending on your preference
+      // Menampilkan error jika ada input diluar huruf dan angka
       setErrorMessage('ID Hanya boleh huruf dan angka!')
       setTimeout(() => {
         setErrorMessage('')
@@ -141,14 +145,14 @@ const FormBayarKasbon = () => {
   useEffect(() => {
     const fetchSessionData = async () => {
       // Ambil SessionData dari Session Storage
-      const sessionDataStr = sessionStorage.getItem('sessionData');
+      const sessionDataStr = sessionStorage.getItem('sessionData')
       if (sessionDataStr) {
-        const sessionData = JSON.parse(sessionDataStr);
-        setSessionData(sessionData);
+        const sessionData = JSON.parse(sessionDataStr)
+        setSessionData(sessionData)
       }
-    };
-    fetchSessionData();
-  }, []);
+    }
+    fetchSessionData()
+  }, [])
 
   const handleSubmitID = async (e) => {
     e.preventDefault();
@@ -157,7 +161,7 @@ const FormBayarKasbon = () => {
       // Display Error jika ada yang tidak diisi
       setErrorMessage('ID Karyawan harus diinput terlebih dahulu');
 
-      return;
+      return
     }
 
     try {
@@ -166,58 +170,61 @@ const FormBayarKasbon = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id_karyawan }), // Make sure to pass an object with id_karyawan
-      });
+        body: JSON.stringify({ id_karyawan }),
+      })
 
       if (response.ok) {
-        setSuccessMessage('Permintaan data berhasil dikirim.');
-        setidkaryawan('');
+        setSuccessMessage('Permintaan data berhasil dikirim.')
+        setidkaryawan('')
         setTimeout(() => {
-          setSuccessMessage('');
-        }, 5000);
+          setSuccessMessage('')
+        }, 5000)
 
-        const result = await response.json();
-        setData(result);
+        const result = await response.json()
+        setData(result)
+
+        // Jika data tidak ditemukan (Error 404)
       } else if (response.status === 404) {
-        console.error('Data tidak ditemukan');
+        console.error('Data tidak ditemukan')
         setErrorMessage(`Data ID : ${id_karyawan} tidak ditemukan`)
         setTimeout(() => {
-          setErrorMessage('');
-        }, 5000);
+          setErrorMessage('')
+        }, 5000)
 
       } else {
-        console.error('Error mengirim permintaan data.');
-        setErrorMessage('Gagal mengirim permintaan data');
+        console.error('Error mengirim permintaan data.')
+        setErrorMessage('Gagal mengirim permintaan data')
         setTimeout(() => {
-          setErrorMessage('');
-        }, 5000);
+          setErrorMessage('')
+        }, 5000)
       }
     } catch (error) {
       console.error('Error:', error);
-      setErrorMessage('Internal Server Error');
+      setErrorMessage('Internal Server Error')
       setTimeout(() => {
-        setErrorMessage('');
-      }, 5000);
+        setErrorMessage('')
+      }, 5000)
     }
-  };
+  }
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    }).format(jumlah);
-  };
+    }).format(jumlah)
+  }
 
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
-    const jakartaTimezone = 'Asia/Jakarta';
-    const utcDate = new Date(tanggaljam);
-    const options = { timeZone: jakartaTimezone, hour12: false };
+    const jakartaTimezone = 'Asia/Jakarta'
+    const utcDate = new Date(tanggaljam)
+    const options = { timeZone: jakartaTimezone, hour12: false }
 
-    return utcDate.toLocaleString('id-ID', options);
-  };
+    return utcDate.toLocaleString('id-ID', options)
+  }
 
+  // Memetakan data ke row/baris
   const rows = data.map((row) => {
     return createData(
       row.id_request,
@@ -228,55 +235,79 @@ const FormBayarKasbon = () => {
       row.keterangan,
       row.status_b,
 
-    );
-  });
+    )
+  })
 
+  // Handle perubahan pada tombol radio
   const handleRadioChange = (event, requestId) => {
     setRadioButtonValues({
       ...radioButtonValues,
       [requestId]: event.target.value,
-    });
-  };
+    })
+  }
 
-  const handleSimpan = async (id_request) => {
-    if (sessionData && sessionData.id_akun) {
-      const status_b = radioButtonValues[id_request]; // ambil nilai radiobutton per baris berdasarkan id_request
-      const id_akun = sessionData.id_akun;
+  const handleRowSelect = (id_request, value) => {
+    setSelectedRows((prevSelectedRows) => ({
+      ...prevSelectedRows,
+      [id_request]: value,
+    }))
+  }
+
+  // Validasi apakah semua tombol radio dipilih
+  const isAllRadioButtonsSelected = () => {
+    return rows.every((row) => radioButtonValues[row.id_request] === 'lunas' || radioButtonValues[row.id_request] === 'belum')
+  }
+
+  // Tombol Simpan Semua Data
+  const handleSimpanSemua = async () => {
+    if (sessionData && sessionData.id_akun && isAllRadioButtonsSelected()) {
+      const updates = rows.map((row) => ({
+        id_request: row.id_request,
+        status_b: radioButtonValues[row.id_request],
+        id_petugas: sessionData.id_akun,
+      }))
 
       try {
-        const response = await fetch(`${API_URL}/api/edit-bayar/${id_request}`, {
+        const response = await fetch(`${API_URL}/api/edit-bayar-batch`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ status_b, id_petugas: id_akun }),
-        });
+          body: JSON.stringify({ requests: updates }),
+        })
 
         if (response.ok) {
-          setSuccessMessage(`Data request berhasil diupdate.`);
+          // Jika sukses mengirim data
+          setSuccessMessage(`Data berhasil diupdate semua.`)
+          window.location.reload() // Reload halaman
           setTimeout(() => {
-            setSuccessMessage('');
-          }, 1000);
-          console.log('Data request berhasil diupdate');
+            setSuccessMessage('')
+          }, 1000)
 
-          // Refresh the page after a successful update
-          window.location.reload();
+          // Kosongkan radiobutton
+          setRadioButtonValues({})
         } else {
-          setErrorMessage(`Gagal mengirim update data request`);
+          // Jika error mengirim data
+          setErrorMessage(`Gagal update data.`)
           setTimeout(() => {
-            setErrorMessage('');
-          }, 3000);
+            setErrorMessage('')
+          }, 3000)
 
-          console.error('Error update data request');
+          console.error('Error in batch update')
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
       }
-    } else {
-      console.error('Session data is missing or incomplete');
     }
 
-  };
+    else {
+      setErrorMessage('Semua tombol radio di setiap baris harus dipilih')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 3000)
+    }
+  }
+
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
@@ -331,10 +362,9 @@ const FormBayarKasbon = () => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-
                   <TableCell
                     align="left"
-                    onClick={() => handleSort('tanggaljam')} // Add onClick to handle sorting
+                    onClick={() => handleSort('tanggaljam')} // Sortir
                   >Tanggal Jam {sorting.column === 'tanggaljam' ? (
                     sorting.direction === 'asc' ? (
                       <KeyboardArrowDownIcon />
@@ -345,7 +375,7 @@ const FormBayarKasbon = () => {
                   </TableCell>
                   <TableCell
                     align="left"
-                    onClick={() => handleSort('nama_user')} // Add onClick to handle sorting
+                    onClick={() => handleSort('nama_user')} // Sortir
                   >
                     Nama Karyawan
                     {sorting.column === 'nama_user' ? (
@@ -359,7 +389,7 @@ const FormBayarKasbon = () => {
                   <TableCell align="left">Jumlah</TableCell>
                   <TableCell
                     align="left"
-                    onClick={() => handleSort('metode')} // Add onClick to handle sorting
+                    onClick={() => handleSort('metode')} // Sortir
                   >
                     Metode
                     {sorting.column === 'metode' ? (
@@ -373,41 +403,44 @@ const FormBayarKasbon = () => {
                   <TableCell align="left">Keterangan</TableCell>
                   <TableCell align="left">Status Bayar</TableCell>
                   <TableCell align="left" id="b_tombol">Sudah Lunas?</TableCell>
-                  <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedData.map((row) => (
-                  <TableRow
-                    key={row.id_request}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell align="left">{row.tanggaljam}</TableCell>
-                    <TableCell align="left">{row.nama_user}</TableCell>
-                    <TableCell align="left">{row.jumlah}</TableCell>
-                    <TableCell align="left">{row.metode}</TableCell>
-                    <TableCell align="left">{row.keterangan}</TableCell>
-                    <TableCell align="left">{getStatusChips(row.status_b)}</TableCell>
-                    <TableCell aligh="left">
-                      <FormControl>
-                        <RadioGroup
-                          row
-                          name={`row-radio-buttons-group-${row.id_request}`}
-                          value={radioButtonValues[row.id_request] || ''}
-                          onChange={(event) => handleRadioChange(event, row.id_request)}
-                        >
-                          <FormControlLabel value="lunas" control={<Radio />} label="Lunas" />
-                          <FormControlLabel value="belum" control={<Radio />} label="Belum" />
-                        </RadioGroup>
-                      </FormControl>
-                    </TableCell>
-                    <TableCell align="left">
-                      <Button type='submit' variant='contained' size='large' onClick={() => handleSimpan(row.id_request)}>
-                        Simpan
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {sortedData.map((row) => {
+
+                  // Cek apakah baris yg dipilih ada di updatedData
+                  const updatedRow = updatedData.find((updatedRow) => updatedRow.id_request === row.id_request);
+
+                  // Menggunakan UpdateRow jika ada
+                  const dataRow = updatedRow || row;
+
+                  return (
+                    <TableRow
+                      key={dataRow.id_request}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell align="left">{row.tanggaljam}</TableCell>
+                      <TableCell align="left">{row.nama_user}</TableCell>
+                      <TableCell align="left">{row.jumlah}</TableCell>
+                      <TableCell align="left">{row.metode}</TableCell>
+                      <TableCell align="left">{row.keterangan}</TableCell>
+                      <TableCell align="left">{getStatusChips(row.status_b)}</TableCell>
+                      <TableCell aligh="left">
+                        <FormControl>
+                          <RadioGroup
+                            row
+                            name={`row-radio-buttons-group-${row.id_request}`}
+                            value={radioButtonValues[row.id_request] || ''}
+                            onChange={(event) => handleRadioChange(event, row.id_request)}
+                          >
+                            <FormControlLabel value="lunas" control={<Radio />} label="Lunas" />
+                            <FormControlLabel value="belum" control={<Radio />} label="Belum" />
+                          </RadioGroup>
+                        </FormControl>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -424,6 +457,22 @@ const FormBayarKasbon = () => {
           }}
         >
         </Box>
+      </Grid>
+      {errorMessage && (
+        <Alert severity="error">{errorMessage}</Alert>
+      )}
+      {successMessage && (
+        <Alert severity="success">{successMessage}</Alert>
+      )}
+      <Grid item xs={12}>
+        <Button type='submit' variant='contained' size='large' onClick={handleSimpanSemua}>
+          Simpan Semua
+        </Button>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="caption">
+          Harap mengisi semua konfirmasi "sudah lunas?" sebelum tekan tombol simpan semua
+        </Typography>
       </Grid>
     </Grid>
   )
