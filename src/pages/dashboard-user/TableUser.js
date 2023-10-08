@@ -9,7 +9,6 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import clsx from 'clsx'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
 
@@ -18,13 +17,16 @@ const useStyles = makeStyles((theme) => ({
   // warna warning/kuning
   warningCell: {
     backgroundColor: 'yellow',
-
   },
 
-  //warna success/hijau
+  // warna success/hijau
   successCell: {
     backgroundColor: 'green',
+  },
 
+  // warna error/merah
+  errorCell: {
+    backgroundColor: 'red',
   },
 }));
 
@@ -41,21 +43,22 @@ const columns = [
 function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_b) {
   let statusChip = null;
 
-  if (status_request === 'wait') {
-    statusChip = (
-      <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'white' }} />
-    );
-  } else if (status_request === 'success') {
-    statusChip = (
-      <Chip label="Success" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-    );
-  } else if (status_request === 'tolak') {
-    statusChip = (
-      <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" labelStyle={{ color: 'white' }} />
-    );
-  }
-
-  return { tanggaljam, jumlah, metode, keterangan, status_request, status_b, statusChip };
+  /*
+    if (status_request === 'wait') {
+      statusChip = (
+        <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'white' }} />
+      );
+    } else if (status_request === 'success') {
+      statusChip = (
+        <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+      );
+    } else if (status_request === 'tolak') {
+      statusChip = (
+        <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" labelStyle={{ color: 'white' }} />
+      );
+    }
+  */
+  return { tanggaljam, jumlah, metode, keterangan, status_request, status_b };
 }
 
 // Sortir
@@ -88,6 +91,7 @@ function descendingComparator(a, b, orderBy) {
 
 // Table dashboard karyawan
 const TableDataUser = () => {
+  const classes = useStyles();
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [data, setData] = useState([])
@@ -165,9 +169,6 @@ const TableDataUser = () => {
   });
 
 
-
-  const classes = useStyles();
-
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
 
   return (
@@ -226,9 +227,11 @@ const TableDataUser = () => {
                     <TableCell key={column.id} align={column.align}>
                       {column.id === 'status_request' ? (
                         row.status_request === 'wait' ? (
-                          <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" />
+                          <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
                         ) : row.status_request === 'sukses' ? (
-                          <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" />
+                          <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                        ) : rows.status_request === 'tolak' ? (
+                          <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
                         ) : (
                           row.status_request
                         )
