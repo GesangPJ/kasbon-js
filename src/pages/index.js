@@ -23,6 +23,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Receipt } from '@mui/icons-material'
 import Alert from '@mui/material/Alert'
+import API_URL from 'src/configs/api'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -70,7 +71,7 @@ const SignPage = () => {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3001/api/masuk', {
+      const response = await fetch(`${API_URL}/api/masuk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

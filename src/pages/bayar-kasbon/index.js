@@ -27,6 +27,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import API_URL from 'src/configs/api'
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Jam', minWidth: 10, sortable: true },
@@ -125,7 +126,7 @@ const FormBayarKasbon = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/ambil-data-bayar', {
+      const response = await fetch(`${API_URL}/api/ambil-data-bayar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -203,7 +204,7 @@ const FormBayarKasbon = () => {
       const id_akun = sessionData.id_akun;
 
       try {
-        const response = await fetch(`http://localhost:3001/api/edit-bayar/${id_request}`, {
+        const response = await fetch(`${API_URL}/api/edit-bayar/${id_request}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
