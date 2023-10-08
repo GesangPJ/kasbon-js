@@ -464,6 +464,48 @@ app.put('/api/edit-bayar/:id_request', async (req, res) => {
   }
 })
 
+// API for batch update
+app.put('/api/edit-bayar-batch', async (req, res) => {
+  const updates = req.body.requests; // An array of updates
+
+  try {
+    const client = await pool.connect();
+
+    // Create an array to hold promises for each update
+    const updatePromises = updates.map(async (update) => {
+      const { status_b, id_petugas, id_request } = update;
+
+      const updateQuery = 'UPDATE request SET status_b = $1, id_petugas = $2, tanggaljam = NOW() WHERE id_request = $3';
+      const updateValues = [status_b, id_petugas, id_request];
+      const updateResult = await client.query(updateQuery, updateValues);
+
+      if (updateResult.rowCount !== 1) {
+        // Handle errors or unsuccessful updates
+        return { error: 'Failed to update request with id ' + id_request };
+      }
+
+      return null; // Successful update
+    });
+
+    // Wait for all update promises to complete
+    const updateResults = await Promise.all(updatePromises);
+
+    // Check for errors in the results
+    const errors = updateResults.filter((result) => result && result.error);
+
+    if (errors.length > 0) {
+      // Some updates failed
+      res.status(500).json({ errors });
+    } else {
+      // All updates were successful
+      res.status(200).json({ message: 'Batch updates completed successfully' });
+    }
+  } catch (error) {
+    console.error('Error updating batch:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // Set Port buat server
 const port = process.env.PORT || 3001;
 app.listen(port, async () => {
