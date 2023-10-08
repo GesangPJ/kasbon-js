@@ -130,6 +130,13 @@ const TableEditRequest = () => {
         if (response.ok) {
           const result = await response.json()
           setData(result)
+        } else if (response.status === 404) {
+          console.error('Data tidak ditemukan');
+          setErrorMessage(`Tidak ada request saat ini`)
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
+
         } else {
           console.error('Error:', response.status, response.statusText)
         }
