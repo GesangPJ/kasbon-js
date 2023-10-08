@@ -17,6 +17,7 @@ import MenuItem from '@mui/material/MenuItem'
 import FormHelperText from '@mui/material/FormHelperText'
 import Select from '@mui/material/Select'
 import OutlinedInput from '@mui/material/OutlinedInput'
+import API_URL from 'src/configs/api'
 
 
 const FormKasbon = () => {
@@ -102,7 +103,7 @@ const FormKasbon = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/input-kasbon', {
+      const response = await fetch(`${API_URL}/api/input-kasbon`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
