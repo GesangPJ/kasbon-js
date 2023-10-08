@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
 
-}));
+}))
 
 const columns = [
   { id: 'id_request', label: 'ID', minWidth: 10, sortable: true },
@@ -55,7 +55,7 @@ const columns = [
 function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_bayar) {
 
 
-  return { id_request, tanggaljam, jumlah, nama_user, metode, keterangan, status_request, status_bayar };
+  return { id_request, tanggaljam, jumlah, nama_user, metode, keterangan, status_request, status_bayar }
 }
 
 // Sortir
@@ -75,7 +75,7 @@ function stableSort(array, comparator) {
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+    : (a, b) => -descendingComparator(a, b, orderBy)
 }
 
 // Komparasi sortir descending
@@ -83,7 +83,7 @@ function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) return -1
   if (b[orderBy] > a[orderBy]) return 1
 
-  return 0;
+  return 0
 }
 
 // Table dashboard karyawan
@@ -99,16 +99,16 @@ const TableEditRequest = () => {
 
   const handleChange = (event) => {
     setValue(event.target.value)
-  };
+  }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
-  };
+  }
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
+    setRowsPerPage(+event.target.value)
     setPage(0)
-  };
+  }
 
   const handleSort = (columnId) => {
     const isAsc = sorting.column === columnId && sorting.direction === 'asc'
@@ -124,7 +124,7 @@ const TableEditRequest = () => {
         const sessionData = JSON.parse(sessionDataStr)
         setSessionData(sessionData)
       }
-    };
+    }
 
     const fetchData = async () => {
       try {
@@ -137,7 +137,7 @@ const TableEditRequest = () => {
           setErrorMessage(`Tidak ada request saat ini`)
           setTimeout(() => {
             setErrorMessage('')
-          }, 3000);
+          }, 3000)
 
         } else {
           console.error('Error:', response.status, response.statusText)
@@ -157,7 +157,7 @@ const TableEditRequest = () => {
       style: 'currency',
       currency: 'IDR',
     }).format(jumlah)
-  };
+  }
 
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
@@ -213,14 +213,14 @@ const TableEditRequest = () => {
         setSuccessMessage(`Data request berhasil diupdate.`)
         setTimeout(() => {
           setSuccessMessage('')
-        }, 1000);
+        }, 1000)
         console.log('Data request berhasil diupdate')
         window.location.reload()
       } else {
         setErrorMessage(`Gagal mengirim update data request`)
         setTimeout(() => {
           setErrorMessage('')
-        }, 3000);
+        }, 3000)
 
         console.error('Error update data request')
       }
