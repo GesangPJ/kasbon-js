@@ -4,6 +4,10 @@ const API_URL = require('./src/configs/api')
 module.exports = {
   trailingSlash: true,
   reactStrictMode: false,
+  compiler: {
+    // Replace Babel with SWC
+    swcMinify: true
+  },
   experimental: {
     pageDataCollectionTimeout: 100000,
     esmExternals: false,
