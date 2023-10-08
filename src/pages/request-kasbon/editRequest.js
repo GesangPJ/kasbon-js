@@ -19,7 +19,9 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import API_URL from 'src/configs/api'
+
+//import API_URL from 'src/configs/api'
+const API_URL = require('src/configs/api')
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +49,7 @@ const columns = [
   { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
   { id: 'b_tombol', label: '', minWidth: 10, align: 'left', sortable: false },
   { id: 'simpan', label: 'simpan', minWidth: 10, align: 'left', sortable: false },
-];
+]
 
 // Konstruktor row
 function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_bayar) {
@@ -58,15 +60,15 @@ function createData(id_request, tanggaljam, nama_user, jumlah, metode, keteranga
 
 // Sortir
 function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+  const stabilizedThis = array.map((el, index) => [el, index])
   stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
+    const order = comparator(a[0], b[0])
+    if (order !== 0) return order
 
-    return a[1] - b[1];
-  });
+    return a[1] - b[1]
+  })
 
-  return stabilizedThis.map((el) => el[0]);
+  return stabilizedThis.map((el) => el[0])
 }
 
 // Komparasi sortir
@@ -78,49 +80,49 @@ function getComparator(order, orderBy) {
 
 // Komparasi sortir descending
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) return -1;
-  if (b[orderBy] > a[orderBy]) return 1;
+  if (b[orderBy] < a[orderBy]) return -1
+  if (b[orderBy] > a[orderBy]) return 1
 
   return 0;
 }
 
 // Table dashboard karyawan
 const TableEditRequest = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState([]);
-  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
-  const [sessionData, setSessionData] = useState(null);
-  const [value, setValue] = React.useState('female');
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [data, setData] = useState([])
+  const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
+  const [sessionData, setSessionData] = useState(null)
+  const [value, setValue] = React.useState('female')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
   const handleChange = (event) => {
-    setValue(event.target.value);
+    setValue(event.target.value)
   };
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setPage(newPage)
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
-    setPage(0);
+    setPage(0)
   };
 
   const handleSort = (columnId) => {
-    const isAsc = sorting.column === columnId && sorting.direction === 'asc';
-    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
+    const isAsc = sorting.column === columnId && sorting.direction === 'asc'
+    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
   };
 
   // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
     const fetchSessionData = async () => {
       // Ambil SessionData dari Session Storage
-      const sessionDataStr = sessionStorage.getItem('sessionData');
+      const sessionDataStr = sessionStorage.getItem('sessionData')
       if (sessionDataStr) {
-        const sessionData = JSON.parse(sessionDataStr);
-        setSessionData(sessionData);
+        const sessionData = JSON.parse(sessionDataStr)
+        setSessionData(sessionData)
       }
     };
 
@@ -131,17 +133,17 @@ const TableEditRequest = () => {
           const result = await response.json()
           setData(result)
         } else if (response.status === 404) {
-          console.error('Data tidak ditemukan');
+          console.error('Data tidak ditemukan')
           setErrorMessage(`Tidak ada request saat ini`)
           setTimeout(() => {
-            setErrorMessage('');
+            setErrorMessage('')
           }, 3000);
 
         } else {
           console.error('Error:', response.status, response.statusText)
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
       }
     }
 
@@ -154,17 +156,17 @@ const TableEditRequest = () => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-    }).format(jumlah);
+    }).format(jumlah)
   };
 
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
-    const jakartaTimezone = 'Asia/Jakarta';
-    const utcDate = new Date(tanggaljam);
-    const options = { timeZone: jakartaTimezone, hour12: false };
+    const jakartaTimezone = 'Asia/Jakarta'
+    const utcDate = new Date(tanggaljam)
+    const options = { timeZone: jakartaTimezone, hour12: false }
 
-    return utcDate.toLocaleString('id-ID', options);
-  };
+    return utcDate.toLocaleString('id-ID', options)
+  }
 
   // Masukkan data ke baris tabel
   const rows = data.map((row) => {
@@ -176,26 +178,26 @@ const TableEditRequest = () => {
       row.metode,
       row.keterangan,
       row.status_request,
-    );
-  });
+    )
+  })
 
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
+  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column))
 
-  const [radioButtonValues, setRadioButtonValues] = useState({});
+  const [radioButtonValues, setRadioButtonValues] = useState({})
 
   const handleRadioChange = (event, requestId) => {
     setRadioButtonValues({
       ...radioButtonValues,
       [requestId]: event.target.value,
-    });
-  };
+    })
+  }
 
   // Mengirim update ke API
   const handleSimpan = async (id_request) => {
     // Menggunakan tombol SIMPAN untuk mengambil id_request
-    const status_request = radioButtonValues[id_request];
+    const status_request = radioButtonValues[id_request]
     const id_akun = sessionData.id_akun
 
     try {
@@ -205,30 +207,27 @@ const TableEditRequest = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ status_request, id_petugas: id_akun }),
-      });
+      })
 
       if (response.ok) {
-        setSuccessMessage(`Data request berhasil diupdate.`);
+        setSuccessMessage(`Data request berhasil diupdate.`)
         setTimeout(() => {
-          setSuccessMessage('');
+          setSuccessMessage('')
         }, 1000);
-        console.log('Data request berhasil diupdate');
-
-        // Refresh the page after a successful update
-        window.location.reload();
+        console.log('Data request berhasil diupdate')
+        window.location.reload()
       } else {
-        setErrorMessage(`Gagal mengirim update data request`);
+        setErrorMessage(`Gagal mengirim update data request`)
         setTimeout(() => {
-          setErrorMessage('');
+          setErrorMessage('')
         }, 3000);
 
-        console.error('Error update data request');
+        console.error('Error update data request')
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     }
-  };
-
+  }
 
   return (
     <div>
@@ -248,7 +247,7 @@ const TableEditRequest = () => {
               <TableRow>
                 <TableCell
                   align="left"
-                  onClick={() => handleSort('tanggaljam')} // Add onClick to handle sorting
+                  onClick={() => handleSort('tanggaljam')}
                 >Tanggal Jam {sorting.column === 'tanggaljam' ? (
                   sorting.direction === 'asc' ? (
                     <KeyboardArrowDownIcon />
@@ -259,7 +258,7 @@ const TableEditRequest = () => {
                 </TableCell>
                 <TableCell
                   align="left"
-                  onClick={() => handleSort('nama_user')} // Add onClick to handle sorting
+                  onClick={() => handleSort('nama_user')}
                 >
                   Nama Karyawan
                   {sorting.column === 'nama_user' ? (
@@ -273,7 +272,7 @@ const TableEditRequest = () => {
                 <TableCell align="left">Nilai</TableCell>
                 <TableCell
                   align="left"
-                  onClick={() => handleSort('metode')} // Add onClick to handle sorting
+                  onClick={() => handleSort('metode')}
                 >
                   Metode
                   {sorting.column === 'metode' ? (
@@ -290,7 +289,7 @@ const TableEditRequest = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedData.map((row) => ( // Change 'rows' to 'sortedData'
+              {sortedData.map((row) => (
                 <TableRow
                   key={row.id_request}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -326,7 +325,7 @@ const TableEditRequest = () => {
 
       </Paper>
     </div>
-  );
-};
+  )
+}
 
-export default TableEditRequest;
+export default TableEditRequest

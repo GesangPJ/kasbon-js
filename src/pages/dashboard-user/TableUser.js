@@ -10,8 +10,9 @@ import TablePagination from '@mui/material/TablePagination'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import Chip from '@mui/material/Chip'
-import API_URL from 'src/configs/api'
 import { makeStyles } from '@mui/styles'
+
+const API_URL = require('src/configs/api')
 
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuningA

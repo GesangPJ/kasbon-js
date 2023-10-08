@@ -14,7 +14,8 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
-import API_URL from 'src/configs/api'
+
+const API_URL = require('src/configs/api')
 
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuning

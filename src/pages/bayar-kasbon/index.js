@@ -24,9 +24,10 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import API_URL from 'src/configs/api'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
+
+const API_URL = require('src/configs/api')
 
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuning
