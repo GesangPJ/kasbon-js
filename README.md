@@ -1,4 +1,6 @@
-# KASBON WEBSITE [EARLY DEVELOPMENT]
+# KASBON WEBSITE [`v1.0.0-Build`] 
+
+<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/desktop-dashboard-admin.png" width = "600" height = "300" >
 
 Website untuk manajemen Kasbon
 
