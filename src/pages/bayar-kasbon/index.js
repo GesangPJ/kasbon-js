@@ -23,16 +23,25 @@ import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import API_URL from 'src/configs/api'
-import { fetchSessionData } from 'src/pages/FetchSession'
-import {
-  getComparator,
-  descendingComparator,
-  stableSort,
-  formatCurrencyIDR,
-  formatTanggaljam,
-  handleSort,
-  handleRadioChange
-} from 'src/pages/tableUtils'
+import { styled } from '@mui/material/styles'
+import Chip from 'src/@core/theme/overrides/chip'
+
+const useStyles = styled((theme) => ({
+  // warna warning/kuning
+  warningCell: {
+    backgroundColor: 'yellow',
+  },
+
+  // warna success/hijau
+  successCell: {
+    backgroundColor: 'green',
+  },
+
+  // warna error/merah
+  errorCell: {
+    backgroundColor: 'red',
+  },
+}))
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Jam', minWidth: 10, sortable: true },
@@ -48,6 +57,34 @@ function createData(id_request, tanggaljam, nama_user, jumlah, metode, keteranga
   return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar };
 }
 
+// Sortir
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+
+    return a[1] - b[1];
+  });
+
+  return stabilizedThis.map((el) => el[0]);
+}
+
+// Komparasi sortir
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+// Komparasi sortir descending
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) return -1;
+  if (b[orderBy] > a[orderBy]) return 1;
+
+  return 0;
+}
+
 const FormBayarKasbon = () => {
   const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -56,6 +93,35 @@ const FormBayarKasbon = () => {
   const [data, setData] = useState([])
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
   const [radioButtonValues, setRadioButtonValues] = useState({})
+  const classes = useStyles();
+
+  const getStatusChips = (status) => {
+    if (status === 'belum') {
+      return (
+        <Chip
+          label="Belum"
+          className={classes.warningCell}
+          color="primary"
+          variant="outlined"
+          style={{ color: 'black' }}
+        />
+      );
+    } else if (status === 'lunas') {
+      return (
+        <Chip
+          label="Lunas"
+          className={classes.successCell}
+          color="secondary"
+          variant="outlined"
+          style={{ color: 'white' }}
+        />
+      );
+
+      // Add more conditions for other status values if needed
+    } else {
+      return status; // Return the status value as is if it doesn't match any condition
+    }
+  };
 
   const handleidkaryawanChange = (e) => {
     const inputValue = e.target.value
@@ -73,13 +139,15 @@ const FormBayarKasbon = () => {
   }
 
   useEffect(() => {
-
-    const fetchData = async () => {
-      fetchSessionData(setSessionData);
+    const fetchSessionData = async () => {
+      // Ambil SessionData dari Session Storage
+      const sessionDataStr = sessionStorage.getItem('sessionData');
+      if (sessionDataStr) {
+        const sessionData = JSON.parse(sessionDataStr);
+        setSessionData(sessionData);
+      }
     };
-
-    fetchData();
-
+    fetchSessionData();
   }, []);
 
   const handleSubmitID = async (e) => {
@@ -126,6 +194,23 @@ const FormBayarKasbon = () => {
     }
   };
 
+  // Format mata uang ke rupiah
+  const formatCurrencyIDR = (jumlah) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(jumlah);
+  };
+
+  // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta';
+    const utcDate = new Date(tanggaljam);
+    const options = { timeZone: jakartaTimezone, hour12: false };
+
+    return utcDate.toLocaleString('id-ID', options);
+  };
+
   const rows = data.map((row) => {
     return createData(
       row.id_request,
@@ -138,6 +223,13 @@ const FormBayarKasbon = () => {
 
     );
   });
+
+  const handleRadioChange = (event, requestId) => {
+    setRadioButtonValues({
+      ...radioButtonValues,
+      [requestId]: event.target.value,
+    });
+  };
 
   const handleSimpan = async (id_request) => {
     if (sessionData && sessionData.id_akun) {
@@ -288,7 +380,7 @@ const FormBayarKasbon = () => {
                     <TableCell align="left">{row.jumlah}</TableCell>
                     <TableCell align="left">{row.metode}</TableCell>
                     <TableCell align="left">{row.keterangan}</TableCell>
-                    <TableCell align="left">{row.status_b}</TableCell>
+                    <TableCell align="left">{getStatusChips(row.status_b)}</TableCell>
                     <TableCell aligh="left">
                       <FormControl>
                         <RadioGroup
