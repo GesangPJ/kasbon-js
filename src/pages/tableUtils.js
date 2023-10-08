@@ -1,8 +1,8 @@
 // tableUtils.js
 // File berisi fungsi yang digunakan pada tabel-tabel
 
-
 import { makeStyles } from '@mui/styles'
+import React, { useState, useEffect } from 'react'
 
 // Menggunakan style untuk edit style cell table nanti
 export const useStyles = makeStyles((theme) => ({
@@ -68,10 +68,10 @@ export function formatTanggaljam(tanggaljam) {
 }
 
 //Handling fungsi sortir pada tabel
-export function handleSort(columnId) {
-  const isAsc = sorting.column === columnId && sorting.direction === 'asc'
-  setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
-}
+export const handleSort = (columnId, sorting, setSorting) => {
+  const isAsc = sorting.column === columnId && sorting.direction === 'asc';
+  setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
+};
 
 // Handling jika ada perubahan pada RadiButton
 export const handleRadioChange = (event, requestId, radioButtonValues, setRadioButtonValues) => {
