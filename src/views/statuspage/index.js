@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Card from '@mui/material/Card';
-import { styled } from '@mui/material/styles';
-import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
+import React, { useEffect, useState } from 'react'
+import Card from '@mui/material/Card'
+import { styled } from '@mui/material/styles'
+import CardHeader from '@mui/material/CardHeader'
+import Typography from '@mui/material/Typography'
+import CardContent from '@mui/material/CardContent'
+import Grid from '@mui/material/Grid'
+import API_URL from 'src/configs/api'
 
 const DemoGrid = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
@@ -13,13 +14,13 @@ const DemoGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const StatusPage = () => {
-  const [PostgreStatus, setPostgreStatus] = useState('Loading'); // Default status
+  const [PostgreStatus, setPostgreStatus] = useState('Loading');
   const [serverStatus, setServerStatus] = useState('Loading');
 
   useEffect(() => {
 
     // Ambil status PostgreSQL
-    fetch('http://localhost:3001/api/postgres-status')
+    fetch(`${API_URL}/api/postgres-status`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -35,7 +36,7 @@ const StatusPage = () => {
         setPostgreStatus('Error');
       })
 
-    fetch('http://localhost:3001/api/server-status')
+    fetch(`${API_URL}/api/server-status`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`)
