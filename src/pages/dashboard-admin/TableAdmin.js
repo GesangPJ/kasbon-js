@@ -15,23 +15,16 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
 import API_URL from 'src/configs/api'
-
-const useStyles = makeStyles((theme) => ({
-  // warna warning/kuning
-  warningCell: {
-    backgroundColor: 'yellow',
-  },
-
-  // warna success/hijau
-  successCell: {
-    backgroundColor: 'green',
-  },
-
-  // warna error/merah
-  errorCell: {
-    backgroundColor: 'red',
-  },
-}))
+import {
+  getComparator,
+  descendingComparator,
+  stableSort,
+  formatCurrencyIDR,
+  formatTanggaljam,
+  handleSort,
+  handleRadioChange,
+  useStyles
+} from 'src/pages/tableUtils'
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
@@ -44,45 +37,8 @@ const columns = [
   { id: 'nama_admin', label: 'Nama Admin', minWidth: 10, align: 'left', sortable: false },
 ]
 
-
-//function createData(nama_user, nama_admin, status_request, tanggaljam, jumlah, metode, keterangan, status_b) {
-// return { nama_user, nama_admin, status_request, tanggaljam, jumlah, metode, keterangan, status_b };
-//}
-
 function createData(tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin) {
   return { tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin }
-}
-
-
-// Fungsi Sortir
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-
-    return a[1] - b[1];
-  })
-
-  return stabilizedThis.map((el) => el[0])
-}
-
-// Sortir order
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-
-  return 0;
 }
 
 const TableDataAdmin = () => {
@@ -94,28 +50,6 @@ const TableDataAdmin = () => {
   const [data, setData] = useState([]); // Declare data state
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' });
   const router = useRouter();
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  const handleSort = (columnId) => {
-    const isAsc = sorting.column === columnId && sorting.direction === 'asc';
-    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
-  };
-
-  // Format mata uang ke rupiah
-  const formatCurrencyIDR = (jumlah) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-    }).format(jumlah);
-  };
 
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
@@ -168,6 +102,16 @@ const TableDataAdmin = () => {
     );
   });
 
+  // Untuk fungsi page berikutnya pada tabel sticky header
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Untuk fungsi row berikutnya pada tabel sticky header
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
 
   // Sorting function
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
