@@ -1,4 +1,6 @@
-# KASBON WEBSITE [EARLY DEVELOPMENT]
+# KASBON WEBSITE [`v1.0.0-Build`] 
+
+<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/desktop-dashboard-admin.png" width = "600" height = "300" >
 
 Website untuk manajemen Kasbon
 
@@ -34,11 +36,11 @@ Website untuk manajemen Kasbon
 
 ### Login Page
 
-<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/desktop-login-1.png" width = "600" height = "300" >
+<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/desktop-login-1.png" width = "300" height = "300" >
 
 Login Page for Desktop
 
-<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/mobile-login.png" width = "112" height = "515" >
+<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/mobile-login.png" width = "250" height = "515" >
 
 Login Page in mobile mode
 
@@ -59,3 +61,16 @@ It use Minify SWC for compiler, you can change it in `next.config.js`
 By using SWC, the build output perform more than good, also it reduce the production build from `~700MB` to `~80MB` in .next directory itself.
 
 ## C. Modules
+
+- React NextJS
+- MUI Core
+- MUI Icons
+- MUI Maerial
+- ExpressJS
+- Express-session
+- Cors
+- pg
+- connect-pg-simple
+- cookie-parser
+- nodemon
+
