@@ -449,7 +449,6 @@ const FormBayarKasbon = () => {
                   <TableCell align="left">Keterangan</TableCell>
                   <TableCell align="left">Status Bayar</TableCell>
                   <TableCell align="left" id="b_tombol">Sudah Lunas?</TableCell>
-                  <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -483,16 +482,6 @@ const FormBayarKasbon = () => {
                             <FormControlLabel value="belum" control={<Radio />} label="Belum" />
                           </RadioGroup>
                         </FormControl>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Button
-                          type='submit'
-                          variant='contained'
-                          size='large'
-                          onClick={() => handleSimpan(row.id_request)}
-                        >
-                          Simpan
-                        </Button>
                       </TableCell>
                     </TableRow>
                   )
