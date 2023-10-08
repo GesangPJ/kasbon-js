@@ -100,6 +100,21 @@ const FormUser = () => {
     event.preventDefault()
   }
 
+  const handleidkaryawanChange = (e) => {
+    const inputValue = e.target.value
+
+    // Use a regular expression to allow only numbers and letters
+    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
+      setidpetugas(inputValue)
+    } else {
+      // Display an error message or prevent input, depending on your preference
+      setErrorMessage('ID hanya boleh huruf dan angka!')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
+  }
+
   return (
     <Card>
       <CardHeader title='Form Tambah User' titleTypographyProps={{ variant: 'h6' }} />
