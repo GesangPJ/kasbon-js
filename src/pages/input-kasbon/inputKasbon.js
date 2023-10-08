@@ -18,16 +18,6 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Select from '@mui/material/Select'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import API_URL from 'src/configs/api'
-import {
-  handleClickShowPassword,
-  handleMouseDownPassword,
-  handlenamaChange,
-  handleidpetugasChange,
-  handlepasswordChange,
-  handleemailChange,
-  handlejumlahChange
-} from 'src/pages/FormUtils'
-
 
 const FormKasbon = () => {
   const [jumlah, setjumlah] = useState('')
@@ -123,7 +113,22 @@ const FormKasbon = () => {
     }
   }
 
-  const [metode, setmetode] = React.useState('');
+  const [metode, setmetode] = React.useState('')
+
+  const handlejumlahChange = (e) => {
+    const inputValue = e.target.value;
+
+    // Use regular expression to allow only numbers
+    if (/^\d*$/.test(inputValue)) {
+      setjumlah(inputValue);
+    } else {
+      // Display an error message or prevent input, depending on your preference
+      setErrorMessage('Hanya boleh angka pada input nilai!');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 5000);
+    }
+  };
 
   return (
     <Card>
