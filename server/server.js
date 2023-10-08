@@ -349,10 +349,9 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
 
     // Jika ada hasil, maka kirim responnya hasil query
     if (selectResult.rows.length > 0) {
-      res.status(200).json(selectResult.rows);
+      res.status(200).json(selectResult.rows)
+      console.log('Data request berhasil dikirim')
     } else {
-
-      // Jika tidak ada data
       res.status(404).json({ message: 'Tidak ada request menunggu konfirmasi' });
     }
   } catch (error) {
