@@ -178,6 +178,13 @@ const FormBayarKasbon = () => {
 
         const result = await response.json();
         setData(result);
+      } else if (response.status === 404) {
+        console.error('Data tidak ditemukan');
+        setErrorMessage(`Data ID : ${id_karyawan} tidak ditemukan`)
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 5000);
+
       } else {
         console.error('Error mengirim permintaan data.');
         setErrorMessage('Gagal mengirim permintaan data');
