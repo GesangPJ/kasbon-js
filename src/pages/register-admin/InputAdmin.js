@@ -13,6 +13,14 @@ import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import FormControl from '@mui/material/FormControl'
 import API_URL from 'src/configs/api'
+import {
+  handleClickShowPassword,
+  handleMouseDownPassword,
+  handlenamaChange,
+  handleidpetugasChange,
+  handlepasswordChange,
+  handleemailChange
+} from 'src/pages/FormUtils'
 
 const FormAdmin = () => {
   const [nama, setnama] = useState('')
@@ -22,43 +30,6 @@ const FormAdmin = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-
-  const handlepasswordChange = (e) => setpassword(e.target.value)
-  const handleemailChange = (e) => setemail(e.target.value)
-
-  const handleidpetugasChange = (e) => {
-    const inputValue = e.target.value
-
-    // Use a regular expression to allow only numbers and letters
-    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
-      setidpetugas(inputValue)
-    } else {
-      // Display an error message or prevent input, depending on your preference
-      setErrorMessage('ID hanya boleh huruf dan angka!')
-      setTimeout(() => {
-        setErrorMessage('')
-      }, 5000)
-    }
-  }
-
-  const handlenamaChange = (e) => {
-    const inputValue = e.target.value
-
-    // Use a regular expression to allow only numbers and letters
-    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
-      setnama(inputValue)
-    } else {
-      // Display an error message or prevent input, depending on your preference
-      setErrorMessage('Nama hanya boleh huruf dan angka!')
-      setTimeout(() => {
-        setErrorMessage('')
-      }, 5000)
-    }
-  }
-
-  const handleChange = (event) => {
-    setRoles(event.target.value);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,14 +74,6 @@ const FormAdmin = () => {
       console.error('Error:', error);
     }
   }
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword); // Toggle password visibility state
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
 
   return (
     <Card>

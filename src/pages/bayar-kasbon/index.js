@@ -13,11 +13,6 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import FormHelperText from '@mui/material/FormHelperText'
-import Select from '@mui/material/Select'
-import OutlinedInput from '@mui/material/OutlinedInput'
 import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -28,6 +23,16 @@ import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import API_URL from 'src/configs/api'
+import { fetchSessionData } from 'src/pages/FetchSession'
+import {
+  getComparator,
+  descendingComparator,
+  stableSort,
+  formatCurrencyIDR,
+  formatTanggaljam,
+  handleSort,
+  handleRadioChange
+} from 'src/pages/tableUtils'
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Jam', minWidth: 10, sortable: true },
@@ -39,33 +44,6 @@ const columns = [
   { id: 'status_bayar', label: 'Sudah Lunas?', minWidth: 10, sortable: true },
 ];
 
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-
-    return a[1] - b[1];
-  });
-
-  return stabilizedThis.map((el) => el[0]);
-}
-
-// Komparasi sortir
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// Komparasi sortir descending
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) return -1;
-  if (b[orderBy] > a[orderBy]) return 1;
-
-  return 0;
-}
-
 function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar) {
   return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, status_bayar };
 }
@@ -75,11 +53,9 @@ const FormBayarKasbon = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [sessionData, setSessionData] = useState(null)
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
   const [data, setData] = useState([])
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
-
+  const [radioButtonValues, setRadioButtonValues] = useState({})
 
   const handleidkaryawanChange = (e) => {
     const inputValue = e.target.value
@@ -96,22 +72,13 @@ const FormBayarKasbon = () => {
     }
   }
 
-  const handleSort = (columnId) => {
-    const isAsc = sorting.column === columnId && sorting.direction === 'asc';
-    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' });
-  };
-
   useEffect(() => {
-    const fetchSessionData = async () => {
-      // Ambil SessionData dari Session Storage
-      const sessionDataStr = sessionStorage.getItem('sessionData');
-      if (sessionDataStr) {
-        const sessionData = JSON.parse(sessionDataStr);
-        setSessionData(sessionData);
-      }
+
+    const fetchData = async () => {
+      fetchSessionData(setSessionData);
     };
 
-    fetchSessionData();
+    fetchData();
 
   }, []);
 
@@ -159,23 +126,6 @@ const FormBayarKasbon = () => {
     }
   };
 
-  // Format mata uang ke rupiah
-  const formatCurrencyIDR = (jumlah) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-    }).format(jumlah);
-  };
-
-  // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
-  const formatTanggaljam = (tanggaljam) => {
-    const jakartaTimezone = 'Asia/Jakarta';
-    const utcDate = new Date(tanggaljam);
-    const options = { timeZone: jakartaTimezone, hour12: false };
-
-    return utcDate.toLocaleString('id-ID', options);
-  };
-
   const rows = data.map((row) => {
     return createData(
       row.id_request,
@@ -188,15 +138,6 @@ const FormBayarKasbon = () => {
 
     );
   });
-
-  const [radioButtonValues, setRadioButtonValues] = useState({});
-
-  const handleRadioChange = (event, requestId) => {
-    setRadioButtonValues({
-      ...radioButtonValues,
-      [requestId]: event.target.value,
-    });
-  };
 
   const handleSimpan = async (id_request) => {
     if (sessionData && sessionData.id_akun) {
@@ -233,10 +174,7 @@ const FormBayarKasbon = () => {
         console.error('Error:', error);
       }
     } else {
-      // Handle the case where sessionData is null or doesn't have id_akun
       console.error('Session data is missing or incomplete');
-
-      // You can set an error message or take appropriate action here.
     }
 
   };
@@ -245,15 +183,12 @@ const FormBayarKasbon = () => {
 
   return (
     <Grid container spacing={6}>
-
       <Grid item xs={12}>
-
         <Typography variant='h5'>
           <Link href=''>
             Bayar Kasbon
           </Link>
         </Typography>
-
       </Grid>
       <Grid item xs={12}>
         <form onSubmit={handleSubmitID}>
@@ -263,8 +198,7 @@ const FormBayarKasbon = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-              }}
-            >
+              }}>
               <TextField
                 fullWidth
                 type="text"

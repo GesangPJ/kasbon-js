@@ -13,6 +13,14 @@ import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import FormControl from '@mui/material/FormControl'
 import API_URL from 'src/configs/api'
+import {
+  handleClickShowPassword,
+  handleMouseDownPassword,
+  handlenamaChange,
+  handleidpetugasChange,
+  handlepasswordChange,
+  handleemailChange
+} from 'src/pages/FormUtils'
 
 const FormUser = () => {
   const [nama, setnama] = useState('')
@@ -23,41 +31,8 @@ const FormUser = () => {
   const [errorMessage, setErrorMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleidkaryawanChange = (e) => {
-    const inputValue = e.target.value
-
-    // Use a regular expression to allow only numbers and letters
-    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
-      setidkaryawan(inputValue)
-    } else {
-      // Display an error message or prevent input, depending on your preference
-      setErrorMessage('ID hanya boleh huruf dan angka!')
-      setTimeout(() => {
-        setErrorMessage('')
-      }, 5000)
-    }
-  }
-
-  const handlenamaChange = (e) => {
-    const inputValue = e.target.value
-
-    // Use a regular expression to allow only numbers and letters
-    if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
-      setnama(inputValue)
-    } else {
-      // Display an error message or prevent input, depending on your preference
-      setErrorMessage('Nama hanya boleh huruf dan angka!')
-      setTimeout(() => {
-        setErrorMessage('')
-      }, 5000)
-    }
-  }
-
-  const handlepasswordChange = (e) => setpassword(e.target.value)
-  const handleemailChange = (e) => setemail(e.target.value)
-
   const handleChange = (event) => {
-    setRoles(event.target.value);
+    setRoles(event.target.value)
   };
 
   const handleSubmit = async (e) => {
@@ -66,7 +41,7 @@ const FormUser = () => {
     // Validate the form fields
     if (!nama || !email || !password || !id_karyawan) {
       // Display an error message if any field is empty
-      setErrorMessage('Semua kolom harus diisi!');
+      setErrorMessage('Semua kolom harus diisi!')
 
       return;
     }
@@ -94,23 +69,15 @@ const FormUser = () => {
         setpassword('')
         setidkaryawan('')
         setTimeout(() => {
-          setSuccessMessage('');
+          setSuccessMessage('')
         }, 5000);
       } else {
-        console.error('Error menambahkan User.');
+        console.error('Error menambahkan User.')
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     }
-  };
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword); // Toggle password visibility state
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+  }
 
   return (
     <Card>
@@ -209,7 +176,7 @@ const FormUser = () => {
         )}
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default FormUser;
+export default FormUser

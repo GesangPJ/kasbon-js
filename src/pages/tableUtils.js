@@ -1,5 +1,27 @@
 // tableUtils.js
-// File fungsi yang digunakan pada tabel-tabel
+// File berisi fungsi yang digunakan pada tabel-tabel
+
+
+import { makeStyles } from '@mui/styles'
+
+// Menggunakan style untuk edit style cell table nanti
+export const useStyles = makeStyles((theme) => ({
+  // warna warning/kuning
+  warningCell: {
+    backgroundColor: 'yellow',
+  },
+
+  // warna success/hijau
+  successCell: {
+    backgroundColor: 'green',
+  },
+
+  // warna error/merah
+  errorCell: {
+    backgroundColor: 'red',
+  },
+}))
+
 // Komparasi sortir
 export function getComparator(order, orderBy) {
   return order === 'desc'
