@@ -23,8 +23,6 @@ import {
   formatTanggaljam,
   handleSort,
   handleRadioChange,
-  handleChangePage,
-  handleChangeRowsPerPage,
   useStyles
 } from 'src/pages/tableUtils'
 
@@ -104,6 +102,16 @@ const TableDataAdmin = () => {
     );
   });
 
+  // Untuk fungsi page berikutnya pada tabel sticky header
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Untuk fungsi row berikutnya pada tabel sticky header
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
 
   // Sorting function
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
