@@ -16,23 +16,5 @@ module.exports = {
     }
 
     return config
-  },
-  async getStaticProps() {
-    const serverStatusResponse = await fetch(`${API_URL}/api/server-status`);
-    const serverStatus = await serverStatusResponse.json();
-
-    const sessionResponse = await fetch(`${API_URL}/api/get-session`);
-    const session = await sessionResponse.json();
-
-    const postgresStatusResponse = await fetch(`${API_URL}/api/postgres-status`);
-    const postgresStatus = await postgresStatusResponse.json();
-
-    return {
-      props: {
-        serverStatus,
-        session,
-        postgresStatus,
-      },
-    };
-  },
+  }
 }
