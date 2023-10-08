@@ -14,7 +14,7 @@ import API_URL from 'src/configs/api'
 import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
-  // warna warning/kuning
+  // warna warning/kuningA
   warningCell: {
     backgroundColor: 'yellow',
   },
@@ -204,17 +204,24 @@ const TableDataUser = () => {
                           <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
                         ) : row.status_request === 'sukses' ? (
                           <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-                        ) : rows.status_request === 'tolak' ? (
+                        ) : row.status_request === 'tolak' ? (
                           <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
                         ) : (
                           row.status_request
+                        )
+                      ) : column.id === 'status_b' ? (
+                        row.status_b === 'lunas' ? (
+                          <Chip label="Lunas" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                        ) : row.status_b === 'belum' ? (
+                          <Chip label="Belum" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
+                        ) : (
+                          row.status_b
                         )
                       ) : column.format && typeof row[column.id] === 'number' ? (
                         column.format(row[column.id])
                       ) : (
                         row[column.id]
-                      )
-                      }
+                      )}
                     </TableCell>
                   ))
                   }
