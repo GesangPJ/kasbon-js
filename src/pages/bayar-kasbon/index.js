@@ -301,38 +301,56 @@ const FormBayarKasbon = () => {
   };
 
   const handleSimpanSemua = async () => {
-    try {
-      const updates = Object.keys(selectedRows).map((id_request) => {
-        const status_b = radioButtonValues[id_request];
+    if (sessionData && sessionData.id_akun) {
+      const requestsToUpdate = [];
 
-        return handleSimpan(id_request, status_b);
+      // Iterate over the rows and create an array of objects with id_request and status_b
+      sortedData.forEach((row) => {
+        const status_b = radioButtonValues[row.id_request];
+        requestsToUpdate.push({ id_request: row.id_request, status_b });
       });
 
-      Promise.all(updates)
-        .then((results) => {
-          // Handle success and results (if needed)
-          console.log('Batch update success:', results);
+      try {
+        const response = await fetch(`${API_URL}/api/edit-bayar-batch`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ requests: requestsToUpdate, id_petugas: sessionData.id_akun }),
+        });
 
-          // Update the local data with the modified status_b
-          const updatedDataCopy = [...updatedData];
-          results.forEach((result) => {
-            const updatedRowIndex = updatedDataCopy.findIndex((row) => row.id_request === result.id_request);
-            if (updatedRowIndex !== -1) {
-              updatedDataCopy[updatedRowIndex].status_b = result.status_b;
+        if (response.ok) {
+          setSuccessMessage(`Data request berhasil diupdate.`)
+          setTimeout(() => {
+            setSuccessMessage('')
+          }, 1000);
+          console.log('Data request berhasil diupdate')
+          window.location.reload();
+
+          // Update the local data with the modified status_b values
+          const updatedDataCopy = [...sortedData];
+          updatedDataCopy.forEach((row) => {
+            const updatedRequest = requestsToUpdate.find((request) => request.id_request === row.id_request);
+            if (updatedRequest) {
+              row.status_b = updatedRequest.status_b;
             }
           });
-          setUpdatedData(updatedDataCopy);
 
           // Reset the radio button values
           setRadioButtonValues({});
-        })
-        .catch((error) => {
-          // Handle errors (if needed)
-          console.error('Batch update error:', error);
-        });
-    } catch (error) {
-      // Handle any other errors (if needed)
-      console.error('Error:', error);
+        } else {
+          setErrorMessage(`Gagal mengirim update data request`);
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
+
+          console.error('Error update data request');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    } else {
+      console.error('Session data is missing or incomplete');
     }
   };
 
@@ -497,7 +515,7 @@ const FormBayarKasbon = () => {
         </Box>
       </Grid>
       <Grid item xs={12}>
-        <Button variant="contained" onClick={handleSimpanSemua}>
+        <Button type='submit' variant='contained' size='large' onClick={handleSimpanSemua}>
           Simpan Semua
         </Button>
       </Grid>
