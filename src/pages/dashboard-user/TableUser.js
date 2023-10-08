@@ -19,8 +19,6 @@ import {
   formatTanggaljam,
   handleSort,
   handleRadioChange,
-  handleChangePage,
-  handleChangeRowsPerPage,
   useStyles
 } from 'src/pages/tableUtils'
 
@@ -46,15 +44,6 @@ const TableDataUser = () => {
   const [data, setData] = useState([])
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
   const [sessionData, setSessionData] = useState(null)
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
 
   // Ambil data dari API/ambil-dashboard-karyawan
   useEffect(() => {
@@ -92,6 +81,17 @@ const TableDataUser = () => {
   });
 
   const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column));
+
+  // Untuk fungsi page berikutnya pada tabel sticky header
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Untuk fungsi row berikutnya pada tabel sticky header
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
