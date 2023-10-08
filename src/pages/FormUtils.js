@@ -48,3 +48,20 @@ const handlenamaChange = (e) => {
 export const handlepasswordChange = (e) => setpassword(e.target.value)
 
 export const handleemailChange = (e) => setemail(e.target.value)
+
+// Validasi input Jumlah
+
+export const handlejumlahChange = (e) => {
+  const inputValue = e.target.value;
+
+  // Use regular expression to allow only numbers
+  if (/^\d*$/.test(inputValue)) {
+    setjumlah(inputValue);
+  } else {
+    // Display an error message or prevent input, depending on your preference
+    setErrorMessage('Hanya boleh angka pada input nilai!');
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 5000);
+  }
+};
