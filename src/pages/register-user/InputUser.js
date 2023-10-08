@@ -27,17 +27,17 @@ const FormUser = () => {
 
   const handleChange = (event) => {
     setRoles(event.target.value)
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // Validate the form fields
     if (!nama || !email || !password || !id_karyawan) {
       // Display an error message if any field is empty
       setErrorMessage('Semua kolom harus diisi!')
 
-      return;
+      return
     }
 
     const AkunData = {
@@ -45,7 +45,7 @@ const FormUser = () => {
       email,
       password,
       id_karyawan,
-    };
+    }
 
     try {
       const response = await fetch(`${API_URL}/api/tambah-user`, {
@@ -64,7 +64,7 @@ const FormUser = () => {
         setidkaryawan('')
         setTimeout(() => {
           setSuccessMessage('')
-        }, 5000);
+        }, 5000)
       } else {
         console.error('Error menambahkan User.')
       }
