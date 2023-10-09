@@ -47,13 +47,13 @@ Login Page in mobile mode
 ## B. Install
 
 1. Pull this repo to your directory
-2. In project root, use `yarn install` or `npm install` to install all dependencies
-3. Go to /server
+2. In project root, go to /frontend use `yarn install` or `npm install` to install all dependencies
+3. Go to /backend
 4. use `yarn install` or `npm install` to install all backend dependencies
 5. Make sure you have PostgreSQL installed or access via cloud.
-6. Define your PostgreSQL Connection in /server/file_env
+6. Define your PostgreSQL Connection in /backend/file_env
 7. Start backend ExpressJS using `node server.js` or `nodemon server.js` (`nodemon` is recomended because it has hot-reload function)
-8. Define your frontend (NextJS) env in file frontend_env
+8. Define your frontend (NextJS) env in file /frontend/frontend_env
 9. Start Development Frontend NextJS using `yarn dev` or `npm dev`
 
 If you want to build the project, you can us `yarn build` or `next build` or `npm build`
