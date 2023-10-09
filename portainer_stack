@@ -15,6 +15,4 @@ services:
   db:
     image: postgres:15
     ports:
-      - '5442:5432' # Map the PostgreSQL container port 5432 to the host port 5442
-    env_file:
-      - .env
+      - '5442:5432'
