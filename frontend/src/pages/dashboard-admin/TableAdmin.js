@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const columns = [
+  { id: 'id_request', label: 'ID', minWidth: 10, sortable: true },
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
   { id: 'nama_user', label: 'Nama Karyawan', minWidth: 10, sortable: true },
   { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
@@ -59,8 +60,8 @@ const columns = [
   { id: 'nama_admin', label: 'Petugas', minWidth: 10, align: 'left', sortable: false },
 ]
 
-function createData(tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin) {
-  return { tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin }
+function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin) {
+  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin }
 }
 
 // Komparasi sortir
@@ -137,6 +138,7 @@ const TableDataAdmin = () => {
 
   const rows = data.map((row) => {
     const {
+      id_request,
       tanggaljam,
       nama_user,
       jumlah,
@@ -148,6 +150,7 @@ const TableDataAdmin = () => {
     } = row
 
     return createData(
+      id_request,
       formatTanggaljam(tanggaljam),
       nama_user,
       formatCurrencyIDR(jumlah),
@@ -216,7 +219,7 @@ const TableDataAdmin = () => {
           </TableHead>
           <TableBody>
             {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.id_request}>
                 {columns.map((column) => {
                   const value = row[column.id]
                   if (column.id === 'aksi') {
