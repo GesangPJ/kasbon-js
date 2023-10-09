@@ -1,5 +1,3 @@
 POSTGRES_USER=yourdbuser
 POSTGRES_PASSWORD=yourdbpassword
 POSTGRES_DB=yourdbname
-PGADMIN_DEFAULT_EMAIL=your@email.com
-PGADMIN_DEFAULT_PASSWORD=yourpassword
