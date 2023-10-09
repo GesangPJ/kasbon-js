@@ -19,6 +19,7 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { useTheme } from '@mui/material/styles';
 
 //import API_URL from 'src/configs/api'
 const API_URL = require('src/configs/api')
@@ -97,6 +98,7 @@ const TableEditRequest = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [selectedRows, setSelectedRows] = useState({})
+  const theme = useTheme();
 
   const handleChange = (event) => {
     setValue(event.target.value)
@@ -189,12 +191,7 @@ const TableEditRequest = () => {
 
   const [radioButtonValues, setRadioButtonValues] = useState({})
 
-  const handleRadioChange = (event, requestId) => {
-    setSelectedRows({
-      ...selectedRows,
-      [requestId]: event.target.value,
-    });
-  };
+
 
   const handleBatchUpdate = async () => {
     const id_akun = sessionData.id_akun;
@@ -236,6 +233,13 @@ const TableEditRequest = () => {
     } catch (error) {
       console.error('Error:', error);
     }
+  };
+
+  const handleRadioChange = (event, requestId) => {
+    setSelectedRows({
+      ...selectedRows,
+      [requestId]: event.target.value,
+    });
   };
 
   return (
@@ -297,41 +301,49 @@ const TableEditRequest = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedData.map((row) => (
-                <TableRow
-                  key={row.id_request}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell align="left">{row.tanggaljam}</TableCell>
-                  <TableCell align="left">{row.nama_user}</TableCell>
-                  <TableCell align="left">{row.jumlah}</TableCell>
-                  <TableCell align="left">{row.metode}</TableCell>
-                  <TableCell align="left">{row.keterangan}</TableCell>
-                  <TableCell align="left">
-                    <FormControl>
-                      <RadioGroup
-                        row
-                        name={`row-radio-buttons-group-${row.id_request}`}
-                      >
-                        <FormControlLabel
-                          value="sukses"
-                          control={<Radio color="primary" />}
-                          label="Setuju"
-                          checked={radioButtonValues[row.id_request] === "sukses"}
-                          onChange={(event) => handleRadioChange(event, row.id_request)}
-                        />
-                        <FormControlLabel
-                          value="tolak"
-                          control={<Radio color="primary" />}
-                          label="Tolak"
-                          checked={radioButtonValues[row.id_request] === "tolak"}
-                          onChange={(event) => handleRadioChange(event, row.id_request)}
-                        />
-                      </RadioGroup>
-                    </FormControl>
+              {sortedData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    Tidak ada request kasbon saat ini.
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                sortedData.map((row) => (
+                  <TableRow
+                    key={row.id_request}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell align="left">{row.tanggaljam}</TableCell>
+                    <TableCell align="left">{row.nama_user}</TableCell>
+                    <TableCell align="left">{row.jumlah}</TableCell>
+                    <TableCell align="left">{row.metode}</TableCell>
+                    <TableCell align="left">{row.keterangan}</TableCell>
+                    <TableCell align="left">
+                      <FormControl>
+                        <RadioGroup
+                          row
+                          name={`row-radio-buttons-group-${row.id_request}`} // Make sure this is unique per row
+                        >
+                          <FormControlLabel
+                            value="sukses"
+                            control={<Radio />}
+                            label="Setuju"
+                            checked={selectedRows[row.id_request] === "sukses"}
+                            onChange={(event) => handleRadioChange(event, row.id_request)}
+                          />
+                          <FormControlLabel
+                            value="tolak"
+                            control={<Radio />}
+                            label="Tolak"
+                            checked={selectedRows[row.id_request] === "tolak"}
+                            onChange={(event) => handleRadioChange(event, row.id_request)}
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>
