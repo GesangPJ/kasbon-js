@@ -1,5 +1,0 @@
-CREATE TABLE sessions (
-  sid VARCHAR(32) NOT NULL PRIMARY KEY,
-  sess JSON NOT NULL,
-  expire TIMESTAMP NOT NULL
-);
