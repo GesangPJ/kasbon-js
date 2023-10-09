@@ -24,7 +24,14 @@ Website untuk manajemen Kasbon
 
 ### Changelog
 
-##### v1.0.0-Build
+### v1.0.5-Build
+
+- Single submit button for request page
+- Single submit button for bayar page
+- Fix sorting system for dashboard Admin
+- Fix sorting system for dashboard User (Karyawan)
+
+### v1.0.0-Build
 
 - Working Login Page and directing to respective account role
 - Working Dashboard, both for Admin and User
