@@ -4,17 +4,27 @@ services:
     image: kasbon-nextjs:1.0.5
     ports:
       - '3000:3000'
+    networks:
+      - mynetwork
 
   kasbon-expressjs:
     image: kasbon-expressjs:1.0.5
     ports:
       - '3001:3001'
-    depends_on:
-      - db
 
-  db:
+    networks:
+      - mynetwork
+
+  postgres15:
     image: postgres:15
     ports:
-      - '5442:5432'
-    env_file:
-      - .env
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: gesangpg
+      POSTGRES_PASSWORD: gesangpj01
+      POSTGRES_DB: postgres
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
