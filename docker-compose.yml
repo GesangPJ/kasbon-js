@@ -20,9 +20,9 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_USER: gesangpg
-      POSTGRES_PASSWORD: gesangpj01
-      POSTGRES_DB: postgres
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB:
     networks:
       - mynetwork
 
