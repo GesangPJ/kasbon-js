@@ -266,29 +266,29 @@ const TableDataUser = () => {
 // SSR biar bisa ambil data waktu production build
 export async function getServerSideProps(req) {
   try {
-    const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
+    const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
 
-    const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
+    const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`)
     if (response.ok) {
-      const data = await response.json();
+      const data = await response.json()
       return {
         props: {
           data,
         },
         revalidate: 5, // ambil data dan refresh setiap x detik
-      };
+      }
     } else {
-      console.error('Error fetching dashboard user data.');
+      console.error('Error fetching dashboard user data.')
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error:', error)
   }
 
   return {
     props: {
       data: [],
     },
-  };
+  }
 }
 
 export default TableDataUser
