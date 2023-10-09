@@ -14,14 +14,6 @@ Website untuk manajemen Kasbon
 - Set Bayar
 - Additional 2 VIEW tables
 
-#### Modules
-
-- React & NextJS
-- MUI Core, Mui Icons
-- Express-JS
-- Express-Session
-- PostgreSQL Database
-
 ### Changelog
 
 - -Build means it's safe to build the project
