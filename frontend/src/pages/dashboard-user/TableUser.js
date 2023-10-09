@@ -254,13 +254,41 @@ const TableDataUser = () => {
         <Button variant="contained" color="primary">
           Download Excel
         </Button>
-        <div style={{ width: '10px' }}></div> {/* Add some spacing */}
+        <div style={{ width: '10px' }}></div>
         <Button variant="contained" color="primary">
           Download Docx
         </Button>
       </Paper>
     </div>
   )
+}
+
+// SSR biar bisa ambil data waktu production build
+export async function getServerSideProps(req) {
+  try {
+    const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
+
+    const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
+    if (response.ok) {
+      const data = await response.json();
+      return {
+        props: {
+          data,
+        },
+        revalidate: 5, // ambil data dan refresh setiap x detik
+      };
+    } else {
+      console.error('Error fetching dashboard user data.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+
+  return {
+    props: {
+      data: [],
+    },
+  };
 }
 
 export default TableDataUser
