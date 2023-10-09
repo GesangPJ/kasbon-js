@@ -18,12 +18,3 @@ services:
       - '5442:5432'
     env_file:
       - .env
-
-  pgadmin:
-    image: dpage/pgadmin4
-    ports:
-      - '5090:5050'
-    env_file:
-      - .env
-    depends_on:
-      - db
