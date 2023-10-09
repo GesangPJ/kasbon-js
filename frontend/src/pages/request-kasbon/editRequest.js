@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   simpanButton: {
     position: 'sticky',
     bottom: 0,
-    backgroundColor: 'white', // Set the background color to match the table
+    backgroundColor: 'primary', // Set the background color to match the table
   },
 
 
@@ -96,6 +96,7 @@ const TableEditRequest = () => {
   const [value, setValue] = React.useState('female')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [selectedRows, setSelectedRows] = useState({})
 
   const handleChange = (event) => {
     setValue(event.target.value)
@@ -164,7 +165,7 @@ const TableEditRequest = () => {
     const jakartaTimezone = 'Asia/Jakarta'
     const utcDate = new Date(tanggaljam)
     const options = { timeZone: jakartaTimezone, hour12: false }
-    const [selectedRows, setSelectedRows] = useState({})
+
 
     return utcDate.toLocaleString('id-ID', options)
   }
@@ -189,11 +190,11 @@ const TableEditRequest = () => {
   const [radioButtonValues, setRadioButtonValues] = useState({})
 
   const handleRadioChange = (event, requestId) => {
-    setRadioButtonValues({
-      ...radioButtonValues,
+    setSelectedRows({
+      ...selectedRows,
       [requestId]: event.target.value,
-    })
-  }
+    });
+  };
 
   // Mengirim update ke API
   const handleSimpan = async (id_request) => {
@@ -256,7 +257,7 @@ const TableEditRequest = () => {
         setSuccessMessage(`Data request berhasil diupdate.`);
         setTimeout(() => {
           setSuccessMessage('');
-        }, 1000);
+        }, 5000);
         console.log('Data request berhasil diupdate');
         window.location.reload();
       } else {
