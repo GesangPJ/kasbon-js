@@ -17,9 +17,14 @@ import MenuItem from '@mui/material/MenuItem'
 import FormHelperText from '@mui/material/FormHelperText'
 import Select from '@mui/material/Select'
 import OutlinedInput from '@mui/material/OutlinedInput'
+import styled from '@emotion/styled'
 
 //import API_URL from 'src/configs/api'
 const API_URL = require('src/configs/api')
+
+const RoundedRectangleButton = styled(Button)`
+  border-radius: 32px;
+`
 
 const FormKasbon = () => {
   const [jumlah, setjumlah] = useState('')
@@ -200,9 +205,9 @@ const FormKasbon = () => {
                   justifyContent: 'space-between',
                 }}
               >
-                <Button type='submit' variant='contained' size='large'>
+                <RoundedRectangleButton type='submit' variant='contained' size='large' color="primary">
                   Request
-                </Button>
+                </RoundedRectangleButton>
               </Box>
             </Grid>
           </Grid>

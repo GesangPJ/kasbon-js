@@ -19,10 +19,19 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles'
+import styled from '@emotion/styled'
 
 //import API_URL from 'src/configs/api'
 const API_URL = require('src/configs/api')
+
+const RoundedRectangleButton = styled(Button)`
+  border-radius: 32px;
+  position: sticky;
+  bottom: 0;
+  &:disabled {
+    border-radius: 32px;
+  }`
 
 // Menggunakan style untuk edit style cell table nanti
 const useStyles = makeStyles((theme) => ({
@@ -349,15 +358,14 @@ const TableEditRequest = () => {
         </TableContainer>
       </Paper>
       <div className={classes.buttonContainer}>
-        <Button
+        <RoundedRectangleButton
           variant="contained"
           size="large"
           onClick={handleBatchUpdate}
-          className={classes.simpanButton}
           disabled={Object.keys(selectedRows).length === 0}
         >
           Simpan
-        </Button>
+        </RoundedRectangleButton>
       </div>
       <br></br>
     </div>

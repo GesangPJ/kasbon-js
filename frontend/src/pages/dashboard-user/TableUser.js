@@ -12,8 +12,17 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import Chip from '@mui/material/Chip'
 import { makeStyles } from '@mui/styles'
 import Button from '@mui/material/Button'
+import styled from '@emotion/styled'
 
 const API_URL = require('src/configs/api')
+
+const RoundedRectangleButton = styled(Button)`
+  border-radius: 32px;
+  position: sticky;
+  bottom: 0;
+  &:disabled {
+    border-radius: 32px;
+  }`
 
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuningA
@@ -29,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
   // warna error/merah
   errorCell: {
     backgroundColor: 'red',
+  },
+  ovalButton: {
+    borderRadius: '50%',
   },
 }))
 
@@ -253,13 +265,13 @@ const TableDataUser = () => {
         />
       </Paper><br></br>
       <Paper sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px' }}>
-        <Button variant="contained" color="primary">
-          Download Excel
-        </Button>
+        <RoundedRectangleButton variant="outlined" color="success">
+          Excel Export
+        </RoundedRectangleButton>
         <div style={{ width: '10px' }}></div>
-        <Button variant="contained" color="primary">
-          Download Docx
-        </Button>
+        <RoundedRectangleButton variant="outlined" color="primary" >
+          Docx Export
+        </RoundedRectangleButton>
       </Paper>
     </div>
   )

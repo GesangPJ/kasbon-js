@@ -26,8 +26,17 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
+import styled from '@emotion/styled'
 
 const API_URL = require('src/configs/api')
+
+const RoundedRectangleButton = styled(Button)`
+  border-radius: 32px;
+  position: sticky;
+  bottom: 0;
+  &:disabled {
+    border-radius: 32px;
+  }`
 
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuning
@@ -343,19 +352,18 @@ const FormBayarKasbon = () => {
             </Box>
           </Grid><br></br>
           <Grid item xs={7}>
-            <Button type="button" variant="contained" size="large" onClick={handleSubmitID}>
+            <RoundedRectangleButton type="button" variant="contained" size="large" onClick={handleSubmitID} color="primary">
               Lihat Data
-            </Button>
+            </RoundedRectangleButton>
           </Grid>
-        </form>
-
+        </form><br></br>
       </Grid><br></br>
       {errorMessage && (
         <Alert severity="error">{errorMessage}</Alert>
       )}
       {successMessage && (
         <Alert severity="success">{successMessage}</Alert>
-      )}
+      )}<br></br>
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Tabel Bayar Kasbon' titleTypographyProps={{ variant: 'h6' }} />
@@ -466,9 +474,9 @@ const FormBayarKasbon = () => {
         <Alert severity="success">{successMessage}</Alert>
       )}
       <Grid item xs={12}>
-        <Button type='submit' variant='contained' size='large' onClick={handleSimpanSemua}>
+        <RoundedRectangleButton type='submit' variant='contained' size='large' onClick={handleSimpanSemua} color="primary">
           Simpan Semua
-        </Button>
+        </RoundedRectangleButton>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="caption">

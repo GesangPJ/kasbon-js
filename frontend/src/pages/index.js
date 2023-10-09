@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
@@ -22,8 +21,20 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Receipt } from '@mui/icons-material'
+import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import API_URL from 'src/configs/api'
+import { makeStyles } from '@mui/styles'
+
+const RoundedRectangleButton = styled(Button)`
+  border-radius: 32px;
+`;
+
+const useStyles = makeStyles((theme) => ({
+  ovalButton: {
+    borderRadius: '50%',
+  },
+}))
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -47,6 +58,7 @@ const SignPage = () => {
   const [loading, setLoading] = useState(true)
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const classes = useStyles()
 
   const [values, setValues] = useState({
     idakun: '', // Change 'name' to 'username'
@@ -216,9 +228,13 @@ const SignPage = () => {
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             ></Box>
-            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
+            <RoundedRectangleButton fullWidth size='large' variant='outlined'
+              color="primary"
+
+              sx={{ marginBottom: 7 }}
+              onClick={handleLogin}>
               Masuk
-            </Button>
+            </RoundedRectangleButton>
           </form>
 
         </CardContent>

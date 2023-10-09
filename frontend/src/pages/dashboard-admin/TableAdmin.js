@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Button from '@mui/material/Button'
 import Link from 'next/dist/client/link'
 import { useRouter } from 'next/router'
 import Paper from '@mui/material/Paper'
@@ -14,9 +13,14 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
-import fetch from 'node-fetch'
+import Button from '@mui/material/Button'
+import styled from '@emotion/styled'
 
 const API_URL = require('src/configs/api')
+
+const RoundedRectangleButton = styled(Button)`
+  border-radius: 32px;
+`;
 
 // SSR Biar bisa ambil data waktu production build
 export async function getServerSideProps() {
@@ -45,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
   // warna error/merah
   errorCell: {
     backgroundColor: 'red',
+  },
+  ovalButton: {
+    borderRadius: '50%',
   },
 }))
 
@@ -182,97 +189,109 @@ const TableDataAdmin = () => {
   }
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  sx={{ minWidth: column.minWidth }}
-                >
-                  <div
-                    style={{ display: 'flex', alignItems: 'center' }}
-                    onClick={() => column.sortable && handleSort(column.id)}
+    <div>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    sx={{ minWidth: column.minWidth }}
                   >
-                    {column.label}
-                    {column.sortable && (
-                      <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
-                        {column.sortable && (
-                          <div style={{ height: '24px' }}>
-                            {sorting.column === column.id && sorting.direction === 'asc' && (
-                              <ArrowUpwardIcon fontSize="small" />
-                            )}
-                            {sorting.column === column.id && sorting.direction === 'desc' && (
-                              <ArrowDownwardIcon fontSize="small" />
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.id_request}>
-                {columns.map((column) => {
-                  const value = row[column.id]
-                  if (column.id === 'aksi') {
+                    <div
+                      style={{ display: 'flex', alignItems: 'center' }}
+                      onClick={() => column.sortable && handleSort(column.id)}
+                    >
+                      {column.label}
+                      {column.sortable && (
+                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
+                          {column.sortable && (
+                            <div style={{ height: '24px' }}>
+                              {sorting.column === column.id && sorting.direction === 'asc' && (
+                                <ArrowUpwardIcon fontSize="small" />
+                              )}
+                              {sorting.column === column.id && sorting.direction === 'desc' && (
+                                <ArrowDownwardIcon fontSize="small" />
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id_request}>
+                  {columns.map((column) => {
+                    const value = row[column.id]
+                    if (column.id === 'aksi') {
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                        </TableCell>
+                      )
+                    }
+
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                        {column.id === 'status_request' ? (
+                          row.status_request === 'wait' ? (
+                            <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
+                          ) : row.status_request === 'sukses' ? (
+                            <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                          ) : row.status_request === 'tolak' ? (
+                            <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
+                          ) : (
+                            row.status_request
+                          )
+                        ) : column.id === 'status_b' ? (
+                          row.status_b === 'lunas' ? (
+                            <Chip label="Lunas" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                          ) : row.status_b === 'belum' ? (
+                            <Chip label="Belum" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
+                          ) : (
+                            row.status_b
+                          )
+                        ) : column.format && typeof row[column.id] === 'number' ? (
+                          column.format(row[column.id])
+                        ) : (
+                          row[column.id]
+                        )}
                       </TableCell>
                     )
-                  }
-
-                  return (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.id === 'status_request' ? (
-                        row.status_request === 'wait' ? (
-                          <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
-                        ) : row.status_request === 'sukses' ? (
-                          <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-                        ) : row.status_request === 'tolak' ? (
-                          <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
-                        ) : (
-                          row.status_request
-                        )
-                      ) : column.id === 'status_b' ? (
-                        row.status_b === 'lunas' ? (
-                          <Chip label="Lunas" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-                        ) : row.status_b === 'belum' ? (
-                          <Chip label="Belum" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
-                        ) : (
-                          row.status_b
-                        )
-                      ) : column.format && typeof row[column.id] === 'number' ? (
-                        column.format(row[column.id])
-                      ) : (
-                        row[column.id]
-                      )}
-                    </TableCell>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+      <br></br>
+      <Paper sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px' }}>
+        <RoundedRectangleButton variant="outlined" color="success">
+          Excel Export
+        </RoundedRectangleButton>
+        <div style={{ width: '10px' }}></div>
+        <RoundedRectangleButton variant="outlined" color="primary">
+          Docx Export
+        </RoundedRectangleButton>
+      </Paper>
+    </div>
   )
 }
 

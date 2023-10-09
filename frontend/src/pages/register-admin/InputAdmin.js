@@ -12,9 +12,18 @@ import IconButton from '@mui/material/IconButton'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import FormControl from '@mui/material/FormControl'
+import styled from '@emotion/styled'
 
 //import API_URL from 'src/configs/api'
 const API_URL = require('src/configs/api')
+
+const RoundedRectangleButton = styled(Button)`
+  border-radius: 32px;
+  position: sticky;
+  bottom: 0;
+  &:disabled {
+    border-radius: 32px;
+  }`
 
 const FormAdmin = () => {
   const [nama, setnama] = useState('')
@@ -61,8 +70,18 @@ const FormAdmin = () => {
         setTimeout(() => {
           setSuccessMessage('')
         }, 5000)
-      } else {
+      } else if (response.status === 400) {
+        setErrorMessage('Sudah ada akun dengan ID yang sama')
+        setTimeout(() => {
+          setErrorMessage('')
+        }, 5000)
+      }
+      else {
         console.error('Error menambahkan Admin.')
+        setErrorMessage('Gagal menambahkan akun, API Error')
+        setTimeout(() => {
+          setErrorMessage('')
+        }, 5000)
       }
     } catch (error) {
       console.error('Error:', error)
@@ -122,7 +141,7 @@ const FormAdmin = () => {
         )}
         {successMessage && (
           <Alert severity="success">{successMessage}</Alert>
-        )}
+        )}<br></br>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
@@ -198,16 +217,13 @@ const FormAdmin = () => {
                   justifyContent: 'space-between',
                 }}
               >
-                <Button type='submit' variant='contained' size='large'>
+                <RoundedRectangleButton type='submit' variant='contained' size='large' color="primary">
                   Tambah Admin
-                </Button>
+                </RoundedRectangleButton>
               </Box>
             </Grid>
           </Grid>
         </form>
-        {successMessage && (
-          <Alert severity="success">{successMessage}</Alert>
-        )}
       </CardContent>
     </Card>
   )
