@@ -14,8 +14,22 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
+import fetch from 'node-fetch'
 
 const API_URL = require('src/configs/api')
+
+// SSR Biar bisa ambil data waktu production build
+export async function getServerSideProps() {
+  const response = await fetch(`${API_URL}/api/ambil-dashboard-komplit`)
+  const data = await response.json()
+
+  return {
+    props: {
+      data,
+    },
+    revalidate: 5, // ambil setiap X detik
+  }
+}
 
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuning
