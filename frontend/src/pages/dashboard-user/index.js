@@ -12,7 +12,7 @@ const DataUser = () => {
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Typography variant='h5'>
-          <Link href='' target='_blank'>
+          <Link href=''>
             Dashboard Karyawan
           </Link>
         </Typography>
