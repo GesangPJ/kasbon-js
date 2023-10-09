@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const columns = [
+  { id: 'id_request', label: 'ID', minWidth: 10, sortable: true },
   { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
   { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
@@ -42,8 +43,8 @@ const columns = [
 ]
 
 // Konstruktor row
-function createData(tanggaljam, jumlah, metode, keterangan, status_request, status_b) {
-  return { tanggaljam, jumlah, metode, keterangan, status_request, status_b }
+function createData(id_request, tanggaljam, jumlah, metode, keterangan, status_request, status_b) {
+  return { id_request, tanggaljam, jumlah, metode, keterangan, status_request, status_b }
 }
 
 // Komparasi sortir
@@ -124,6 +125,7 @@ const TableDataUser = () => {
   // Masukkan data ke baris tabel
   const rows = data.map((row) => {
     return createData(
+      row.id_request,
       formatTanggaljam(row.tanggaljam),
       formatCurrencyIDR(row.jumlah),
       row.metode,
@@ -180,7 +182,7 @@ const TableDataUser = () => {
             </TableHead>
             <TableBody>
               {sortedData.length === 0 ? (
-                <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={rows.id_request}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
                       {column.id === 'status_request' ? (
@@ -204,7 +206,7 @@ const TableDataUser = () => {
                 </TableRow>
               ) : (
                 sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={rows.id_request}>
                     {columns.map((column) => (
                       <TableCell key={column.id} align={column.align}>
                         {column.id === 'status_request' ? (
@@ -264,31 +266,33 @@ const TableDataUser = () => {
 }
 
 // SSR biar bisa ambil data waktu production build
+
 export async function getServerSideProps(req) {
   try {
-    const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
+    const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
 
-    const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`)
+    const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
     if (response.ok) {
-      const data = await response.json()
+      const data = await response.json();
       return {
         props: {
           data,
         },
-        revalidate: 5, // ambil data dan refresh setiap x detik
-      }
+        revalidate: 10, // ambil data dan refresh setiap x detik
+      };
     } else {
-      console.error('Error fetching dashboard user data.')
+      console.error('Error fetching dashboard user data.');
     }
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error:', error);
   }
 
   return {
     props: {
       data: [],
     },
-  }
+  };
 }
+
 
 export default TableDataUser
