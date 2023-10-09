@@ -1,6 +1,6 @@
-# KASBON WEBSITE [`v1.0.0-Build`] 
+# KASBON WEBSITE [`v1.0.0-Build`]
 
-<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/desktop-dashboard-admin.png" width = "600" height = "300" >
+<img src="https://github.com/GesangPJ/kasbon-js/blob/main/frontend/public/images/ss/desktop-dashboard-admin.png" width = "600" height = "300" >
 
 Website untuk manajemen Kasbon
 
@@ -36,11 +36,11 @@ Website untuk manajemen Kasbon
 
 ### Login Page
 
-<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/desktop-login-1.png" width = "300" height = "300" >
+<img src="https://github.com/GesangPJ/kasbon-js/blob/main/frontend/public/images/ss/desktop-login-1.png" width = "300" height = "300" >
 
 Login Page for Desktop
 
-<img src="https://github.com/GesangPJ/kasbon-js/blob/main/public/images/ss/mobile-login.png" width = "250" height = "515" >
+<img src="https://github.com/GesangPJ/kasbon-js/blob/main/frontend/public/images/ss/mobile-login.png" width = "250" height = "515" >
 
 Login Page in mobile mode
 
@@ -73,4 +73,3 @@ By using SWC, the build output perform more than good, also it reduce the produc
 - connect-pg-simple
 - cookie-parser
 - nodemon
-
