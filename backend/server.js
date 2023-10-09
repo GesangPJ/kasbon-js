@@ -380,7 +380,7 @@ app.put('/api/update-request/:id_request', async (req, res) => {
     if (updateResult.rowCount === 1) {
       // Jika sukses
       res.status(200).json({ message: 'Request berhasil diupdate' })
-      console.log('Update request berhasil')
+      console.log(`Update request ${requestId}  berhasil`)
     } else {
       // Jika tidak menemukan data yang tepat
       res.status(404).json({ error: 'Request tidak ditemukan' })
