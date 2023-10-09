@@ -11,6 +11,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import Chip from '@mui/material/Chip'
 import { makeStyles } from '@mui/styles'
+import Button from '@mui/material/Button'
 
 const API_URL = require('src/configs/api')
 
@@ -152,102 +153,113 @@ const TableDataUser = () => {
   }
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
-                    {column.label}
-                    {column.sortable && (
-                      <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
-                        {column.sortable && (
-                          <div style={{ height: '24px' }}>
-                            {sorting.column === column.id && sorting.direction === 'asc' && <ArrowUpwardIcon fontSize="small" />}
-                            {sorting.column === column.id && sorting.direction === 'desc' && <ArrowDownwardIcon fontSize="small" />}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedData.length === 0 ? (
-              <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
+    <div>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
                 {columns.map((column) => (
-                  <TableCell key={column.id} align={column.align}>
-                    {column.id === 'status_request' ? (
-                      rows.status_request === 'wait' ? (
-                        <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'white' }} />
-                      ) : rows.status_request === 'success' ? (
-                        <Chip label="Success" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-                      ) : rows.status_request === 'tolak' ? (
-                        <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
-                      ) : (
-                        rows.status_request
-                      )
-                    ) : column.format && typeof rows[column.id] === 'number' ? (
-                      column.format(row[column.id])
-                    ) : (
-                      rows[column.id]
-                    )
-                    }
+                  <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => column.sortable && handleSort(column.id)}>
+                      {column.label}
+                      {column.sortable && (
+                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
+                          {column.sortable && (
+                            <div style={{ height: '24px' }}>
+                              {sorting.column === column.id && sorting.direction === 'asc' && <ArrowUpwardIcon fontSize="small" />}
+                              {sorting.column === column.id && sorting.direction === 'desc' && <ArrowDownwardIcon fontSize="small" />}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
                 ))}
               </TableRow>
-            ) : (
-              sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
+            </TableHead>
+            <TableBody>
+              {sortedData.length === 0 ? (
+                <TableRow hover role="checkbox" tabIndex={-1} key={rows.tanggaljam}>
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align}>
                       {column.id === 'status_request' ? (
-                        row.status_request === 'wait' ? (
-                          <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
-                        ) : row.status_request === 'sukses' ? (
-                          <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-                        ) : row.status_request === 'tolak' ? (
+                        rows.status_request === 'wait' ? (
+                          <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'white' }} />
+                        ) : rows.status_request === 'success' ? (
+                          <Chip label="Success" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                        ) : rows.status_request === 'tolak' ? (
                           <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
                         ) : (
-                          row.status_request
+                          rows.status_request
                         )
-                      ) : column.id === 'status_b' ? (
-                        row.status_b === 'lunas' ? (
-                          <Chip label="Lunas" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-                        ) : row.status_b === 'belum' ? (
-                          <Chip label="Belum" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
-                        ) : (
-                          row.status_b
-                        )
-                      ) : column.format && typeof row[column.id] === 'number' ? (
+                      ) : column.format && typeof rows[column.id] === 'number' ? (
                         column.format(row[column.id])
                       ) : (
-                        row[column.id]
-                      )}
+                        rows[column.id]
+                      )
+                      }
                     </TableCell>
-                  ))
-                  }
+                  ))}
                 </TableRow>
-              ))
-            )
-            }
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+              ) : (
+                sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.tanggaljam}>
+                    {columns.map((column) => (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.id === 'status_request' ? (
+                          row.status_request === 'wait' ? (
+                            <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
+                          ) : row.status_request === 'sukses' ? (
+                            <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                          ) : row.status_request === 'tolak' ? (
+                            <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
+                          ) : (
+                            row.status_request
+                          )
+                        ) : column.id === 'status_b' ? (
+                          row.status_b === 'lunas' ? (
+                            <Chip label="Lunas" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                          ) : row.status_b === 'belum' ? (
+                            <Chip label="Belum" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
+                          ) : (
+                            row.status_b
+                          )
+                        ) : column.format && typeof row[column.id] === 'number' ? (
+                          column.format(row[column.id])
+                        ) : (
+                          row[column.id]
+                        )}
+                      </TableCell>
+                    ))
+                    }
+                  </TableRow>
+                ))
+              )
+              }
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper><br></br>
+      <Paper sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px' }}>
+        <Button variant="contained" color="primary">
+          Download Excel
+        </Button>
+        <div style={{ width: '10px' }}></div> {/* Add some spacing */}
+        <Button variant="contained" color="primary">
+          Download Docx
+        </Button>
+      </Paper>
+    </div>
   )
 }
 
