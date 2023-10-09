@@ -278,7 +278,7 @@ export async function getServerSideProps(req) {
         props: {
           data,
         },
-        revalidate: 10, // ambil data dan refresh setiap x detik
+        revalidate: 5, // ambil data dan refresh setiap x detik
       };
     } else {
       console.error('Error fetching dashboard user data.');
