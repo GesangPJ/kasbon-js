@@ -221,8 +221,8 @@ app.post('/api/tambah-admin', async (req, res) => {
     const client = await pool.connect()
 
     // Cek apakah ada admin dengan nama dan id yang sama
-    const checkQuery = 'SELECT COUNT(*) FROM "admin_kasbon" WHERE id_petugas = $1 AND nama_admin = $2'
-    const checkResult = await client.query(checkQuery, [id_petugas, nama])
+    const checkQuery = 'SELECT COUNT(*) FROM "admin_kasbon" WHERE id_petugas = $1'
+    const checkResult = await client.query(checkQuery, [id_petugas])
 
     if (checkResult.rows[0].count > 0) {
       // ada admin dengan nama dan id yang sama
@@ -257,8 +257,8 @@ app.post('/api/tambah-user', async (req, res) => {
     const client = await pool.connect()
 
     // Cek apakah ada user dengan nama yang sama
-    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE id_karyawan = $1 AND nama_user = $2'
-    const checkResult = await client.query(checkQuery, [nama, id_karyawan])
+    const checkQuery = 'SELECT COUNT(*) FROM "user_kasbon" WHERE id_karyawan = $1'
+    const checkResult = await client.query(checkQuery, [id_karyawan])
 
     if (checkResult.rows[0].count > 0) {
       // user dengan nama yang sama sudah ada
