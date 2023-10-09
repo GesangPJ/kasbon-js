@@ -1,0 +1,20 @@
+version: '3'
+services:
+  kasbon-nextjs:
+    image: kasbon-nextjs:1.0.5
+    ports:
+      - '3000:3000'
+
+  kasbon-expressjs:
+    image: kasbon-expressjs:1.0.5
+    ports:
+      - '3001:3001'
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    ports:
+      - '5442:5432' # Map the PostgreSQL container port 5432 to the host port 5442
+    env_file:
+      - .env
