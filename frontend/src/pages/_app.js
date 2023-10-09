@@ -52,10 +52,10 @@ const App = props => {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>{`${themeConfig.templateName} | Web Katalog Obat Generik Dan Herbal`}</title>
+        <title>{`${themeConfig.templateName} | Website manajemen kasbon`}</title>
         <meta
           name='description'
-          content={`${themeConfig.templateName} Website Katalog Obat Generik Dan Herbal, mengenai nama-nama obat, komposisi, manfaat utama, dan cara penggunaanya`}
+          content={`${themeConfig.templateName} Website manajemen kasbon, input kasbon, halaman persetujuan kasbon, halaman konfirmasi bayar`}
         />
         <meta name='keywords' content='Obat, Generic, Herbal, Medicine, Generik' />
         <meta name='viewport' content='initial-scale=1, width=device-width' />
