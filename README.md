@@ -24,6 +24,8 @@ Website untuk manajemen Kasbon
 
 ### Changelog
 
+- -Build means it's safe to build the project
+
 ### v1.0.5-Build
 
 - Single submit button for request page
