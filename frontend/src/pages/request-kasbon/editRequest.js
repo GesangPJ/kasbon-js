@@ -196,41 +196,6 @@ const TableEditRequest = () => {
     });
   };
 
-  // Mengirim update ke API
-  const handleSimpan = async (id_request) => {
-    // Menggunakan tombol SIMPAN untuk mengambil id_request
-    const status_request = radioButtonValues[id_request]
-    const id_akun = sessionData.id_akun
-
-    try {
-      const response = await fetch(`${API_URL}/api/update-request/${id_request}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status_request, id_petugas: id_akun }),
-      })
-
-      if (response.ok) {
-        setSuccessMessage(`Data request berhasil diupdate.`)
-        setTimeout(() => {
-          setSuccessMessage('')
-        }, 1000)
-        console.log('Data request berhasil diupdate')
-        window.location.reload()
-      } else {
-        setErrorMessage(`Gagal mengirim update data request`)
-        setTimeout(() => {
-          setErrorMessage('')
-        }, 3000)
-
-        console.error('Error update data request')
-      }
-    } catch (error) {
-      console.error('Error:', error)
-    }
-  }
-
   const handleBatchUpdate = async () => {
     const id_akun = sessionData.id_akun;
     const updatePromises = [];
@@ -329,7 +294,6 @@ const TableEditRequest = () => {
                 </TableCell>
                 <TableCell align="left">Keterangan</TableCell>
                 <TableCell align="left" id="b_tombol">Konfirmasi Request</TableCell>
-                <TableCell align="left" id="simpan_tombol">Simpan</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -366,11 +330,6 @@ const TableEditRequest = () => {
                       </RadioGroup>
                     </FormControl>
                   </TableCell>
-                  <TableCell align="left">
-                    <Button type='submit' variant='contained' size='large' onClick={() => handleSimpan(row.id_request)}>
-                      Simpan
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -385,9 +344,10 @@ const TableEditRequest = () => {
           className={classes.simpanButton}
           disabled={Object.keys(selectedRows).length === 0}
         >
-          Submit
+          Simpan
         </Button>
       </div>
+      <br></br>
     </div>
   )
 }
