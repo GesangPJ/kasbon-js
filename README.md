@@ -1,4 +1,4 @@
-# KASBON WEBSITE [`v1.0.0-Build`]
+# KASBON WEBSITE [v1.0.5-Build]
 
 <img src="https://github.com/GesangPJ/kasbon-js/blob/main/frontend/public/images/ss/desktop-dashboard-admin.png" width = "600" height = "300" >
 
