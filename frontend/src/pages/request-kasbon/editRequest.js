@@ -164,6 +164,7 @@ const TableEditRequest = () => {
     const jakartaTimezone = 'Asia/Jakarta'
     const utcDate = new Date(tanggaljam)
     const options = { timeZone: jakartaTimezone, hour12: false }
+    const [selectedRows, setSelectedRows] = useState({})
 
     return utcDate.toLocaleString('id-ID', options)
   }
@@ -228,6 +229,48 @@ const TableEditRequest = () => {
       console.error('Error:', error)
     }
   }
+
+  const handleBatchUpdate = async () => {
+    const id_akun = sessionData.id_akun;
+    const updatePromises = [];
+
+    // Iterate through selected rows and create update promises
+    for (const requestId in selectedRows) {
+      const status_request = selectedRows[requestId];
+      updatePromises.push(
+        fetch(`${API_URL}/api/update-request/${requestId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status_request, id_petugas: id_akun }),
+        })
+      );
+    }
+
+    try {
+      const responses = await Promise.all(updatePromises);
+      const isSuccess = responses.every((response) => response.ok);
+
+      if (isSuccess) {
+        setSuccessMessage(`Data request berhasil diupdate.`);
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 1000);
+        console.log('Data request berhasil diupdate');
+        window.location.reload();
+      } else {
+        setErrorMessage(`Gagal mengirim update data request`);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+
+        console.error('Error update data request');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   return (
     <div>
@@ -322,8 +365,18 @@ const TableEditRequest = () => {
             </TableBody>
           </Table>
         </TableContainer>
-
       </Paper>
+      <div className={classes.buttonContainer}>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={handleBatchUpdate}
+          className={classes.simpanButton}
+          disabled={Object.keys(selectedRows).length === 0}
+        >
+          Submit
+        </Button>
+      </div>
     </div>
   )
 }
