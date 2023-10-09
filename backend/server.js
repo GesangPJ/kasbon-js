@@ -49,7 +49,7 @@ app.get('/api/server-status', (req, res) => {
 // Hapus semua session data di table session postgres
 app.get('/api/clear-sessions', async (req, res) => {
   try {
-    const client = await pool.connect();
+    const client = await pool.connect()
     const clearSessionsQuery = 'DELETE FROM sessions'
     await client.query(clearSessionsQuery)
     client.release()
@@ -93,7 +93,7 @@ app.post('/api/masuk', async (req, res) => {
 
       // Pastikan bahwa session adalah objek
       if (!req.session.user) {
-        req.session.user = {};
+        req.session.user = {}
       }
       const tanggalAkun = new Date(user.tanggal)
       const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
@@ -151,7 +151,7 @@ app.post('/api/masuk', async (req, res) => {
         tanggal_akun: tanggalFormat,
       }
 
-      client.release();
+      client.release()
 
       res.status(200).json({
         id: admin.id_admin,
@@ -232,7 +232,7 @@ app.post('/api/tambah-admin', async (req, res) => {
     }
 
     // Lanjut jika tidak ada
-    const insertQuery = 'INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin, id_petugas) VALUES ($1, $2, $3, NOW(), $4, $5)';
+    const insertQuery = 'INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin, id_petugas) VALUES ($1, $2, $3, NOW(), $4, $5)'
     const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_petugas])
 
     client.release()
@@ -262,7 +262,7 @@ app.post('/api/tambah-user', async (req, res) => {
 
     if (checkResult.rows[0].count > 0) {
       // user dengan nama yang sama sudah ada
-      client.release();
+      client.release()
 
       return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` })
     }
@@ -271,7 +271,7 @@ app.post('/api/tambah-user', async (req, res) => {
     const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles_user, id_karyawan) VALUES ($1, $2, $3, NOW(), $4, $5)'
     const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_karyawan])
 
-    client.release();
+    client.release()
 
     if (insertResult.rowCount === 1) {
       res.status(201).json({ message: `User: ${nama} Id: ${id_karyawan} berhasil ditambahkan.` })
@@ -279,10 +279,10 @@ app.post('/api/tambah-user', async (req, res) => {
       res.status(500).json({ error: 'Gagal menambahkan akun user' })
     }
   } catch (error) {
-    console.error('Error menambahkan user:', error);
+    console.error('Error menambahkan user:', error)
     res.status(500).json({ error: 'Internal Server Error' })
   }
-});
+})
 
 // API Input Kasbon Karyawan
 app.post('/api/input-kasbon', async (req, res) => {
@@ -334,7 +334,7 @@ app.get('/api/ambil-dashboard-karyawan/:id_akun', async (req, res) => {
       res.status(404).json({ message: 'Data tidak ada' })
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error:', error)
     res.status(500).json({ message: 'Internal Server Error' })
   }
 })
@@ -387,21 +387,59 @@ app.put('/api/update-request/:id_request', async (req, res) => {
       console.log('Update Request tidak ditemukan data')
     }
   } catch (error) {
-    console.error('Error updating request:', error);
+    console.error('Error updating request:', error)
     res.status(500).json({ error: 'Internal Server Error' })
     console.log('Update Request tidak berhasil')
   }
-});
+})
+
+//API Update request secara bersamaan
+app.post('/api/update-requests/:id_request', async (req, res) => {
+  const requestId = req.params.id_request
+  const requestsToUpdate = req.body.requests // Yang masuk adalah array beberapa request
+
+  try {
+    // Buka koneksi ke Postgres
+    const client = await pool.connect()
+
+    for (const request of requestsToUpdate) {
+      const { status_request, id_petugas } = request
+
+      // Query Update request
+      const updateQuery = 'UPDATE request SET status_request = $1, id_petugas = $2, status_b=\'belum\', tanggaljam = NOW() WHERE id_request = $3'
+      const updateValues = [status_request, id_petugas, requestId]
+
+      const updateResult = await client.query(updateQuery, updateValues)
+
+      if (updateResult.rowCount === 1) {
+        // Jika sukses
+        console.log(`Request with ID ${requestId} updated successfully`)
+      } else {
+        // Jika tidak menemukan data yang tepat
+        console.log(`Request with ID ${requestId} not found`)
+      }
+    }
+
+    client.release()
+
+    res.status(200).json({ message: 'Requests updated successfully' })
+
+  } catch (error) {
+    console.error('Error updating requests:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
 
 // API Ambil data untuk halaman Bayar
 app.post('/api/ambil-data-bayar', async (req, res) => {
-  const id_karyawan = req.body.id_karyawan;
+  const id_karyawan = req.body.id_karyawan
 
   try {
     const client = await pool.connect()
 
-    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND id_karyawan = $1';
-    const selectResult = await client.query(selectQuery, [id_karyawan]);
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND id_karyawan = $1'
+    const selectResult = await client.query(selectQuery, [id_karyawan])
 
     client.release()
 
@@ -451,15 +489,15 @@ app.put('/api/edit-bayar/:id_request', async (req, res) => {
     const updateResult = await client.query(updateQuery, updateValues)
 
     if (updateResult.rowCount === 1) {
-      res.status(200).json({ message: 'Pembayaran berhasil diubah' });
+      res.status(200).json({ message: 'Pembayaran berhasil diubah' })
       console.log('Update bayar berhasil')
     } else {
-      res.status(404).json({ error: 'Request tidak ditemukan' });
+      res.status(404).json({ error: 'Request tidak ditemukan' })
       console.log('Update bayar tidak ditemukan data')
     }
   }
   catch (error) {
-    console.error('Error update bayar :', error);
+    console.error('Error update bayar :', error)
     res.status(500).json({ error: 'Internal Server Error' })
     console.log('Update bayar tidak berhasil')
   }
@@ -489,7 +527,7 @@ app.put('/api/edit-bayar-batch', async (req, res) => {
       }
 
       return null // Update sukses
-    });
+    })
 
     // Menunggu semua update selesai
     const updateResults = await Promise.all(updatePromises)
