@@ -348,11 +348,21 @@ const TableEditRequest = () => {
                       <RadioGroup
                         row
                         name={`row-radio-buttons-group-${row.id_request}`}
-                        value={radioButtonValues[row.id_request] || ''}
-                        onChange={(event) => handleRadioChange(event, row.id_request)}
                       >
-                        <FormControlLabel value="sukses" control={<Radio />} label="Setuju" />
-                        <FormControlLabel value="tolak" control={<Radio />} label="Tolak" />
+                        <FormControlLabel
+                          value="sukses"
+                          control={<Radio color="primary" />}
+                          label="Setuju"
+                          checked={radioButtonValues[row.id_request] === "sukses"}
+                          onChange={(event) => handleRadioChange(event, row.id_request)}
+                        />
+                        <FormControlLabel
+                          value="tolak"
+                          control={<Radio color="primary" />}
+                          label="Tolak"
+                          checked={radioButtonValues[row.id_request] === "tolak"}
+                          onChange={(event) => handleRadioChange(event, row.id_request)}
+                        />
                       </RadioGroup>
                     </FormControl>
                   </TableCell>
