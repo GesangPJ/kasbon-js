@@ -23,8 +23,9 @@ import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Receipt } from '@mui/icons-material'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
-import API_URL from 'src/configs/api'
 import { makeStyles } from '@mui/styles'
+
+const API_URL = require('src/configs/api')
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -242,15 +243,6 @@ const SignPage = () => {
       <FooterIllustrationsV1 />
     </Box>
   )
-}
-
-export async function getServerSideProps() {
-  // Fetch environment variables on the server side
-  const apiURL = process.env.API_URL;
-
-  return {
-    props: { apiURL },
-  }
 }
 
 SignPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
