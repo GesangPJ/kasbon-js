@@ -4,8 +4,11 @@ const session = require('express-session')
 const { pool, PostgresStatus } = require('./postgres')
 const cookieParser = require('cookie-parser')
 const pgSession = require('connect-pg-simple')(session)
+const dotenv = require('dotenv')
 
 const app = express()
+dotenv.config()
+const allowedOrigin = process.env.CORS_ALLOWED_ORIGIN
 
 // Express JS
 app.use(express.json())
@@ -32,7 +35,7 @@ app.use(
 
 // Menentukan izin akses ke server API
 const corsOptions = {
-  origin: 'http://localhost:3000', // Be cautious when using '*' in a production environment.
+  origin: allowedOrigin,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: false,
