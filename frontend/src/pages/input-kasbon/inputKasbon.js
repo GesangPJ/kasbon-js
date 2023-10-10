@@ -19,7 +19,6 @@ import Select from '@mui/material/Select'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import styled from '@emotion/styled'
 
-//import API_URL from 'src/configs/api'
 const API_URL = require('src/configs/api')
 
 const RoundedRectangleButton = styled(Button)`
