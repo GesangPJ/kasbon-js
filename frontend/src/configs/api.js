@@ -2,8 +2,6 @@
 //const dotenv = require('dotenv')
 //dotenv.config()
 
-require('dotenv').config()
-
 const API_URL = 'http://kasbon-expressjs:3001'
 console.log('API : ', API_URL)
 
