@@ -8,7 +8,6 @@ const dotenv = require('dotenv')
 
 const app = express()
 dotenv.config()
-const allowedOrigin = process.env.CORS_ALLOWED_ORIGIN
 
 // Express JS
 app.use(express.json())
@@ -35,12 +34,12 @@ app.use(
 
 // Menentukan izin akses ke server API
 const corsOptions = {
-  origin: allowedOrigin,
+  origin: ['http://kasbon-nextjs:3000', 'http://localhost:3000', 'http://localhost:4000'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: false,
   optionsSuccessStatus: 204,
-}
+};
 
 app.use(cors(corsOptions))
 
