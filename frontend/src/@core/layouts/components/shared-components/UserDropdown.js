@@ -23,6 +23,8 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
+const API_URL = require('src/configs/api')
+
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
   width: 8,
@@ -52,7 +54,7 @@ const UserDropdown = () => {
   // Fungsi Tombol Logout
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:3001/api/logout', {
+      await fetch(`${API_URL}/api/logout`, {
         method: 'GET',
         credentials: 'include',
       });
