@@ -34,7 +34,7 @@ app.use(
 
 // Menentukan izin akses ke server API
 const corsOptions = {
-  origin: ['http://kasbon-nextjs:3000', 'http://localhost:3000', 'http://localhost:4000'],
+  origin: ['http://kasbon-nextjs:3000', 'http://172.17.0.5:3000'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: false,
