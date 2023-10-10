@@ -244,6 +244,15 @@ const SignPage = () => {
   )
 }
 
+export async function getServerSideProps() {
+  // Fetch environment variables on the server side
+  const apiURL = process.env.API_URL;
+
+  return {
+    props: { apiURL },
+  }
+}
+
 SignPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
 
 export default SignPage
