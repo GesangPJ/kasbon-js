@@ -16,7 +16,16 @@ Website untuk manajemen Kasbon
 
 ### Changelog
 
-- -Build means it's safe to build the project
+- Build means it's safe to build the project
+
+### v1.0.7-PREVIEW
+
+- Change API URL in frontend (client-side)
+- Change CORS options in backend
+- Trying to make it work in Docker Container
+- Docker Container available [BETA]
+- Docker Compose available [BETA]
+- Fix typos in some files
 
 ### v1.0.5-Build
 
