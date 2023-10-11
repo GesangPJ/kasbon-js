@@ -9,7 +9,7 @@ module.exports = {
     swcMinify: true
   },
   experimental: {
-    pageDataCollectionTimeout: 100000,
+    pageDataCollectionTimeout: 200000,
     esmExternals: false,
     jsconfigPaths: false // enables it for both jsconfig.json and tsconfig.json
   },
