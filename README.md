@@ -16,7 +16,8 @@ Website untuk manajemen Kasbon
 
 ### Changelog
 
-- Build means it's safe to build the project
+_Build means it's safe to build the project_
+_Preview means the build version still have bugs_
 
 ### v1.0.7-PREVIEW
 
