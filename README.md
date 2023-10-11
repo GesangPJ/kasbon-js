@@ -4,7 +4,7 @@
 
 Website NodeJS bertujuan untuk mengelola Kasbon, menggunakan NextJS untuk frontend(client-side), dan ExpressJS untuk backend(server-side),data kasbon dan akun dimasukkan dan dikelola dengan database PostgreSQL v15. Mulai dari versi 1.0.7-Preview tersedia
 versi docker container untuk website ini, versi docker container 1.0.7 mungkin masih memiliki beberapa masalah seperti tidak terkoneksi
-antara container frontend dan backend.
+antara container frontend dan backend (API ERROR NOT FOUND/ API ERROR CONNECTION TIME OUT).
 
 #### Features
 
@@ -29,6 +29,7 @@ antara container frontend dan backend.
 - Docker Container available [BETA]
 - Docker Compose available [BETA]
 - Fix typos in some files
+- Fix env files for frontend and backend
 
 ### v1.0.5-Build
 
