@@ -15,15 +15,10 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 // ** Icons Imports
-import CogOutline from 'mdi-material-ui/CogOutline'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import EmailOutline from 'mdi-material-ui/EmailOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
-const API_URL = require('src/configs/api')
+const dotenv = require('dotenv')
+dotenv.config()
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -35,43 +30,43 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 }))
 
 const UserDropdown = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [user, setUser] = useState({ nama: '' });
-  const [admin, setAdmin] = useState({ nama: '' });
-  const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [user, setUser] = useState({ nama: '' })
+  const [admin, setAdmin] = useState({ nama: '' })
+  const router = useRouter()
 
   const handleDropdownOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleDropdownClose = (url) => {
     if (url) {
-      router.push(url);
+      router.push(url)
     }
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   // Fungsi Tombol Logout
   const handleLogout = async () => {
     try {
-      await fetch(`${API_URL}/api/logout`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/logout`, {
         method: 'GET',
         credentials: 'include',
-      });
+      })
 
       // hapus session storage saat logout
-      sessionStorage.clear();
+      sessionStorage.clear()
 
       // Arahkan ke login
-      router.push('/');
+      router.push('/')
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error('Error during logout:', error)
 
 
     }
 
-    setAnchorEl(null); // tutup dropdown
-  };
+    setAnchorEl(null) // tutup dropdown
+  }
 
 
   const styles = {
@@ -88,16 +83,16 @@ const UserDropdown = () => {
     }
   }
 
-  const [sessionData, setSessionData] = useState(null);
+  const [sessionData, setSessionData] = useState(null)
 
   useEffect(() => {
     // Ambil Data session dari session storage
-    const sessionDataStr = sessionStorage.getItem('sessionData');
+    const sessionDataStr = sessionStorage.getItem('sessionData')
     if (sessionDataStr) {
-      const sessionData = JSON.parse(sessionDataStr);
-      setSessionData(sessionData);
+      const sessionData = JSON.parse(sessionDataStr)
+      setSessionData(sessionData)
     }
-  }, []);
+  }, [])
 
   return (
     <Fragment>
@@ -151,7 +146,7 @@ const UserDropdown = () => {
         </MenuItem>
       </Menu>
     </Fragment>
-  );
-};
+  )
+}
 
-export default UserDropdown;
+export default UserDropdown
