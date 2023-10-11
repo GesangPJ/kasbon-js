@@ -1,15 +1,23 @@
 {
-  "name": "katalog-obat-server",
+  "name": "kasbon-server",
   "version": "1.0.7",
-  "description": "Backend Website Kasbon",
+  "description": "ExpressJS Website manajemen kasbon",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "kasbon",
+    "manajemen",
+    "NodeJS",
+    "ExpressJS"
+  ],
+  "author": {
+    "name": "GPAUDRA",
+    "url": "https://github.com/GesangPJ"
+  },
+  "license": "CC BY-NC-ND",
   "dependencies": {
     "connect-pg-simple": "^9.0.0",
     "cookie-parser": "^1.4.6",
