@@ -7,6 +7,7 @@ const pgSession = require('connect-pg-simple')(session)
 const dotenv = require('dotenv')
 
 const allowedOrigins = process.env.CORS_ORIGINS.split(',')
+const PREFLIGHT = process.env.PREFLIGHT
 
 const app = express()
 dotenv.config()
@@ -39,7 +40,7 @@ const corsOptions = {
   origin: allowedOrigins,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
-  preflightContinue: false,
+  preflightContinue: PREFLIGHT,
   optionsSuccessStatus: 204,
 }
 
