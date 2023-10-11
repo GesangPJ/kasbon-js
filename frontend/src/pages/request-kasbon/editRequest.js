@@ -210,7 +210,7 @@ const TableEditRequest = () => {
     for (const requestId in selectedRows) {
       const status_request = selectedRows[requestId];
       updatePromises.push(
-        fetch(`${API_URL}/api/update-request/${requestId}`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/update-request/${requestId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

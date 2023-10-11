@@ -5,7 +5,9 @@ import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import Grid from '@mui/material/Grid'
-import API_URL from 'src/configs/api'
+
+const dotenv = require('dotenv')
+dotenv.config()
 
 const DemoGrid = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
@@ -20,7 +22,7 @@ const StatusPage = () => {
   useEffect(() => {
 
     // Ambil status PostgreSQL
-    fetch(`${API_URL}/api/postgres-status`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/postgres-status`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -36,7 +38,7 @@ const StatusPage = () => {
         setPostgreStatus('Error');
       })
 
-    fetch(`${API_URL}/api/server-status`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/server-status`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`)
