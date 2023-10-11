@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser')
 const pgSession = require('connect-pg-simple')(session)
 const dotenv = require('dotenv')
 
+const allowedOrigins = process.env.CORS_ORIGINS.split(',')
+
 const app = express()
 dotenv.config()
 
@@ -34,7 +36,7 @@ app.use(
 
 // Menentukan izin akses ke server API
 const corsOptions = {
-  origin: '*',
+  origin: allowedOrigins,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: false,
@@ -243,6 +245,7 @@ app.post('/api/tambah-admin', async (req, res) => {
       res.status(201).json({ message: `Admin ${nama} ID : ${id_petugas} berhasil ditambahkan.` })
     } else {
       res.status(500).json({ error: 'Gagal menambahkan akun admin.' })
+      console.log('Gagal menambahkan Akun Admin')
     }
   } catch (error) {
     console.error('Error menambahkan admin:', error)
