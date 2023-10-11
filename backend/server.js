@@ -23,7 +23,7 @@ app.use(
     }),
 
     // Pengaturan session dan cookie
-    secret: 'zXBVUQI0XCO24vcOc7leDCRJDI26QvSN',
+    secret: 'zXBVUQI0XCO24vcOc7leDCRJDI26QvSNDDAAGG',
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -34,12 +34,12 @@ app.use(
 
 // Menentukan izin akses ke server API
 const corsOptions = {
-  origin: ['http://kasbon-nextjs:3000', 'http://172.17.0.5:3000'],
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: false,
   optionsSuccessStatus: 204,
-};
+}
 
 app.use(cors(corsOptions))
 
