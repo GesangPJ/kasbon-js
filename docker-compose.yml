@@ -1,28 +1,46 @@
 version: '3'
+
 services:
-  kasbon-nextjs:
-    image: kasbon-nextjs:1.0.5
-    ports:
-      - '3000:3000'
+  frontend: #Frontend NextJS
+    image: kasbon-nextjs:1.0.7
     networks:
-      - mynetwork
-
-  kasbon-expressjs:
-    image: kasbon-expressjs:1.0.5
+      my_network:
+        ipv4_address: 172.18.0.2 # Static IP
     ports:
-      - '3001:3001'
+      - '4000:3000'
 
+  backend: #Backend Expressjs
+    image: kasbon-expressjs:1.0.7
     networks:
-      - mynetwork
+      my_network:
+        ipv4_address: 172.18.0.3 # Static IP
+    ports:
+      - '4001:3001'
+    environment:
+      DB_USER:
+      DB_HOST:
+      DB_DATABASE:
+      DB_PASSWORD:
+      DB_PORT:
+      PORT:
+      CORS_ORIGINS: http://frontend:3000,http://localhost:3000,http://kasbon-nextjs:3000
 
-  postgres15:
+  postgres15: #PostgreSQL Database
     image: postgres:15
-    ports:
-      - '5432:5432'
-    env_file:
-      - .env
     networks:
-      - mynetwork
+      my_network:
+        ipv4_address: 172.18.0.4 # Static IP
+    ports:
+      - '5442:5432'
+    environment:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB:
 
 networks:
-  mynetwork:
+  my_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/16 # Static IP
