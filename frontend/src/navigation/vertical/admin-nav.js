@@ -45,12 +45,6 @@ const AdminNavigation = () => {
       icon: AddCircle,
       path: '/register-admin',
       openInNewTab: false
-    },
-    {
-      title: 'Download Data',
-      icon: SaveAltOutlinedIcon,
-      path: '/download',
-      openInNewTab: false
     }
   ]
 }
