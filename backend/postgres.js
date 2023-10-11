@@ -1,5 +1,5 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Pool } = require('pg')
+require('dotenv').config()
 
 // Database connection configuration
 const dbConfig = {
@@ -8,21 +8,21 @@ const dbConfig = {
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-};
+}
 
 // Create a new PostgreSQL pool
-const pool = new Pool(dbConfig);
+const pool = new Pool(dbConfig)
 
 // Function to check the database connection status
 async function PostgresStatus() {
   try {
-    const client = await pool.connect();
-    console.log('PostgreSQL Connected');
-    client.release(); // Release the client back to the pool
+    const client = await pool.connect()
+    console.log('PostgreSQL Connected')
+    client.release() // Release the client back to the pool
   } catch (error) {
-    console.error('Error connecting to the database:', error);
+    console.error('Error connecting to the database:', error)
   }
 }
 
 // Export the pool to use it in other parts of your application
-module.exports = { pool, PostgresStatus };
+module.exports = { pool, PostgresStatus }
