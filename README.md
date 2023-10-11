@@ -2,7 +2,9 @@
 
 <img src="https://github.com/GesangPJ/kasbon-js/blob/main/frontend/public/images/ss/desktop-dashboard-admin.png" width = "600" height = "300" >
 
-Website untuk manajemen Kasbon
+Website NodeJS bertujuan untuk mengelola Kasbon, menggunakan NextJS untuk frontend(client-side), dan ExpressJS untuk backend(server-side),data kasbon dan akun dimasukkan dan dikelola dengan database PostgreSQL v15. Mulai dari versi 1.0.7-Preview tersedia
+versi docker container untuk website ini, versi docker container 1.0.7 mungkin masih memiliki beberapa masalah seperti tidak terkoneksi
+antara container frontend dan backend.
 
 #### Features
 
