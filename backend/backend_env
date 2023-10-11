@@ -1,10 +1,7 @@
-//POSTGRESQL CONNECTION
-
 DB_USER =
   DB_HOST =
   DB_DATABASE =
   DB_PASSWORD =
   DB_PORT = 5432
-
-// CORS
-CORS_ALLOWED_ORIGIN =
+PORT = 3001
+CORS_ORIGINS = http://frontend:3000,http://localhost:3000,http://kasbon-nextjs:3000
