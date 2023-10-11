@@ -22,7 +22,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useTheme } from '@mui/material/styles'
 import styled from '@emotion/styled'
 
-const API_URL = require('src/configs/api')
+const dotenv = require('dotenv')
+dotenv.config()
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -139,7 +140,7 @@ const TableEditRequest = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/ambil-request-kasbon`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/ambil-request-kasbon`)
         if (response.ok) {
           const result = await response.json()
           setData(result)

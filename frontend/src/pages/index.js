@@ -25,7 +25,8 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import { makeStyles } from '@mui/styles'
 
-const API_URL = require('src/configs/api')
+const dotenv = require('dotenv')
+dotenv.config()
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -84,7 +85,7 @@ const SignPage = () => {
       return;
     }
     try {
-      const response = await fetch(`${API_URL}/api/masuk`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/masuk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

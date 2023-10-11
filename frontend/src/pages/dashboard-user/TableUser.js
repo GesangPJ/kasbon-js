@@ -14,7 +14,8 @@ import { makeStyles } from '@mui/styles'
 import Button from '@mui/material/Button'
 import styled from '@emotion/styled'
 
-const API_URL = require('src/configs/api')
+const dotenv = require('dotenv')
+dotenv.config()
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -103,7 +104,7 @@ const TableDataUser = () => {
       try {
         const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
 
-        const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/ambil-dashboard-karyawan/${id_akun}`)
         if (response.ok) {
           const result = await response.json()
           setData(result)
@@ -283,7 +284,7 @@ export async function getServerSideProps(req) {
   try {
     const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
 
-    const response = await fetch(`${API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/ambil-dashboard-karyawan/${id_akun}`);
     if (response.ok) {
       const data = await response.json();
       return {
