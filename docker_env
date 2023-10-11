@@ -1,3 +1,0 @@
-POSTGRES_USER=yourdbuser
-POSTGRES_PASSWORD=yourdbpassword
-POSTGRES_DB=yourdbname
