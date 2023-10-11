@@ -104,7 +104,7 @@ const TableDataUser = () => {
       try {
         const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/ambil-dashboard-karyawan/${id_akun}`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/ambil-dashboard-karyawan/${id_akun}`)
         if (response.ok) {
           const result = await response.json()
           setData(result)
@@ -284,7 +284,7 @@ export async function getServerSideProps(req) {
   try {
     const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/ambil-dashboard-karyawan/${id_akun}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/ambil-dashboard-karyawan/${id_akun}`);
     if (response.ok) {
       const data = await response.json();
       return {

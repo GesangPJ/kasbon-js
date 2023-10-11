@@ -29,8 +29,8 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 const RoundedRectangleButton = styled(Button)`
-  border-radius: 32px;
-`;
+  border-radius: 32px
+`
 
 const useStyles = makeStyles((theme) => ({
   ovalButton: {
@@ -63,16 +63,16 @@ const SignPage = () => {
   const classes = useStyles()
 
   const [values, setValues] = useState({
-    idakun: '', // Change 'name' to 'username'
+    idakun: '',
     password: '',
     showPassword: false,
-  });
+  })
 
-  const router = useRouter(); // Use the router to navigate
+  const router = useRouter()
 
   const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
+    setValues({ ...values, [prop]: event.target.value })
+  }
 
   const handleLogin = async () => {
     if (!values.idakun || !values.password) {
@@ -82,29 +82,33 @@ const SignPage = () => {
         setErrorMessage('')
       }, 5000)
 
-      return;
+      return
     }
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/masuk`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/masuk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(values),
-      });
+      })
 
       if (response.status === 200) {
-        const data = await response.json();
-        console.log('Response data:', data);
+        const data = await response.json()
+        console.log('Response data:', data)
+        setSuccessMessage('Login Sukses')
+        setTimeout(() => {
+          setSuccessMessage('')
+        }, 2000)
 
         // Check if data contains role information
         if (data && data.isAdmin !== undefined && data.roles !== '') {
-          const role = data.roles;
+          const role = data.roles
 
-          const tanggalAkun = new Date(data.tanggal_akun);
-          const jakartaTimezone = 'Asia/Jakarta';
+          const tanggalAkun = new Date(data.tanggal_akun)
+          const jakartaTimezone = 'Asia/Jakarta'
 
-          const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
+          const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
 
           const sessionData = {
             id_table: data.id,
@@ -114,16 +118,16 @@ const SignPage = () => {
             isAdmin: role === 'admin',
             id_akun: data.id_akun,
             tanggal_akun: tanggalFormat,
-          };
+          }
 
           // Store the session data as a JSON string in session storage
-          sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
+          sessionStorage.setItem('sessionData', JSON.stringify(sessionData))
 
           // Jika sukses
-          router.push(`/dashboard-${role}`);
+          router.push(`/dashboard-${role}`)
         }
         else {
-          console.error('Role or id not found');
+          console.error('ID Tidak ditemukan')
         }
       } else if (response.status === 401) {
         // Jika data akun tidak ketemu
@@ -146,24 +150,24 @@ const SignPage = () => {
         setErrorMessage('')
       }, 3000)
     }
-  };
+  }
   useEffect(() => {
     // Simulate loading the login form
     setTimeout(() => {
-      setLoading(false);
-    }, 2500);
+      setLoading(false)
+    }, 2500)
 
-  }, []);
+  }, [])
 
-  const theme = useTheme();
+  const theme = useTheme()
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
-  };
+    setValues({ ...values, showPassword: !values.showPassword })
+  }
 
   const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   return (
     <Box className='content-center'>
@@ -240,6 +244,7 @@ const SignPage = () => {
           </form>
 
         </CardContent>
+        <Typography variant='caption'>API: {process.env.NEXT_PUBLIC_API_URL}:{process.env.NEXT_PUBLIC_API_PORT}</Typography>
       </Card>
       <FooterIllustrationsV1 />
     </Box>

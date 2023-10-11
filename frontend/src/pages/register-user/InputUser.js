@@ -57,7 +57,7 @@ const FormUser = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/tambah-user`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/tambah-user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

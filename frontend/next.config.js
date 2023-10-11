@@ -1,5 +1,5 @@
 const path = require('path')
-const API_URL = require('./src/configs/api')
+
 
 module.exports = {
   trailingSlash: true,

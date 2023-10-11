@@ -92,7 +92,7 @@ const FormKasbon = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/input-kasbon`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/input-kasbon`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

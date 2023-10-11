@@ -49,7 +49,7 @@ const UserDropdown = () => {
   // Fungsi Tombol Logout
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/logout`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/logout`, {
         method: 'GET',
         credentials: 'include',
       })

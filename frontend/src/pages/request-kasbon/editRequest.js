@@ -140,7 +140,7 @@ const TableEditRequest = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${NEXT_PUBLIC_API_PORT}/api/ambil-request-kasbon`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/ambil-request-kasbon`)
         if (response.ok) {
           const result = await response.json()
           setData(result)
