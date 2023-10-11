@@ -19,8 +19,7 @@ import Select from '@mui/material/Select'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import styled from '@emotion/styled'
 
-const dotenv = require('dotenv')
-dotenv.config()
+require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -92,7 +91,7 @@ const FormKasbon = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/input-kasbon`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/input-kasbon`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

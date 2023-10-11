@@ -16,8 +16,7 @@ import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
 import styled from '@emotion/styled'
 
-const dotenv = require('dotenv')
-dotenv.config()
+require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -25,7 +24,7 @@ const RoundedRectangleButton = styled(Button)`
 
 // SSR Biar bisa ambil data waktu production build
 export async function getServerSideProps() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/ambil-dashboard-komplit`)
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`)
   const data = await response.json()
 
   return {
@@ -112,7 +111,7 @@ const TableDataAdmin = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/ambil-dashboard-komplit`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`)
         if (response.ok) {
           const result = await response.json()
           setData(result) // Update data state

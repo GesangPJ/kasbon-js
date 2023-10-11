@@ -22,7 +22,7 @@ const StatusPage = () => {
   useEffect(() => {
 
     // Ambil status PostgreSQL
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/postgres-status`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/postgres-status`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -38,7 +38,7 @@ const StatusPage = () => {
         setPostgreStatus('Error');
       })
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/server-status`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/server-status`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`)

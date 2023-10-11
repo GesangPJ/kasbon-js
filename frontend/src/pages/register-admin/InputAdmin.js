@@ -14,8 +14,7 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import FormControl from '@mui/material/FormControl'
 import styled from '@emotion/styled'
 
-const dotenv = require('dotenv')
-dotenv.config()
+require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -53,7 +52,7 @@ const FormAdmin = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/tambah-admin`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tambah-admin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

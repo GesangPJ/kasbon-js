@@ -28,8 +28,7 @@ import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
 import styled from '@emotion/styled'
 
-const dotenv = require('dotenv')
-dotenv.config()
+require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -176,7 +175,7 @@ const FormBayarKasbon = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/ambil-data-bayar`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-data-bayar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -279,7 +278,7 @@ const FormBayarKasbon = () => {
       }))
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/edit-bayar-batch`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/edit-bayar-batch`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

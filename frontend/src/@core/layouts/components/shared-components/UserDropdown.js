@@ -17,8 +17,7 @@ import Typography from '@mui/material/Typography'
 // ** Icons Imports
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 
-const dotenv = require('dotenv')
-dotenv.config()
+require('dotenv').config()
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -49,7 +48,7 @@ const UserDropdown = () => {
   // Fungsi Tombol Logout
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/logout`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
         method: 'GET',
         credentials: 'include',
       })

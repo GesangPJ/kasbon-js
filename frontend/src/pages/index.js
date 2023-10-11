@@ -25,8 +25,7 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import { makeStyles } from '@mui/styles'
 
-const dotenv = require('dotenv')
-dotenv.config()
+require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px
@@ -85,7 +84,7 @@ const SignPage = () => {
       return
     }
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}:${process.env.NEXT_PUBLIC_API_PORT}/api/masuk`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/masuk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -244,7 +243,7 @@ const SignPage = () => {
           </form>
 
         </CardContent>
-        <Typography variant='caption'>API: {process.env.NEXT_PUBLIC_API_URL}:{process.env.NEXT_PUBLIC_API_PORT}</Typography>
+        <Typography variant='caption'>API: {process.env.NEXT_PUBLIC_API_URL}</Typography>
       </Card>
       <FooterIllustrationsV1 />
     </Box>
