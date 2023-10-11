@@ -23,7 +23,7 @@ app.use(
     }),
 
     // Pengaturan session dan cookie
-    secret: 'zXBVUQI0XCO24vcOc7leDCRJDI26QvSNDDAAGG',
+    secret: '4MOS7PnCkw51C4c03Y0QB4UJOoiemF1t',
     resave: false,
     saveUninitialized: true,
     cookie: {
