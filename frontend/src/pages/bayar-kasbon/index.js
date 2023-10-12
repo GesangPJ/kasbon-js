@@ -244,7 +244,6 @@ const FormBayarKasbon = () => {
       row.metode,
       row.keterangan,
       row.status_b,
-
     )
   })
 
