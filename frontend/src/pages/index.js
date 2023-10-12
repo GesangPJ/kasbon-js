@@ -28,8 +28,11 @@ import { makeStyles } from '@mui/styles'
 require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
-  border-radius: 32px
-`
+  border-radius: 32px;
+  position: sticky;
+  &:disabled {
+    border-radius: 32px;
+  }`
 
 const useStyles = makeStyles((theme) => ({
   ovalButton: {
@@ -198,52 +201,85 @@ const SignPage = () => {
               Masuk Ke Akun Anda Untuk Melanjutkan
             </Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={(e) => e.preventDefault()}>
+          <form noValidate autoComplete="off" onSubmit={(e) => e.preventDefault()}>
             <TextField
               autoFocus
               fullWidth
-              id='idakun'
-              label='ID Anda' // Change 'Nama' to 'Username'
+              id="idakun"
+              label="ID Anda"
               sx={{ marginBottom: 4 }}
               value={values.idakun}
-              onChange={handleChange('idakun')}
+              onChange={handleChange("idakun")}
             />
             <FormControl fullWidth>
-              <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
+              <InputLabel htmlFor="auth-login-password">Password</InputLabel>
               <OutlinedInput
-                label='Password'
+                label="Password"
                 value={values.password}
-                id='auth-login-password'
-                onChange={handleChange('password')}
-                type={values.showPassword ? 'text' : 'password'}
+                id="auth-login-password"
+                onChange={handleChange("password")}
+                type={values.showPassword ? "text" : "password"}
                 endAdornment={
-                  <InputAdornment position='end'>
+                  <InputAdornment position="end">
                     <IconButton
-                      edge='end'
+                      edge="end"
                       onClick={handleClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
-                      aria-label='toggle password visibility'
+                      aria-label="toggle password visibility"
                     >
                       {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
                     </IconButton>
                   </InputAdornment>
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault(); // Prevent form submission
+                    if (values.idakun && values.password) {
+                      handleLogin(); // Call the login function on Enter key press if fields are not empty
+                    }
+                  }
+                }}
               />
             </FormControl>
             <Box
-              sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
+              sx={{
+                mb: 4,
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+                justifyContent: "space-between",
+              }}
             ></Box>
-            <RoundedRectangleButton fullWidth size='large' variant='outlined'
+            <RoundedRectangleButton
+              type="button" // Change the button type to button
+              variant="contained"
               color="primary"
-
-              sx={{ marginBottom: 7 }}
-              onClick={handleLogin}>
+              sx={{
+                marginBottom: 7,
+                display: "block", // Center the button
+                margin: "0 auto", // Center the button
+                width: "300px", // Adjust the width as needed
+              }}
+              onClick={() => {
+                if (values.idakun && values.password) {
+                  handleLogin();
+                } else {
+                  // Handle empty fields here, such as showing an error message
+                  setErrorMessage("Semua Kolom Harus Diisi !");
+                  setTimeout(() => {
+                    setErrorMessage("");
+                  }, 5000);
+                }
+              }}
+            >
               Masuk
             </RoundedRectangleButton>
           </form>
 
-        </CardContent>
-        <Typography variant='caption'>API: {process.env.NEXT_PUBLIC_API_URL}</Typography>
+        </CardContent><br></br><br></br>
+        <Typography variant='caption'>
+          {`© 2023 - ${new Date().getFullYear()} GESANG TECHNOLOGY`}
+        </Typography>
       </Card>
       <FooterIllustrationsV1 />
     </Box>
