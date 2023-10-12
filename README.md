@@ -21,6 +21,12 @@ antara container frontend dan backend (API ERROR NOT FOUND/ API ERROR CONNECTION
 - _Build means it's safe to build the project_
 - _Preview means the build version still have bugs_
 
+### v1.0.7-BUILD
+
+- Working API URL from env
+- All page is working seamless
+- Next Build version is work like a charm
+
 ### v1.0.7-PREVIEW
 
 - Change API URL in frontend (client-side)
