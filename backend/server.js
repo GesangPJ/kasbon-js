@@ -5,6 +5,7 @@ const { pool, PostgresStatus } = require('./postgres')
 const cookieParser = require('cookie-parser')
 const pgSession = require('connect-pg-simple')(session)
 const dotenv = require('dotenv')
+const bcrypt = require('bcrypt')
 
 const allowedOrigins = process.env.CORS_ORIGINS.split(',')
 const PREFLIGHT = process.env.PREFLIGHT
@@ -93,6 +94,8 @@ app.post('/api/masuk', async (req, res) => {
     const userResult = await client.query(userQuery, [idakun, password])
 
     if (userResult.rows.length > 0) {
+      const passwordMatch = await bcrypt.compare(password, user.password_user)
+
       const user = userResult.rows[0]
       console.log('User login data:', user)
 
@@ -222,6 +225,8 @@ app.post('/api/tambah-admin', async (req, res) => {
   const { nama, email, password, id_petugas } = req.body
   const roles = 'admin'
 
+  const hashedPassword = await bcrypt.hash(password, 10)
+
   try {
     const client = await pool.connect()
 
@@ -238,7 +243,7 @@ app.post('/api/tambah-admin', async (req, res) => {
 
     // Lanjut jika tidak ada
     const insertQuery = 'INSERT INTO admin_kasbon (nama_admin, email_admin, password_admin, tanggal, roles_admin, id_petugas) VALUES ($1, $2, $3, NOW(), $4, $5)'
-    const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_petugas])
+    const insertResult = await client.query(insertQuery, [nama, email, hashedPassword, roles, id_petugas])
 
     client.release()
 
@@ -258,6 +263,7 @@ app.post('/api/tambah-admin', async (req, res) => {
 app.post('/api/tambah-user', async (req, res) => {
   const { nama, email, password, id_karyawan } = req.body
   const roles = 'user'
+  const hashedPassword = await bcrypt.hash(password, 10)
 
   try {
     const client = await pool.connect()
@@ -275,7 +281,7 @@ app.post('/api/tambah-user', async (req, res) => {
 
     // Jika tidak ada maka lanjut masukkan data
     const insertQuery = 'INSERT INTO user_kasbon (nama_user, email_user, password_user, tanggal, roles_user, id_karyawan) VALUES ($1, $2, $3, NOW(), $4, $5)'
-    const insertResult = await client.query(insertQuery, [nama, email, password, roles, id_karyawan])
+    const insertResult = await client.query(insertQuery, [nama, email, hashedPassword, roles, id_karyawan])
 
     client.release()
 
