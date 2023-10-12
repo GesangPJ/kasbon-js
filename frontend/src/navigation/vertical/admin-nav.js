@@ -4,7 +4,7 @@ import { AddCircle } from '@mui/icons-material'
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
 import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined'
 import PaidIcon from '@mui/icons-material/Paid'
-import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined'
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
 
 const AdminNavigation = () => {
   return [
@@ -44,6 +44,12 @@ const AdminNavigation = () => {
       title: 'Tambah Admin',
       icon: AddCircle,
       path: '/register-admin',
+      openInNewTab: false
+    },
+    {
+      title: 'Download Data',
+      icon: FileDownloadOutlinedIcon,
+      path: '/download',
       openInNewTab: false
     }
   ]
