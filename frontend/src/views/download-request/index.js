@@ -20,6 +20,8 @@ import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded'
+import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded'
 
 require('dotenv').config()
 
@@ -353,16 +355,6 @@ const TableRequestDownload = () => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-      </Paper>
-      <br></br>
-      <Paper sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px' }}>
-        <RoundedRectangleButton variant="outlined" color="success">
-          Excel Export
-        </RoundedRectangleButton>
-        <div style={{ width: '10px' }}></div>
-        <RoundedRectangleButton variant="outlined" color="primary">
-          Docx Export
-        </RoundedRectangleButton>
       </Paper>
     </div>
   )
