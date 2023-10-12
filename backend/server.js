@@ -79,10 +79,15 @@ app.get('/api/logout', (req, res) => {
   })
 })
 
+const checkPassword = async (plainPassword, hashedPassword) => {
+  return await bcrypt.compare(plainPassword, hashedPassword);
+};
+
 // API Masuk
 app.post('/api/masuk', async (req, res) => {
   const { idakun, password } = req.body
   const jakartaTimezone = 'Asia/Jakarta'
+
 
   try {
 
@@ -90,95 +95,105 @@ app.post('/api/masuk', async (req, res) => {
     const client = await pool.connect()
 
     // Cek kredensial pada tabel user_kasbon
-    const userQuery = 'SELECT id_user, nama_user, email_user, tanggal, roles_user, id_karyawan FROM user_kasbon WHERE id_karyawan = $1 AND password_user = $2'
-    const userResult = await client.query(userQuery, [idakun, password])
+    const userQuery = 'SELECT id_user, nama_user, email_user, tanggal, roles_user, password_user, id_karyawan FROM user_kasbon WHERE id_karyawan = $1'
+    const userResult = await client.query(userQuery, [idakun])
 
     if (userResult.rows.length > 0) {
-      const passwordMatch = await bcrypt.compare(password, user.password_user)
-
       const user = userResult.rows[0]
-      console.log('User login data:', user)
+      const passwordMatch = await checkPassword(password, user.password_user)
 
-      // Pastikan bahwa session adalah objek
-      if (!req.session.user) {
-        req.session.user = {}
+
+      if (passwordMatch) {
+        console.log('User login data :', user);
+
+        // Pastikan bahwa session adalah objek
+        if (!req.session.user) {
+          req.session.user = {};
+        }
+        const tanggalAkun = new Date(user.tanggal);
+        const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
+
+        // Simpan session ke backend
+        req.session.user = {
+          id: user.id_user,
+          username: user.nama_user,
+          email: user.email_user,
+          roles: user.roles_user,
+          isAdmin: false,
+          id_akun: user.id_karyawan,
+          tanggal_akun: tanggalFormat,
+        };
+
+        client.release();
+
+        // Jika sukses, kirim respon status dan kirim data session ke frontend
+        res.status(200).json({
+          id: user.id_user,
+          username: user.nama_user,
+          email: user.email_user,
+          roles: user.roles_user,
+          isAdmin: false,
+          id_akun: user.id_karyawan,
+          tanggal_akun: user.tanggal,
+        });
+
+        console.log('Session User Data:', req.session.user);
+      } else {
+        // Password does not match
+        client.release();
+        res.status(401).json({ error: 'Invalid credentials' });
       }
-      const tanggalAkun = new Date(user.tanggal)
-      const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
-
-      // Simpan session ke backend
-      req.session.user = {
-        id: user.id_user,
-        username: user.nama_user,
-        email: user.email_user,
-        roles: user.roles_user,
-        isAdmin: false,
-        tanggal_akun: tanggalFormat,
-      }
-
-      client.release()
-
-      // Jika sukses, kirim respon status dan kirim data session ke frontend
-      res.status(200).json({
-        id: user.id_user,
-        username: user.nama_user,
-        email: user.email_user,
-        roles: user.roles_user,
-        isAdmin: false,
-        id_akun: user.id_karyawan,
-        tanggal_akun: user.tanggal,
-      })
-
-      console.log('Session User Data:', req.session.user)
-
-      return
+      return;
     }
 
     // Cek kredensial untuk tabel admin_kasbon
-    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, tanggal, roles_admin, id_petugas FROM admin_kasbon WHERE id_petugas = $1 AND password_admin = $2'
-    const adminResult = await client.query(adminQuery, [idakun, password])
+    const adminQuery = 'SELECT id_admin, nama_admin, email_admin, tanggal, roles_admin, password_admin, id_petugas FROM admin_kasbon WHERE id_petugas = $1'
+    const adminResult = await client.query(adminQuery, [idakun])
 
     // Jika Data ditemukan
     if (adminResult.rows.length > 0) {
       const admin = adminResult.rows[0]
+      const passwordMatch = await checkPassword(password, admin.password_admin)
 
-      // Pastikan bahwa session adalah objek
-      if (!req.session.admin) {
-        req.session.admin = {}
+      if (passwordMatch) {
+        // Pastikan bahwa session adalah objek
+        if (!req.session.admin) {
+          req.session.admin = {};
+        }
+        const tanggalAkun = new Date(admin.tanggal);
+        const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
+
+        req.session.admin = {
+          id: admin.id_admin,
+          username: admin.nama_admin,
+          email: admin.email_admin,
+          roles: admin.roles_admin,
+          isAdmin: true,
+          id_akun: admin.id_petugas,
+          tanggal_akun: tanggalFormat,
+        };
+
+        client.release();
+
+        // Jika sukses, kirim respon status dan kirim data session ke frontend
+        res.status(200).json({
+          id: admin.id_admin,
+          username: admin.nama_admin,
+          email: admin.email_admin,
+          roles: admin.roles_admin,
+          isAdmin: true,
+          id_akun: admin.id_petugas,
+          tanggal_akun: admin.tanggal,
+        });
+
+        console.log('Session Admin Data:', req.session.admin);
+      } else {
+        // Password does not match
+        client.release();
+        res.status(401).json({ error: 'Invalid credentials' });
       }
-      const tanggalAkun = new Date(admin.tanggal)
-      const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
-
-      req.session.admin = {
-        id: admin.id_admin,
-        username: admin.nama_admin,
-        email: admin.email_admin,
-        roles: admin.roles_admin,
-        isAdmin: true,
-        id_akun: admin.id_petugas,
-        tanggal_akun: tanggalFormat,
-      }
-
-      client.release()
-
-      res.status(200).json({
-        id: admin.id_admin,
-        username: admin.nama_admin,
-        email: admin.email_admin,
-        roles: admin.roles_admin,
-        isAdmin: true,
-        id_akun: admin.id_petugas,
-        tanggal_akun: admin.tanggal,
-      })
-
-      console.log('Session Admin Data:', req.session.admin)
-
-      return
+      return;
     }
-
-    // Jika kredensial tidak valid/akun tidak ditemukan
-    client.release()
-    res.status(401).json({ error: 'Invalid credentials' })
   } catch (error) {
     console.error('Login error:', error)
     res.status(500).json({ error: 'Internal Server Error' })
