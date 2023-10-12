@@ -31,7 +31,7 @@ const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
   position: sticky;
   &:disabled {
-    border-radius: 32px;
+    border-radius: 32px
   }`
 
 const useStyles = makeStyles((theme) => ({
@@ -233,9 +233,9 @@ const SignPage = () => {
                 }
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    e.preventDefault(); // Prevent form submission
+                    e.preventDefault()
                     if (values.idakun && values.password) {
-                      handleLogin(); // Call the login function on Enter key press if fields are not empty
+                      handleLogin()
                     }
                   }
                 }}
@@ -251,24 +251,24 @@ const SignPage = () => {
               }}
             ></Box>
             <RoundedRectangleButton
-              type="button" // Change the button type to button
+              type="button"
               variant="contained"
               color="primary"
               sx={{
                 marginBottom: 7,
-                display: "block", // Center the button
-                margin: "0 auto", // Center the button
-                width: "300px", // Adjust the width as needed
+                display: "block",
+                margin: "0 auto",
+                width: "300px",
               }}
               onClick={() => {
                 if (values.idakun && values.password) {
-                  handleLogin();
+                  handleLogin()
                 } else {
-                  // Handle empty fields here, such as showing an error message
-                  setErrorMessage("Semua Kolom Harus Diisi !");
+
+                  setErrorMessage("Semua Kolom Harus Diisi !")
                   setTimeout(() => {
-                    setErrorMessage("");
-                  }, 5000);
+                    setErrorMessage("")
+                  }, 5000)
                 }
               }}
             >
