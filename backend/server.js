@@ -80,14 +80,13 @@ app.get('/api/logout', (req, res) => {
 })
 
 const checkPassword = async (plainPassword, hashedPassword) => {
-  return await bcrypt.compare(plainPassword, hashedPassword);
-};
+  return await bcrypt.compare(plainPassword, hashedPassword)
+}
 
 // API Masuk
 app.post('/api/masuk', async (req, res) => {
   const { idakun, password } = req.body
   const jakartaTimezone = 'Asia/Jakarta'
-
 
   try {
 
@@ -104,14 +103,14 @@ app.post('/api/masuk', async (req, res) => {
 
 
       if (passwordMatch) {
-        console.log('User login data :', user);
+        console.log('Password Match!')
 
         // Pastikan bahwa session adalah objek
         if (!req.session.user) {
-          req.session.user = {};
+          req.session.user = {}
         }
-        const tanggalAkun = new Date(user.tanggal);
-        const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
+        const tanggalAkun = new Date(user.tanggal)
+        const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
 
         // Simpan session ke backend
         req.session.user = {
@@ -122,9 +121,9 @@ app.post('/api/masuk', async (req, res) => {
           isAdmin: false,
           id_akun: user.id_karyawan,
           tanggal_akun: tanggalFormat,
-        };
+        }
 
-        client.release();
+        client.release()
 
         // Jika sukses, kirim respon status dan kirim data session ke frontend
         res.status(200).json({
@@ -135,15 +134,15 @@ app.post('/api/masuk', async (req, res) => {
           isAdmin: false,
           id_akun: user.id_karyawan,
           tanggal_akun: user.tanggal,
-        });
-
-        console.log('Session User Data:', req.session.user);
+        })
+        console.log('Session User Data:', req.session.user)
+        console.log('Password Match!')
       } else {
         // Password does not match
-        client.release();
-        res.status(401).json({ error: 'Invalid credentials' });
+        client.release()
+        res.status(401).json({ error: 'Invalid credentials' })
       }
-      return;
+      return
     }
 
     // Cek kredensial untuk tabel admin_kasbon
@@ -158,10 +157,10 @@ app.post('/api/masuk', async (req, res) => {
       if (passwordMatch) {
         // Pastikan bahwa session adalah objek
         if (!req.session.admin) {
-          req.session.admin = {};
+          req.session.admin = {}
         }
-        const tanggalAkun = new Date(admin.tanggal);
-        const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone });
+        const tanggalAkun = new Date(admin.tanggal)
+        const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
 
         req.session.admin = {
           id: admin.id_admin,
@@ -171,9 +170,9 @@ app.post('/api/masuk', async (req, res) => {
           isAdmin: true,
           id_akun: admin.id_petugas,
           tanggal_akun: tanggalFormat,
-        };
+        }
 
-        client.release();
+        client.release()
 
         // Jika sukses, kirim respon status dan kirim data session ke frontend
         res.status(200).json({
@@ -184,15 +183,16 @@ app.post('/api/masuk', async (req, res) => {
           isAdmin: true,
           id_akun: admin.id_petugas,
           tanggal_akun: admin.tanggal,
-        });
+        })
 
-        console.log('Session Admin Data:', req.session.admin);
+        console.log('Session Admin Data:', req.session.admin)
+        console.log('Password Match!')
       } else {
         // Password does not match
-        client.release();
-        res.status(401).json({ error: 'Invalid credentials' });
+        client.release()
+        res.status(401).json({ error: 'Invalid credentials' })
       }
-      return;
+      return
     }
   } catch (error) {
     console.error('Login error:', error)
