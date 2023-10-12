@@ -91,7 +91,7 @@ const StatusPage = () => {
           <Grid container spacing={6} justifyContent="center" textAlign={'justify'}>
             <DemoGrid item xs={5} sm={9}>
               <Typography variant="body1">
-
+                API : {process.env.NEXT_PUBLIC_API_URL}
               </Typography>
               <Typography variant="body1">
 

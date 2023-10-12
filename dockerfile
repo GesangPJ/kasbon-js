@@ -14,15 +14,12 @@ RUN npm install --prefix ./frontend
 # Install the Express.js dependencies
 RUN npm install --prefix ./backend
 
-# Build the Next.js frontend
-RUN npm run build --prefix ./frontend
-
 # Expose the ports for Express.js and Next.js (if necessary)
 EXPOSE 3000
 EXPOSE 3001
 
 # Copy the batch script to start both frontend and backend
-COPY start.bat /app
+COPY start.sh /app
 
 # Set the batch script as the entry point
-CMD ["start.bat"]
+CMD ["start.sh"]
