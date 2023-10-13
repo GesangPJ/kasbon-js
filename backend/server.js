@@ -482,6 +482,54 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
 
 })
 
+// API Ambil data request untuk di download
+app.post('/api/ambil-request-download', async (req, res) => {
+  const id_karyawan = req.body.id_karyawan
+
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND status_b = \'belum\' AND id_karyawan = $1'
+    const selectResult = await client.query(selectQuery, [id_karyawan])
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data request' })
+    }
+  }
+  catch (error) {
+    console.error('Error :', error)
+  }
+
+})
+
+// API Ambil data request untuk di download
+app.post('/api/ambil-bayar-download', async (req, res) => {
+  const id_karyawan = req.body.id_karyawan
+
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND status_b = \'lunas\' AND id_karyawan = $1'
+    const selectResult = await client.query(selectQuery, [id_karyawan])
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data request' })
+    }
+  }
+  catch (error) {
+    console.error('Error :', error)
+  }
+
+})
+
 // API Dashboard Admin (Menggunakan VIEW dashboard_komplit)
 app.get('/api/ambil-dashboard-komplit', async (req, res) => {
   try {
