@@ -651,8 +651,6 @@ function generateDocxWithData(data, templatePath) {
 app.post('/api/download-docx-request/:id_request', async (req, res) => {
   const requestId = req.params.id_request
   const currentDateTime = new Date()
-  const zip = new PizZip(content)
-
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
     const jakartaTimezone = 'Asia/Jakarta'
@@ -660,7 +658,6 @@ app.post('/api/download-docx-request/:id_request', async (req, res) => {
     const options = { timeZone: jakartaTimezone, hour12: false }
     return utcDate.toLocaleString('id-ID', options)
   }
-
   try {
     // Buka koneksi ke Postgres
     const client = await pool.connect()
@@ -693,11 +690,14 @@ app.post('/api/download-docx-request/:id_request', async (req, res) => {
         current_datetime: formatTanggaljam(currentDateTime),
       }
 
+
       // Path to the template file
       const content = fs.readFileSync(
-        path.resolve("/data/template/template_request.docx"),
+        path.resolve(__dirname, './data/template/template_request.docx'),
         "binary"
-      );
+      )
+
+      const zip = new PizZip(content)
 
       const doc = new Docxtemplater(zip, {
         paragraphLoop: true,
