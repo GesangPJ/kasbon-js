@@ -5,6 +5,7 @@ import Link from '@mui/material/Link'
 
 import TableRequestDownload from 'src/views/download-request'
 import TableBayarDownload from 'src/views/download-bayar'
+import Divider from '@mui/material/Divider'
 
 const DownloadPage = () => {
   return (
@@ -16,15 +17,22 @@ const DownloadPage = () => {
           </Link>
         </Typography>
       </Grid>
+
       <Grid item xs={12}>
         <TableRequestDownload />
       </Grid>
       <Grid item xs={12}>
+        <Divider sx={{ borderBottomWidth: 4 }} />
+      </Grid>
+      <Grid item xs={12}><br></br>
         <Typography variant='h5'>
           <Link href=''>
             DOWNLOAD DATA BAYAR
           </Link>
         </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Divider sx={{ borderBottomWidth: 4 }} />
       </Grid>
       <Grid item xs={12}>
         <TableBayarDownload />
