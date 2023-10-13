@@ -27,6 +27,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
 import styled from '@emotion/styled'
+import Divider from '@mui/material/Divider'
 
 require('dotenv').config()
 
@@ -329,6 +330,7 @@ const FormBayarKasbon = () => {
           </Link>
         </Typography>
       </Grid>
+
       <Grid item xs={12}>
         <form onSubmit={handleSubmitID}>
           <Grid item xs={4}>
@@ -355,14 +357,17 @@ const FormBayarKasbon = () => {
               Lihat Data
             </RoundedRectangleButton>
           </Grid>
-        </form><br></br>
-      </Grid><br></br>
+        </form>
+      </Grid>
       {errorMessage && (
         <Alert severity="error">{errorMessage}</Alert>
       )}
       {successMessage && (
         <Alert severity="success">{successMessage}</Alert>
-      )}<br></br>
+      )}
+      <Grid item xs={12}>
+        <Divider sx={{ borderBottomWidth: 4 }} />
+      </Grid>
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Tabel Bayar Kasbon' titleTypographyProps={{ variant: 'h6' }} />
