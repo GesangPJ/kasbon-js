@@ -23,6 +23,8 @@ import TextField from '@mui/material/TextField'
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded'
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined'
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
+import Divider from '@mui/material/Divider'
+import Alert from '@mui/material/Alert'
 
 require('dotenv').config()
 
@@ -276,8 +278,17 @@ const TableRequestDownload = () => {
                 Lihat Data Request
               </RoundedRectangleButton>
             </Grid>
-          </form><br></br>
+          </form>
         </Grid><br></br>
+        {errorMessage && (
+          <Alert severity="error">{errorMessage}</Alert>
+        )}
+        {successMessage && (
+          <Alert severity="success">{successMessage}</Alert>
+        )}
+        <Grid item xs={12}>
+          <Divider sx={{ borderBottomWidth: 4 }} />
+        </Grid>
       </Grid>
 
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
