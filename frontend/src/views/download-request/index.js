@@ -21,13 +21,17 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded'
-import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded'
+import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined'
+import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
 
 require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
-  border-radius: 32px
-`
+  border-radius: 32px;
+  position: sticky;
+  &:disabled {
+    border-radius: 32px
+  }`
 
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuning
@@ -47,6 +51,10 @@ const useStyles = makeStyles((theme) => ({
   ovalButton: {
     borderRadius: '50%',
   },
+
+  downloadButton: {
+    alignContent: "center",
+  },
 }))
 
 const columns = [
@@ -56,12 +64,13 @@ const columns = [
   { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: true },
-  { id: 'download_b', label: 'Download', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
+  { id: 'nama_admin', label: 'Petugas', minWidth: 10, align: 'left', sortable: true },
+  { id: 'download_b', label: '', minWidth: 10, align: 'left', sortable: false },
 ]
 
-function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request) {
-  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request }
+function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, nama_admin) {
+  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, nama_admin }
 }
 
 // Komparasi sortir
@@ -132,7 +141,7 @@ const TableRequestDownload = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-data-bayar`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-request-download`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,8 +161,8 @@ const TableRequestDownload = () => {
 
         // Jika data tidak ditemukan (Error 404)
       } else if (response.status === 404) {
-        console.error('Data tidak ditemukan')
-        setErrorMessage(`Data ID : ${id_karyawan} tidak ditemukan`)
+        console.error('Data request tidak ditemukan')
+        setErrorMessage(`Data ID : ${id_karyawan} request tidak ditemukan`)
         setTimeout(() => {
           setErrorMessage('')
         }, 5000)
@@ -203,7 +212,6 @@ const TableRequestDownload = () => {
       jumlah,
       metode,
       status_request,
-      status_b,
       keterangan,
       nama_admin,
     } = row
@@ -216,7 +224,6 @@ const TableRequestDownload = () => {
       metode,
       keterangan,
       status_request,
-      status_b,
       nama_admin,
     )
   })
@@ -323,7 +330,13 @@ const TableRequestDownload = () => {
 
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        {column.id === 'status_request' ? (
+                        {column.id === 'download_b' ? (
+                          <RoundedRectangleButton variant="contained" color="primary"
+                            startIcon={<DownloadForOfflineOutlinedIcon />}
+                            style={{ color: 'white' }}>
+                            Download
+                          </RoundedRectangleButton>
+                        ) : column.id === 'status_request' ? (
                           row.status_request === 'wait' ? (
                             <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
                           ) : row.status_request === 'sukses' ? (
