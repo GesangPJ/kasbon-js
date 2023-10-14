@@ -10,15 +10,19 @@ import Box from '@mui/material/Box'
 // ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
-// ** Demo Imports
-import FooterIllustrations from 'src/views/pages/misc/FooterIllustrations'
-
 // ** Styled Components
 const BoxWrapper = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
     width: '90vw'
   }
 }))
+
+const RoundedRectangleButton = styled(Button)`
+  border-radius: 32px;
+  position: sticky;
+  &:disabled {
+    border-radius: 32px
+  }`
 
 const Img = styled('img')(({ theme }) => ({
   marginBottom: theme.spacing(10),
@@ -39,20 +43,20 @@ const Error401 = () => {
     <Box className='content-center'>
       <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
         <BoxWrapper>
-          <Typography variant='h1'>401</Typography>
+          <Typography variant='h1'>403</Typography>
           <Typography variant='h5' sx={{ mb: 1, fontSize: '1.5rem !important' }}>
-            You are not authorized! 🔐
+            Anda Tidak Memiliki Izin Mengakses Halaman Ini! 🔐
           </Typography>
-          <Typography variant='body2'>You don&prime;t have permission to access this page. Go Home!</Typography>
+          <Typography variant='body1'>Masuk Dengan Akun Yang Memiliki Akses</Typography>
         </BoxWrapper>
-        <Img height='487' alt='error-illustration' src='/images/pages/401.png' />
+        <Img height='387' alt='error-illustration' src='/images/pages/stop.png' />
         <Link passHref href='/'>
-          <Button component='a' variant='contained' sx={{ px: 5.5 }}>
-            Back to Home
-          </Button>
+          <RoundedRectangleButton component='a' variant='contained' sx={{ px: 5.5 }}>
+            Kembali
+          </RoundedRectangleButton>
         </Link>
       </Box>
-      <FooterIllustrations />
+
     </Box>
   )
 }
