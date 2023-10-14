@@ -24,6 +24,18 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 - _Build means it's safe to build the project_
 - _Preview means the build version still have bugs_
 
+### v1.1.1-BUILD
+
+- Add access protection for Admin Dashboard page, only admin can access
+- Add access protection for Karyawan Dashboard page
+- Add access protection for Input Kasbon page
+- Add access protection for Request Page, only admin can access
+- Add access protection for Bayar page, only admin can access
+- Add access protection for Download page, only admin can access
+- Fix Docx download bugs
+- Fix docx template
+- Remove unnecessary codes
+
 ### v1.0.8-BUILD
 
 - Working Download Request Page, download data to Docx format.
