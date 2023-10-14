@@ -8,7 +8,7 @@ antara container frontend dan backend (API ERROR NOT FOUND/ API ERROR CONNECTION
 
 Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar frontend (NextJS) container dan backend (ExpressJS) tidak dapat terhubung sama sekali pada webpage NextJS, namun bisa jika melalui container console pada kedua container.
 
-#### Features
+## Features
 
 - Account auth using express-session
 - Session storage
@@ -17,8 +17,9 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 - Set Request
 - Set Bayar
 - Additional 2 VIEW tables
+- Download Data Page
 
-### Changelog
+## Changelog
 
 - _Build means it's safe to build the project_
 - _Preview means the build version still have bugs_
