@@ -6,6 +6,10 @@ const cookieParser = require('cookie-parser')
 const pgSession = require('connect-pg-simple')(session)
 const dotenv = require('dotenv')
 const bcrypt = require('bcrypt')
+const PizZip = require("pizzip")
+const Docxtemplater = require("docxtemplater")
+const fs = require('fs')
+const path = require('path')
 
 const allowedOrigins = process.env.CORS_ORIGINS.split(',')
 const PREFLIGHT = process.env.PREFLIGHT
@@ -482,6 +486,54 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
 
 })
 
+// API Ambil data request untuk di download
+app.post('/api/ambil-request-download', async (req, res) => {
+  const id_karyawan = req.body.id_karyawan
+
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND status_b = \'belum\' AND id_karyawan = $1'
+    const selectResult = await client.query(selectQuery, [id_karyawan])
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data request' })
+    }
+  }
+  catch (error) {
+    console.error('Error :', error)
+  }
+
+})
+
+// API Ambil data request untuk di download
+app.post('/api/ambil-bayar-download', async (req, res) => {
+  const id_karyawan = req.body.id_karyawan
+
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND status_b = \'lunas\' AND id_karyawan = $1'
+    const selectResult = await client.query(selectQuery, [id_karyawan])
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data request' })
+    }
+  }
+  catch (error) {
+    console.error('Error :', error)
+  }
+
+})
+
 // API Dashboard Admin (Menggunakan VIEW dashboard_komplit)
 app.get('/api/ambil-dashboard-komplit', async (req, res) => {
   try {
@@ -574,6 +626,67 @@ app.put('/api/edit-bayar-batch', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' })
   }
 })
+
+// Download Request Kasbon
+app.post('/api/download-kasbon', async (req, res) => {
+  const { id_request, nama_user, jumlah, metode, tanggaljam, keterangan } = req.body
+
+  const DateTime = new Date()
+
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta'
+    const utcDate = new Date(tanggaljam)
+    const options = { timeZone: jakartaTimezone, hour12: false }
+
+    return utcDate.toLocaleString('id-ID', options)
+  }
+  try {
+    const content = fs.readFileSync(
+      path.resolve(__dirname, "template_request.docx"),
+      "binary"
+    );
+
+    const zip = new PizZip(content);
+
+    const doc = new Docxtemplater(zip, {
+      paragraphLoop: true,
+      linebreaks: true,
+    })
+    doc.render({
+      id_request: id_request,
+      nama_user: nama_user,
+      jumlah: jumlah,
+      metode: metode,
+      keterangan: keterangan,
+      tanggaljam: tanggaljam,
+      current_datetime: formatTanggaljam(DateTime)
+    })
+
+    const buffer = doc.getZip().generate({
+      type: "nodebuffer",
+      compression: "DEFLATE",
+    })
+
+    if (buffer) {
+      res.setHeader('Content-Disposition', `attachment; filename=kasbon-${nama_user}-${id_request}.docx`);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Length', buffer.length);
+      res.send(buffer);
+      console.log('Sukses kirim Docx')
+    } else {
+      res.status(500).send('Internal Server Error');
+    }
+  }
+  catch (error) {
+    res.status(500).send('Cannot make Docx')
+  }
+})
+
+
+
+
+
+
 
 // Set Port buat server
 const port = process.env.PORT || 3001

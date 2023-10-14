@@ -21,7 +21,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded'
-import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined'
+import DownloadForOfflineRoundedIcon from '@mui/icons-material/DownloadForOfflineRounded'
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
 import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
@@ -66,13 +66,13 @@ const columns = [
   { id: 'jumlah', label: 'Nilai', minWidth: 10, sortable: false },
   { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
   { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
-  { id: 'status_request', label: 'Req', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_b', label: 'Status Bayar', minWidth: 10, align: 'left', sortable: false },
   { id: 'nama_admin', label: 'Petugas', minWidth: 10, align: 'left', sortable: true },
   { id: 'download_b', label: '', minWidth: 10, align: 'left', sortable: false },
 ]
 
-function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, nama_admin) {
-  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, nama_admin }
+function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, nama_admin) {
+  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, nama_admin }
 }
 
 // Komparasi sortir
@@ -102,7 +102,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0])
 }
 
-const TableRequestDownload = () => {
+const TableBayarDownload = () => {
   const classes = useStyles()
 
   // ** States
@@ -143,7 +143,7 @@ const TableRequestDownload = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-request-download`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-bayar-download`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -213,7 +213,7 @@ const TableRequestDownload = () => {
       nama_user,
       jumlah,
       metode,
-      status_request,
+      status_b,
       keterangan,
       nama_admin,
     } = row
@@ -225,7 +225,7 @@ const TableRequestDownload = () => {
       formatCurrencyIDR(jumlah),
       metode,
       keterangan,
-      status_request,
+      status_b,
       nama_admin,
     )
   })
@@ -247,44 +247,6 @@ const TableRequestDownload = () => {
   const handleSort = (columnId) => {
     const isAsc = sorting.column === columnId && sorting.direction === 'asc'
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
-  }
-
-  const DownloadKasbon = async (id_request, nama_user, jumlah, metode, keterangan, tanggaljam) => {
-    const DownloadData = {
-      id_request, nama_user, jumlah, metode, keterangan, tanggaljam
-    }
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/download-kasbon`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(DownloadData),
-      });
-      if (response.ok) {
-        // Convert the response to a Blob
-        const blob = await response.blob();
-
-        // Create a URL for the Blob
-        const url = window.URL.createObjectURL(blob);
-
-        // Create an anchor element to trigger the download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `kasbon-${nama_user}-${id_request}.docx`; // Modify the file name as needed
-
-        // Trigger the click event to download the file
-        a.click();
-
-        // Clean up resources
-        window.URL.revokeObjectURL(url);
-      } else {
-        console.error('Error downloading the DOCX file');
-        // Handle the error
-      }
-    }
-    catch (error) {
-      console.error('Error :', error)
-    }
   }
 
   return (
@@ -313,20 +275,11 @@ const TableRequestDownload = () => {
             </Grid><br></br>
             <Grid item xs={7}>
               <RoundedRectangleButton type="button" variant="contained" size="large" onClick={handleSubmitID} color="primary">
-                Lihat Data Request
+                Lihat Data Bayar
               </RoundedRectangleButton>
             </Grid>
-          </form>
+          </form><br></br>
         </Grid><br></br>
-        {errorMessage && (
-          <Alert severity="error">{errorMessage}</Alert>
-        )}
-        {successMessage && (
-          <Alert severity="success">{successMessage}</Alert>
-        )}
-        <Grid item xs={12}>
-          <Divider sx={{ borderBottomWidth: 4 }} />
-        </Grid>
       </Grid>
 
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -380,28 +333,18 @@ const TableRequestDownload = () => {
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {column.id === 'download_b' ? (
-                          <RoundedRectangleButton variant="contained" color="primary"
-                            startIcon={<DownloadForOfflineOutlinedIcon />}
-                            onClick={() => DownloadKasbon(
-                              row.id_request,
-                              row.nama_user,
-                              row.jumlah,
-                              row.metode,
-                              row.keterangan,
-                              row.tanggaljam
-                            )}
-                            style={{ color: 'white' }}>
+                          <RoundedRectangleButton variant="contained" color="primary" startIcon={<TextSnippetOutlinedIcon />} style={{ color: 'white' }}>
                             Download
                           </RoundedRectangleButton>
-                        ) : column.id === 'status_request' ? (
-                          row.status_request === 'wait' ? (
+                        ) : column.id === 'status_b' ? (
+                          row.status_b === 'wait' ? (
                             <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
-                          ) : row.status_request === 'sukses' ? (
-                            <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
-                          ) : row.status_request === 'tolak' ? (
+                          ) : row.status_b === 'lunas' ? (
+                            <Chip label="Lunas" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
+                          ) : row.status_b === 'tolak' ? (
                             <Chip label="Tolak" className={classes.errorCell} color="error" variant="outlined" style={{ color: 'white' }} />
                           ) : (
-                            row.status_request
+                            row.status_b
                           )
                         ) : column.format && typeof row[column.id] === 'number' ? (
                           column.format(row[column.id])
@@ -430,4 +373,4 @@ const TableRequestDownload = () => {
   )
 }
 
-export default TableRequestDownload
+export default TableBayarDownload
