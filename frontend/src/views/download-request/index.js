@@ -259,26 +259,26 @@ const TableRequestDownload = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(DownloadData),
-      });
+      })
       if (response.ok) {
         // Convert the response to a Blob
-        const blob = await response.blob();
+        const blob = await response.blob()
 
         // Create a URL for the Blob
-        const url = window.URL.createObjectURL(blob);
+        const url = window.URL.createObjectURL(blob)
 
         // Create an anchor element to trigger the download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `kasbon-${nama_user}-${id_request}.docx`; // Modify the file name as needed
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `kasbon-${nama_user}-${id_request}.docx` // Modify the file name as needed
 
         // Trigger the click event to download the file
-        a.click();
+        a.click()
 
         // Clean up resources
-        window.URL.revokeObjectURL(url);
+        window.URL.revokeObjectURL(url)
       } else {
-        console.error('Error downloading the DOCX file');
+        console.error('Error downloading the DOCX file')
         // Handle the error
       }
     }
