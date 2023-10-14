@@ -8,8 +8,8 @@ const dotenv = require('dotenv')
 const bcrypt = require('bcrypt')
 const PizZip = require("pizzip")
 const Docxtemplater = require("docxtemplater")
-const path = require('path')
 const fs = require('fs')
+const path = require('path')
 
 const allowedOrigins = process.env.CORS_ORIGINS.split(',')
 const PREFLIGHT = process.env.PREFLIGHT
@@ -627,119 +627,175 @@ app.put('/api/edit-bayar-batch', async (req, res) => {
   }
 })
 
-// Fungsi Docxtemplater 
-function generateDocxWithData(data, templatePath) {
-  const content = fs.readFileSync(templatePath, 'binary')
-  const docx = new Docxtemplater()
-  docx.loadZip(content)
+const generateDocxWithData = async (data, templatePath) => {
+  const content = await fs.promises.readFile(templatePath, 'binary');
+  const docx = new docxtemplater();
+  docx.loadZip(content);
 
   // Set the data to replace placeholders
-  docx.setData(data)
+  docx.setData(data);
 
   try {
-    docx.render()
-    const buffer = docx.getZip().generate({ type: 'nodebuffer' })
+    docx.render();
+    const buffer = docx.getZip().generate({ type: 'nodebuffer' });
 
-    return buffer
+    return buffer;
   } catch (error) {
-    console.error('Error membuat docx:', error)
-    return null
+    console.error('Error making docx:', error);
+    return null;
   }
 }
 
-// API Buat dan Download Docx Requesst Kasbon
+// API to download the DOCX file
 app.post('/api/download-docx-request/:id_request', async (req, res) => {
-  const requestId = req.params.id_request
-  const currentDateTime = new Date()
+  const idRequest = req.params.id_request;
+
+  // Get the entire row from the database
+  const row = await pool.query(`SELECT * FROM dashboard_komplit WHERE id_request = ${idRequest}`);
+
+  // Generate the DOCX file
+  const buffer = await generateDocxWithData(row[0], path.resolve(__dirname, 'data/template/template_request.docx'));
+
+  if (buffer) {
+    res.setHeader('Content-Disposition', `attachment; filename=kasbon-${idRequest}.docx`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.setHeader('Content-Length', buffer.length);
+    res.send(buffer);
+  } else {
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// API to download the DOCX file
+app.post('/api/download-test-request/:id_request', async (req, res) => {
+  const id_request = req.params.id_request
+  const datetime = new Date()
+  const client = pool.connect()
+
   // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
   const formatTanggaljam = (tanggaljam) => {
     const jakartaTimezone = 'Asia/Jakarta'
     const utcDate = new Date(tanggaljam)
     const options = { timeZone: jakartaTimezone, hour12: false }
+
+    return utcDate.toLocaleString('id-ID', options)
+  }
+
+  // Get the entire row from the database
+
+  const selectQuery = `SELECT * FROM dashboard_komplit WHERE id_request = $1`
+  const selectValues = [id_request]
+  const selectResult = await client.query(selectQuery, selectValues)
+
+  if (selectResult.rows.length > 0) {
+
+    //res.status(200).json(selectResult.rows)
+
+    const data = selectResult.rows
+
+    const content = fs.readFileSync(
+      path.resolve(__dirname, "template_request.docx"),
+      "binary"
+    );
+
+    const zip = new PizZip(content);
+
+    const doc = new Docxtemplater(zip, {
+      paragraphLoop: true,
+      linebreaks: true,
+    });
+
+    doc.render({
+      id_request: data.id_request,
+      id_karyawan: data.id_karyawan,
+      nama_user: data.nama_user,
+      jumlah: data.jumlah,
+      metode: data.metode,
+      keterangan: data.keterangan,
+      tanggaljam: formatTanggaljam(tanggaljam),
+      current_datetime: formatTanggaljam(datetime)
+    });
+
+    const buffer = doc.getZip().generate({
+      type: "nodebuffer",
+      compression: "DEFLATE",
+    });
+
+    if (buffer) {
+      res.setHeader('Content-Disposition', `attachment; filename=kasbon-${data.nama_user}-${id_request}.docx`);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Length', buffer.length);
+      res.send(buffer);
+    } else {
+      res.status(500).send('Internal Server Error');
+    }
+
+  } else {
+    res.status(404).json({ message: 'Tidak ada data request' })
+  }
+});
+
+
+// Download Request Kasbon
+app.post('/api/download-kasbon', async (req, res) => {
+  const { id_request, nama_user, jumlah, metode, tanggaljam, keterangan } = req.body
+
+  const DateTime = new Date()
+
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta'
+    const utcDate = new Date(tanggaljam)
+    const options = { timeZone: jakartaTimezone, hour12: false }
+
     return utcDate.toLocaleString('id-ID', options)
   }
   try {
-    // Buka koneksi ke Postgres
-    const client = await pool.connect()
+    const content = fs.readFileSync(
+      path.resolve(__dirname, "template_request.docx"),
+      "binary"
+    );
 
-    // Query to fetch data from the database
-    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE id_request = $1 AND status_request = \'sukses\' AND status_b = \'belum\' '
-    const selectValues = [requestId]
-    const selectResult = await client.query(selectQuery, selectValues)
+    const zip = new PizZip(content);
 
-    if (selectResult.rowCount === 1) {
-      // Extract the data from the query result
-      const {
-        id_request,
-        nama_user,
-        jumlah,
-        keterangan,
-        tanggaljam,
-        id_karyawan,
-        metode,
-      } = selectResult.rows[0] // Use selectResult.rows to access the first row of the result
+    const doc = new Docxtemplater(zip, {
+      paragraphLoop: true,
+      linebreaks: true,
+    })
+    doc.render({
+      id_request: id_request,
+      nama_user: nama_user,
+      jumlah: jumlah,
+      metode: metode,
+      keterangan: keterangan,
+      tanggaljam: tanggaljam,
+      current_datetime: formatTanggaljam(DateTime)
+    })
 
-      const data = {
-        id_request,
-        id_karyawan,
-        nama_user,
-        jumlah,
-        metode,
-        keterangan,
-        tanggaljam: formatTanggaljam(tanggaljam),
-        current_datetime: formatTanggaljam(currentDateTime),
-      }
+    const buffer = doc.getZip().generate({
+      type: "nodebuffer",
+      compression: "DEFLATE",
+    })
 
-
-      // Path to the template file
-      const content = fs.readFileSync(
-        path.resolve(__dirname, './data/template/template_request.docx'),
-        "binary"
-      )
-
-      const zip = new PizZip(content)
-
-      const doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-      });
-
-      doc.render({
-        id_request: "John",
-        id_karyawan: "Doe",
-        nama_user: "0652455478",
-        jumlah: "New Website",
-        metode: data.metode,
-        keterangan: data.keterangan,
-        tanggaljam: formatTanggaljam(data.tanggaljam),
-        current_datetime: formatTanggaljam(currentDateTime)
-      })
-
-      const buffer = doc.getZip().generate({
-        type: "nodebuffer",
-        // compression: DEFLATE adds a compression step.
-        // For a 50MB output document, expect 500ms additional CPU time
-        compression: "DEFLATE",
-      })
-
-      if (buffer) {
-        res.setHeader('Content-Disposition', `attachment filename=kasbon-${nama_user}-${id_request}-${id_karyawan}.docx`)
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        res.setHeader('Content-Length', buffer.length)
-        res.send(buffer)
-      } else {
-        res.status(500).send('Internal Server Error')
-      }
+    if (buffer) {
+      res.setHeader('Content-Disposition', `attachment; filename=kasbon-${nama_user}-${id_request}.docx`);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Length', buffer.length);
+      res.send(buffer);
+      console.log('Sukses kirim Docx')
     } else {
-      res.status(404).send('Data not found')
+      res.status(500).send('Internal Server Error');
     }
-
-    client.release()
-  } catch (error) {
-    console.error('Error generating docx:', error)
-    res.status(500).send('Internal Server Error')
+  }
+  catch (error) {
+    res.status(500).send('Cannot make Docx')
   }
 })
+
+
+
+
+
+
 
 // Set Port buat server
 const port = process.env.PORT || 3001
