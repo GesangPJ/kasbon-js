@@ -115,7 +115,12 @@ const TableDataAdmin = () => {
         if (response.ok) {
           const result = await response.json()
           setData(result) // Update data state
-        } else {
+        } else if (response.status === 403) {
+          // Redirect to the 401.js page
+          const router = useRouter();
+          router.push('/401'); // Replace with the actual path to your 401.js page
+        }
+        else {
           console.error('Error mengambil dashboard admin.')
         }
       } catch (error) {

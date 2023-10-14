@@ -28,6 +28,7 @@ import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
 import styled from '@emotion/styled'
 import Divider from '@mui/material/Divider'
+import { useRouter } from 'next/router'
 
 require('dotenv').config()
 
@@ -109,6 +110,9 @@ const FormBayarKasbon = () => {
   const classes = useStyles()
   const [updatedData, setUpdatedData] = useState([])
   const [selectedRows, setSelectedRows] = useState({})
+  const router = useRouter()
+  const [isAuthorized, setIsAuthorized] = useState(true)
+
 
 
   const getStatusChips = (status) => {
@@ -154,6 +158,14 @@ const FormBayarKasbon = () => {
   }
 
   useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem('sessionData'))
+
+    if (!userData || !userData.isAdmin) {
+      // User is not authorized
+      setIsAuthorized(false) // Set the state variable to false
+      router.push('/401') // Redirect to the 401 page
+    }
+
     const fetchSessionData = async () => {
       // Ambil SessionData dari Session Storage
       const sessionDataStr = sessionStorage.getItem('sessionData')
@@ -163,7 +175,11 @@ const FormBayarKasbon = () => {
       }
     }
     fetchSessionData()
-  }, [])
+  }, [router])
+
+  if (!isAuthorized) {
+    return null
+  }
 
   const handleSubmitID = async (e) => {
     e.preventDefault()

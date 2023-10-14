@@ -18,6 +18,7 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Select from '@mui/material/Select'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import styled from '@emotion/styled'
+import { useRouter } from 'next/router'
 
 require('dotenv').config()
 
@@ -35,8 +36,10 @@ const FormKasbon = () => {
   const handlemetodeChange = (e) => setmetode(e.target.value)
   const handleketeranganChange = (e) => setketerangan(e.target.value)
   const [sessionData, setSessionData] = useState(null)
+  const router = useRouter()
 
   useEffect(() => {
+
     // Get session data from sessionStorage
     const sessionDataStr = sessionStorage.getItem('sessionData')
     if (sessionDataStr) {
