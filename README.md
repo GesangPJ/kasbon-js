@@ -115,3 +115,4 @@ By using SWC, the build output perform more than good, also it reduce the produc
 - connect-pg-simple
 - cookie-parser
 - nodemon
+- Docxtemplater
