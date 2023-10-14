@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Link from 'next/dist/client/link'
 import { useRouter } from 'next/router'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
@@ -16,12 +15,8 @@ import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
 import styled from '@emotion/styled'
 import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded'
-import DownloadForOfflineRoundedIcon from '@mui/icons-material/DownloadForOfflineRounded'
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
 import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
@@ -163,8 +158,8 @@ const TableBayarDownload = () => {
 
         // Jika data tidak ditemukan (Error 404)
       } else if (response.status === 404) {
-        console.error('Data request tidak ditemukan')
-        setErrorMessage(`Data ID : ${id_karyawan} request tidak ditemukan`)
+        console.error('Data lunas tidak ditemukan')
+        setErrorMessage(`Data ID : ${id_karyawan} Belum ada yang lunas`)
         setTimeout(() => {
           setErrorMessage('')
         }, 5000)
@@ -184,10 +179,6 @@ const TableBayarDownload = () => {
       }, 5000)
     }
   }
-
-  useEffect(() => {
-
-  }, [])
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
@@ -213,8 +204,8 @@ const TableBayarDownload = () => {
       nama_user,
       jumlah,
       metode,
-      status_b,
       keterangan,
+      status_b,
       nama_admin,
     } = row
 
@@ -249,6 +240,44 @@ const TableBayarDownload = () => {
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
   }
 
+  const DownloadLunas = async (id_request, nama_user, jumlah, metode, keterangan, tanggaljam) => {
+    const DownloadData = {
+      id_request, nama_user, jumlah, metode, keterangan, tanggaljam
+    }
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/download-lunas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(DownloadData),
+      })
+      if (response.ok) {
+        // Convert the response to a Blob
+        const blob = await response.blob()
+
+        // Create a URL for the Blob
+        const url = window.URL.createObjectURL(blob)
+
+        // Create an anchor element to trigger the download
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `kasbon-${nama_user}-${id_request}.docx` // Modify the file name as needed
+
+        // Trigger the click event to download the file
+        a.click()
+
+        // Clean up resources
+        window.URL.revokeObjectURL(url)
+      } else {
+        console.error('Error downloading the DOCX file')
+        // Handle the error
+      }
+    }
+    catch (error) {
+      console.error('Error :', error)
+    }
+  }
+
   return (
     <div>
       <Grid container spacing={6}>
@@ -280,6 +309,15 @@ const TableBayarDownload = () => {
             </Grid>
           </form><br></br>
         </Grid><br></br>
+        {errorMessage && (
+          <Alert severity="error">{errorMessage}</Alert>
+        )}
+        {successMessage && (
+          <Alert severity="success">{successMessage}</Alert>
+        )}
+        <Grid item xs={12}>
+          <Divider sx={{ borderBottomWidth: 4 }} />
+        </Grid>
       </Grid>
 
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -333,7 +371,19 @@ const TableBayarDownload = () => {
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {column.id === 'download_b' ? (
-                          <RoundedRectangleButton variant="contained" color="primary" startIcon={<TextSnippetOutlinedIcon />} style={{ color: 'white' }}>
+                          <RoundedRectangleButton
+                            variant="contained"
+                            color="primary"
+                            startIcon={<TextSnippetOutlinedIcon />}
+                            onClick={() => DownloadLunas(
+                              row.id_request,
+                              row.nama_user,
+                              row.jumlah,
+                              row.metode,
+                              row.keterangan,
+                              row.tanggaljam
+                            )}
+                            style={{ color: 'white' }}>
                             Download
                           </RoundedRectangleButton>
                         ) : column.id === 'status_b' ? (

@@ -525,7 +525,8 @@ app.post('/api/ambil-bayar-download', async (req, res) => {
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
     } else {
-      res.status(404).json({ message: 'Tidak ada data request' })
+      res.status(404).json({ message: `ID : ${id_karyawan} tidak ada kasbon yang lunas ` })
+      console.log(`ID : ${id_karyawan} tidak ditemukan kasbon sudah lunas`)
     }
   }
   catch (error) {
@@ -644,9 +645,9 @@ app.post('/api/download-kasbon', async (req, res) => {
     const content = fs.readFileSync(
       path.resolve(__dirname, "template_request.docx"),
       "binary"
-    );
+    )
 
-    const zip = new PizZip(content);
+    const zip = new PizZip(content)
 
     const doc = new Docxtemplater(zip, {
       paragraphLoop: true,
@@ -668,13 +669,13 @@ app.post('/api/download-kasbon', async (req, res) => {
     })
 
     if (buffer) {
-      res.setHeader('Content-Disposition', `attachment; filename=kasbon-${nama_user}-${id_request}.docx`);
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Length', buffer.length);
-      res.send(buffer);
-      console.log('Sukses kirim Docx')
+      res.setHeader('Content-Disposition', `attachment filename=kasbon-${nama_user}-${id_request}.docx`)
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      res.setHeader('Content-Length', buffer.length)
+      res.send(buffer)
+      console.log('Sukses membuat Docx Request Kasbon')
     } else {
-      res.status(500).send('Internal Server Error');
+      res.status(500).send('Internal Server Error')
     }
   }
   catch (error) {
@@ -682,11 +683,60 @@ app.post('/api/download-kasbon', async (req, res) => {
   }
 })
 
+// Download Bukti Lunas
+app.post('/api/download-lunas', async (req, res) => {
+  const { id_request, nama_user, jumlah, metode, tanggaljam, keterangan } = req.body
 
+  const DateTime = new Date()
 
+  const formatTanggaljam = (tanggaljam) => {
+    const jakartaTimezone = 'Asia/Jakarta'
+    const utcDate = new Date(tanggaljam)
+    const options = { timeZone: jakartaTimezone, hour12: false }
 
+    return utcDate.toLocaleString('id-ID', options)
+  }
+  try {
+    const content = fs.readFileSync(
+      path.resolve(__dirname, "template_lunas.docx"),
+      "binary"
+    )
 
+    const zip = new PizZip(content)
 
+    const doc = new Docxtemplater(zip, {
+      paragraphLoop: true,
+      linebreaks: true,
+    })
+    doc.render({
+      id_request: id_request,
+      nama_user: nama_user,
+      jumlah: jumlah,
+      metode: metode,
+      keterangan: keterangan,
+      tanggaljam: tanggaljam,
+      current_datetime: formatTanggaljam(DateTime)
+    })
+
+    const buffer = doc.getZip().generate({
+      type: "nodebuffer",
+      compression: "DEFLATE",
+    })
+
+    if (buffer) {
+      res.setHeader('Content-Disposition', `attachment filename=kasbon-${nama_user}-${id_request}.docx`)
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      res.setHeader('Content-Length', buffer.length)
+      res.send(buffer)
+      console.log('Sukses membuat Docx Bukti Lunas')
+    } else {
+      res.status(500).send('Internal Server Error')
+    }
+  }
+  catch (error) {
+    res.status(500).send('Cannot make Docx')
+  }
+})
 
 // Set Port buat server
 const port = process.env.PORT || 3001
@@ -696,4 +746,3 @@ app.listen(port, async () => {
   await PostgresStatus()
 
 })
-

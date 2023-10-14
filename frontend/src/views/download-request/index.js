@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Link from 'next/dist/client/link'
 import { useRouter } from 'next/router'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
@@ -16,13 +15,9 @@ import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
 import styled from '@emotion/styled'
 import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded'
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined'
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
 import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
 
@@ -259,26 +254,26 @@ const TableRequestDownload = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(DownloadData),
-      });
+      })
       if (response.ok) {
         // Convert the response to a Blob
-        const blob = await response.blob();
+        const blob = await response.blob()
 
         // Create a URL for the Blob
-        const url = window.URL.createObjectURL(blob);
+        const url = window.URL.createObjectURL(blob)
 
         // Create an anchor element to trigger the download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `kasbon-${nama_user}-${id_request}.docx`; // Modify the file name as needed
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `kasbon-${nama_user}-${id_request}.docx` // Modify the file name as needed
 
         // Trigger the click event to download the file
-        a.click();
+        a.click()
 
         // Clean up resources
-        window.URL.revokeObjectURL(url);
+        window.URL.revokeObjectURL(url)
       } else {
-        console.error('Error downloading the DOCX file');
+        console.error('Error downloading the DOCX file')
         // Handle the error
       }
     }
