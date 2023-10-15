@@ -120,6 +120,7 @@ const SignPage = () => {
             isAdmin: role === 'admin',
             id_akun: data.id_akun,
             tanggal_akun: tanggalFormat,
+            csrfToken: data.csrfToken,
           }
 
           // Store the session data as a JSON string in session storage
@@ -154,10 +155,6 @@ const SignPage = () => {
     }
   }
   useEffect(() => {
-    // Simulate loading the login form
-    setTimeout(() => {
-      setLoading(false)
-    }, 2500)
 
   }, [])
 

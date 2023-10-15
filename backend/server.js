@@ -43,7 +43,7 @@ app.use(
 
 // Menentukan izin akses ke server API
 const corsOptions = {
-  origin: '*',
+  origin: allowedOrigins,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: PREFLIGHT,
@@ -116,20 +116,13 @@ app.post('/api/masuk', async (req, res) => {
       if (passwordMatch) {
         console.log('Password Match!')
 
-        const clientCSRFToken = req.headers['x-csrf-token']
-
-        if (clientCSRFToken !== req.session.csrfToken) {
-          return res.status(403).json({ error: 'Invalid or missing CSRF token' })
-        }
-
-
-
         // Pastikan bahwa session adalah objek
         if (!req.session.user) {
           req.session.user = {}
         }
         const tanggalAkun = new Date(user.tanggal)
         const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
+        req.session.csrfToken = csrfToken
 
         // Simpan session ke backend
         req.session.user = {
@@ -140,6 +133,7 @@ app.post('/api/masuk', async (req, res) => {
           isAdmin: false,
           id_akun: user.id_karyawan,
           tanggal_akun: tanggalFormat,
+          csrfToken,
         }
 
         client.release()
@@ -153,10 +147,10 @@ app.post('/api/masuk', async (req, res) => {
           isAdmin: false,
           id_akun: user.id_karyawan,
           tanggal_akun: user.tanggal,
+          csrfToken,
         })
         console.log('Session User Data:', req.session.user)
         console.log('Password Match!')
-        console.log(clientCSRFToken)
       } else {
         // Password does not match
         client.release()
@@ -175,19 +169,14 @@ app.post('/api/masuk', async (req, res) => {
       const passwordMatch = await checkPassword(password, admin.password_admin)
 
       if (passwordMatch) {
-        // CSRF Token
-        const clientCSRFToken = req.headers['x-csrf-token']
-
-        if (clientCSRFToken !== req.session.csrfToken) {
-          return res.status(403).json({ error: 'Invalid or missing CSRF token' })
-        }
-
         // Pastikan bahwa session adalah objek
         if (!req.session.admin) {
           req.session.admin = {}
         }
         const tanggalAkun = new Date(admin.tanggal)
         const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
+        const csrfToken = generateCSRFToken()
+        req.session.csrfToken = csrfToken
 
         req.session.admin = {
           id: admin.id_admin,
@@ -197,6 +186,7 @@ app.post('/api/masuk', async (req, res) => {
           isAdmin: true,
           id_akun: admin.id_petugas,
           tanggal_akun: tanggalFormat,
+          csrfToken,
         }
 
         client.release()
@@ -210,6 +200,7 @@ app.post('/api/masuk', async (req, res) => {
           isAdmin: true,
           id_akun: admin.id_petugas,
           tanggal_akun: admin.tanggal,
+          csrfToken,
         })
 
         console.log('Session Admin Data:', req.session.admin)
