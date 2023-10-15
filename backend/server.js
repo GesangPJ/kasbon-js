@@ -11,7 +11,7 @@ const Docxtemplater = require("docxtemplater")
 const fs = require('fs')
 const path = require('path')
 
-const allowedOrigins = process.env.CORS_ORIGINS.split(',')
+//const allowedOrigins = process.env.CORS_ORIGINS.split(',')
 const PREFLIGHT = process.env.PREFLIGHT
 
 const app = express()
@@ -39,6 +39,7 @@ app.use(
     },
   })
 )
+const allowedOrigins = ['https://incredibly-discrete-kangaroo.ngrok-free.app', 'http://localhost:3000']
 
 // Menentukan izin akses ke server API
 const corsOptions = {
@@ -741,10 +742,10 @@ app.post('/api/download-lunas', async (req, res) => {
 })
 
 // Set Port buat server
-const port = process.env.PORT || 3001
-app.listen(port, async () => {
-  console.log(`Server is running on port ${port}`)
+//const port = process.env.PORT || 3001
+//app.listen(port, async () => {
+//  console.log(`Server is running on port ${port}`)
 
-  await PostgresStatus()
+//  await PostgresStatus()
 
-})
+//})
