@@ -10,6 +10,7 @@ const PizZip = require("pizzip")
 const Docxtemplater = require("docxtemplater")
 const fs = require('fs')
 const path = require('path')
+const { v4: uuidv4 } = require('uuid')
 
 const allowedOrigins = process.env.CORS_ORIGINS.split(',')
 const PREFLIGHT = process.env.PREFLIGHT
@@ -42,7 +43,7 @@ app.use(
 
 // Menentukan izin akses ke server API
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: PREFLIGHT,
@@ -50,6 +51,11 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
+
+// CSRF Token Generator
+function generateCSRFToken() {
+  return uuidv4()
+}
 
 // Kirim status server
 app.get('/api/server-status', (req, res) => {
@@ -79,6 +85,7 @@ app.get('/api/logout', (req, res) => {
     } else {
       // Redirect to the login page after successful logout
       res.status(200).json({ message: 'Logged out successfully' })
+      console.log('Berhasil Log Out')
     }
   })
 })
@@ -108,6 +115,14 @@ app.post('/api/masuk', async (req, res) => {
 
       if (passwordMatch) {
         console.log('Password Match!')
+
+        const clientCSRFToken = req.headers['x-csrf-token']
+
+        if (clientCSRFToken !== req.session.csrfToken) {
+          return res.status(403).json({ error: 'Invalid or missing CSRF token' })
+        }
+
+
 
         // Pastikan bahwa session adalah objek
         if (!req.session.user) {
@@ -141,6 +156,7 @@ app.post('/api/masuk', async (req, res) => {
         })
         console.log('Session User Data:', req.session.user)
         console.log('Password Match!')
+        console.log(clientCSRFToken)
       } else {
         // Password does not match
         client.release()
@@ -159,6 +175,13 @@ app.post('/api/masuk', async (req, res) => {
       const passwordMatch = await checkPassword(password, admin.password_admin)
 
       if (passwordMatch) {
+        // CSRF Token
+        const clientCSRFToken = req.headers['x-csrf-token']
+
+        if (clientCSRFToken !== req.session.csrfToken) {
+          return res.status(403).json({ error: 'Invalid or missing CSRF token' })
+        }
+
         // Pastikan bahwa session adalah objek
         if (!req.session.admin) {
           req.session.admin = {}
