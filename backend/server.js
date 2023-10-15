@@ -43,7 +43,7 @@ app.use(
 
 // Menentukan izin akses ke server API
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   preflightContinue: PREFLIGHT,
