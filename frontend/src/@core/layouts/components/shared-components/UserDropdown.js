@@ -50,7 +50,7 @@ const UserDropdown = () => {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
         method: 'GET',
-        credentials: 'include',
+        //credentials: 'include',
       })
 
       // hapus session storage saat logout
