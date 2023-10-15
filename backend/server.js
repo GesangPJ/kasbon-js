@@ -756,7 +756,7 @@ app.post('/api/download-lunas', async (req, res) => {
 
 // Set Port buat server
 const port = process.env.PORT || 3001
-app.listen(port, async () => {
+app.listen(port, '0.0.0.0', async () => {
   console.log(`Server is running on port ${port}`)
 
   await PostgresStatus()
