@@ -122,6 +122,7 @@ app.post('/api/masuk', async (req, res) => {
         }
         const tanggalAkun = new Date(user.tanggal)
         const tanggalFormat = tanggalAkun.toLocaleString('id-ID', { timeZone: jakartaTimezone })
+        const csrfToken = generateCSRFToken()
         req.session.csrfToken = csrfToken
 
         // Simpan session ke backend
