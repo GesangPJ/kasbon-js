@@ -39,7 +39,9 @@
     "@mui/icons-material": "^5.14.9",
     "@mui/lab": "^5.0.0-alpha.70",
     "@mui/material": "^5.14.10",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.1",
     "@mui/styles": "^5.14.12",
+    "@mui/x-data-grid": "^6.16.2",
     "@popperjs/core": "^2.11.2",
     "apexcharts-clevision": "3.28.5",
     "babel-eslint": "^10.1.0",
@@ -54,7 +56,8 @@
     "react-dom": "17.0.2",
     "react-perfect-scrollbar": "^1.5.8",
     "react-popper": "^2.2.5",
-    "react-router-dom": "^6.16.0"
+    "react-router-dom": "^6.16.0",
+    "styled-components": "^6.1.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
