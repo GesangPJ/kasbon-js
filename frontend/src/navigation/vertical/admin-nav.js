@@ -5,6 +5,7 @@ import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlin
 import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined'
 import PaidIcon from '@mui/icons-material/Paid'
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 
 const AdminNavigation = () => {
   return [
@@ -50,6 +51,12 @@ const AdminNavigation = () => {
       title: 'Download Data',
       icon: FileDownloadOutlinedIcon,
       path: '/download',
+      openInNewTab: false
+    },
+    {
+      title: 'Dashboard Test',
+      icon: SearchOutlinedIcon,
+      path: '/dashboard-admin-test',
       openInNewTab: false
     }
   ]
