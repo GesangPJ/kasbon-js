@@ -240,9 +240,9 @@ const TableBayarDownload = () => {
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
   }
 
-  const DownloadLunas = async (id_request, nama_user, jumlah, metode, keterangan, tanggaljam) => {
+  const DownloadLunas = async (id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b) => {
     const DownloadData = {
-      id_request, nama_user, jumlah, metode, keterangan, tanggaljam
+      id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b
     }
 
     try {
@@ -381,7 +381,8 @@ const TableBayarDownload = () => {
                               row.jumlah,
                               row.metode,
                               row.keterangan,
-                              row.tanggaljam
+                              row.tanggaljam,
+                              row.status_b
                             )}
                             style={{ color: 'white' }}>
                             Download
