@@ -11,12 +11,15 @@ const Docxtemplater = require("docxtemplater")
 const fs = require('fs')
 const path = require('path')
 const { v4: uuidv4 } = require('uuid')
+const http = require('http')
 
 const allowedOrigins = process.env.CORS_ORIGINS.split(',')
 const PREFLIGHT = process.env.PREFLIGHT
 
+
 const app = express()
 dotenv.config()
+const server = http.createServer(app)
 
 // Express JS
 app.use(express.json())
@@ -397,7 +400,6 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
     // Jika ada hasil, maka kirim responnya hasil query
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
-      console.log('Data request berhasil dikirim')
     } else {
       res.status(404).json({ message: 'Tidak ada request menunggu konfirmasi' })
     }
@@ -757,9 +759,12 @@ app.post('/api/download-lunas', async (req, res) => {
 
 // Set Port buat server
 const port = process.env.PORT || 3001
-app.listen(port, '0.0.0.0', async () => {
-  console.log(`Server is running on port ${port}`)
+server.listen(port, '0.0.0.0', async () => {
+  console.log(`Server is running on port ${port}`);
 
   await PostgresStatus()
 
-})
+  server.on('connection', (socket) => {
+    // Handle incoming connections
+  });
+});
