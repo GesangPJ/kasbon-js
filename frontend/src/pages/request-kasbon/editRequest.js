@@ -29,7 +29,7 @@ const RoundedRectangleButton = styled(Button)`
   position: sticky;
   bottom: 0;
   &:disabled {
-    border-radius: 32px;
+    border-radius: 32px
   }`
 
 // Menggunakan style untuk edit style cell table nanti
@@ -106,20 +106,7 @@ const TableEditRequest = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [selectedRows, setSelectedRows] = useState({})
-  const theme = useTheme();
-
-  const handleChange = (event) => {
-    setValue(event.target.value)
-  }
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value)
-    setPage(0)
-  }
+  const theme = useTheme()
 
   const handleSort = (columnId) => {
     const isAsc = sorting.column === columnId && sorting.direction === 'asc'
@@ -202,12 +189,12 @@ const TableEditRequest = () => {
 
 
   const handleBatchUpdate = async () => {
-    const id_akun = sessionData.id_akun;
-    const updatePromises = [];
+    const id_akun = sessionData.id_akun
+    const updatePromises = []
 
     // Iterate through selected rows and create update promises
     for (const requestId in selectedRows) {
-      const status_request = selectedRows[requestId];
+      const status_request = selectedRows[requestId]
       updatePromises.push(
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/update-request/${requestId}`, {
           method: 'PUT',
@@ -216,39 +203,39 @@ const TableEditRequest = () => {
           },
           body: JSON.stringify({ status_request, id_petugas: id_akun }),
         })
-      );
+      )
     }
 
     try {
-      const responses = await Promise.all(updatePromises);
-      const isSuccess = responses.every((response) => response.ok);
+      const responses = await Promise.all(updatePromises)
+      const isSuccess = responses.every((response) => response.ok)
 
       if (isSuccess) {
-        setSuccessMessage(`Data request berhasil diupdate.`);
+        setSuccessMessage(`Data request berhasil diupdate.`)
         setTimeout(() => {
-          setSuccessMessage('');
-        }, 5000);
-        console.log('Data request berhasil diupdate');
-        window.location.reload();
+          setSuccessMessage('')
+        }, 5000)
+        console.log('Data request berhasil diupdate')
+        window.location.reload()
       } else {
-        setErrorMessage(`Gagal mengirim update data request`);
+        setErrorMessage(`Gagal mengirim update data request`)
         setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+          setErrorMessage('')
+        }, 3000)
 
-        console.error('Error update data request');
+        console.error('Error update data request')
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     }
-  };
+  }
 
   const handleRadioChange = (event, requestId) => {
     setSelectedRows({
       ...selectedRows,
       [requestId]: event.target.value,
-    });
-  };
+    })
+  }
 
   return (
     <div>
