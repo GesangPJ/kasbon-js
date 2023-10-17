@@ -704,7 +704,7 @@ app.post('/api/download-kasbon', async (req, res) => {
 
 // Download Bukti Lunas
 app.post('/api/download-lunas', async (req, res) => {
-  const { id_request, nama_user, jumlah, metode, tanggaljam, keterangan } = req.body
+  const { id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b } = req.body
 
   const DateTime = new Date()
 
@@ -734,6 +734,7 @@ app.post('/api/download-lunas', async (req, res) => {
       metode: metode,
       keterangan: keterangan,
       tanggaljam: tanggaljam,
+      status_b: 'Lunas',
       current_datetime: formatTanggaljam(DateTime)
     })
 
