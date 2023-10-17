@@ -52,8 +52,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const DateNow = new Date()
-
 // Format tanggaljam standar Indonesia dan Zona Waktu UTC+7 (JAKARTA)
 const formatTanggaljam = (tanggaljam) => {
   const jakartaTimezone = 'Asia/Jakarta'
@@ -63,10 +61,6 @@ const formatTanggaljam = (tanggaljam) => {
   return utcDate.toLocaleString('id-ID', options)
 }
 
-const valueFormatter = (params) => {
-  return params.value.display;
-};
-
 const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
   {
@@ -75,22 +69,16 @@ const columns = [
     width: 180,
     editable: true,
     type: 'date',
-    valueGetter: (params) => {
-      const tanggaljamValue = params.row.tanggaljam;
-
-      if (!tanggaljamValue) {
-        return null; // Handle the case where tanggaljam is undefined
-      }
-
-      const formattedDate = dayjs(tanggaljamValue).format('DD MMMM YYYY');
-
-      return {
-        display: formattedDate,
-        sort: new Date(tanggaljamValue),
-      };
-    },
     valueFormatter: (params) => {
-      return params.value.display;
+      const formattedDate = formatTanggaljam(params.value);
+      return formattedDate;
+    },
+    sortComparator: (v1, v2) => {
+      // Parse the dates and compare them for sorting
+      const date1 = new Date(v1);
+      const date2 = new Date(v2);
+
+      return date1 - date2;
     },
   },
   {
@@ -102,7 +90,7 @@ const columns = [
   {
     field: 'jumlah',
     headerName: 'Jumlah',
-    type: 'number',
+    //type: 'number',
     width: 120,
     editable: false,
   },
@@ -193,20 +181,6 @@ function createData(id_request, tanggaljam, nama_user, jumlah, metode, keteranga
   return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin }
 }
 
-/*
-const rows = [
-  { id: 1, tanggaljam: DateNow, nama_user: 'Jon', jumlah: 200000, metode: 'Cash', keterangan: 'AAAAA', status_request: 'wait', status_b: 'belum', nama_admin: 'Apabae' },
-  { id: 2, tanggaljam: DateNow, nama_user: 'Cersei', jumlah: 100000, metode: 'TF', keterangan: 'AAAAA', status_request: 'sukses', status_b: 'belum', nama_admin: 'Apabae' },
-  { id: 3, tanggaljam: DateNow, nama_user: 'Jaime', jumlah: 45000, metode: 'Cash', keterangan: 'AAAAA', status_request: 'sukses', status_b: 'belum', nama_admin: 'Trevor' },
-  { id: 4, tanggaljam: DateNow, nama_user: 'Arya', jumlah: 16000, metode: 'TF', keterangan: 'AAAAA', status_request: 'wait', status_b: 'belum', nama_admin: 'Apabae' },
-  { id: 5, tanggaljam: DateNow, nama_user: 'Daenerys', jumlah: null, metode: 'TF', keterangan: 'AAAAA', status_request: 'wait', status_b: 'belum', nama_admin: 'Trevor' },
-  { id: 6, tanggaljam: DateNow, nama_user: 'Daenerys', jumlah: 150000, metode: 'TF', keterangan: 'AAAAA', status_request: 'sukses', status_b: 'belum', nama_admin: 'Trevor' },
-  { id: 7, tanggaljam: DateNow, nama_user: 'Ferrara', jumlah: 44000, metode: 'TF', keterangan: 'AAAAA', status_request: 'sukses', status_b: 'lunas', nama_admin: 'Trevor' },
-  { id: 8, tanggaljam: DateNow, nama_user: 'Rossini', jumlah: 36000, metode: 'Cash', keterangan: 'AAAAA', status_request: 'wait', status_b: 'belum', nama_admin: 'Trevor' },
-  { id: 9, tanggaljam: DateNow, nama_user: 'Harvey', jumlah: 65000, metode: 'Cash', keterangan: 'AAAAA', status_request: 'wait', status_b: 'belum', nama_admin: 'Apabae' },
-]
-*/
-
 const AdminDataGrid = () => {
   const [data, setData] = useState([])
 
@@ -240,8 +214,6 @@ const AdminDataGrid = () => {
     }).format(jumlah)
   }
 
-
-
   const customMonthYearFilterOperator = {
     // Custom filter operator for month and year
     'month-year': (filterValue, rowValue) => {
@@ -259,17 +231,6 @@ const AdminDataGrid = () => {
     },
   };
 
-  const preprocessTanggaljam = (tanggaljam) => {
-    const dateParts = tanggaljam.split('/');
-    if (dateParts.length === 3) {
-      const day = dateParts[0];
-      const month = dateParts[1];
-      const year = dateParts[2];
-      return `${day}-${month}-${year}`;
-    }
-    return ''; // Handle cases where the date format is invalid
-  };
-
   const rows = data.map((row, index) => ({
     id: row.id_request,
     tanggaljam: row.tanggaljam,
@@ -283,7 +244,7 @@ const AdminDataGrid = () => {
   }));
 
   return (
-    <Box sx={{ height: 550, width: '100%' }}>
+    <Box sx={{ height: 600, width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -294,7 +255,7 @@ const AdminDataGrid = () => {
             },
           },
         }}
-        pageSizeOptions={[10, 15, 20, 25, 50, 100]}
+        pageSizeOptions={[10, 20, 50, 100]}
         checkboxSelection
         disableRowSelectionOnClick
       />
