@@ -28,6 +28,12 @@ const AdminNavigation = () => {
       path: '/bayar-kasbon'
     },
     {
+      title: 'Download Data',
+      icon: FileDownloadOutlinedIcon,
+      path: '/download',
+      openInNewTab: false
+    },
+    {
       sectionTitle: 'Lainnya'
     },
     {
@@ -45,12 +51,6 @@ const AdminNavigation = () => {
       title: 'Tambah Admin',
       icon: AddCircle,
       path: '/register-admin',
-      openInNewTab: false
-    },
-    {
-      title: 'Download Data',
-      icon: FileDownloadOutlinedIcon,
-      path: '/download',
       openInNewTab: false
     },
     {
