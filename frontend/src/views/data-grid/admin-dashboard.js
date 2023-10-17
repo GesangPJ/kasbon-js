@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Box from '@mui/material/Box'
-import { DataGrid } from '@mui/x-data-grid'
+import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { useState, useEffect } from 'react'
 import Alert from '@mui/material/Alert'
 import { makeStyles } from '@mui/styles'
@@ -83,16 +83,26 @@ const columns = [
   },
   {
     field: 'nama_user',
-    headerName: 'Nama Karyawan',
+    headerName: 'NK',
     width: 120,
     editable: true,
   },
   {
+    field: 'id_karyawan',
+    headerName: '',
+    width: 80,
+    editable: false,
+    disableSorting: true,
+    filterable: false,
+  },
+  {
     field: 'jumlah',
     headerName: 'Jumlah',
-    //type: 'number',
+    type: 'number',
     width: 120,
+    align: 'left',
     editable: false,
+    headerAlign: 'left',
   },
   {
     field: 'metode',
@@ -172,14 +182,10 @@ const columns = [
   {
     field: 'nama_admin',
     headerName: 'Petugas',
-    width: 150,
+    width: 180,
     editable: true,
   },
 ]
-
-function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin) {
-  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_request, status_b, nama_admin }
-}
 
 const AdminDataGrid = () => {
   const [data, setData] = useState([])
@@ -235,7 +241,8 @@ const AdminDataGrid = () => {
     id: row.id_request,
     tanggaljam: row.tanggaljam,
     nama_user: row.nama_user,
-    jumlah: formatCurrencyIDR(row.jumlah),
+    id_karyawan: row.id_karyawan,
+    jumlah: row.jumlah,
     metode: row.metode,
     keterangan: row.keterangan,
     status_request: row.status_request,
@@ -248,6 +255,9 @@ const AdminDataGrid = () => {
       <DataGrid
         rows={rows}
         columns={columns}
+        slots={{
+          toolbar: GridToolbar,
+        }}
         initialState={{
           pagination: {
             paginationModel: {
