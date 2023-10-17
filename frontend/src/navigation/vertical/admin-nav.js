@@ -28,7 +28,7 @@ const AdminNavigation = () => {
       path: '/bayar-kasbon'
     },
     {
-      sectionTitle: 'Admin'
+      sectionTitle: 'Lainnya'
     },
     {
       title: 'Web Status',
@@ -54,9 +54,9 @@ const AdminNavigation = () => {
       openInNewTab: false
     },
     {
-      title: 'Dashboard Test',
+      title: 'Request Test',
       icon: SearchOutlinedIcon,
-      path: '/dashboard-admin-test',
+      path: '/RequestPage',
       openInNewTab: false
     }
   ]
