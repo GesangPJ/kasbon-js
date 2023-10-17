@@ -75,14 +75,6 @@ const columns = [
     editable: true,
   },
   {
-    field: 'id_karyawan',
-    headerName: '',
-    width: 80,
-    editable: false,
-    disableSorting: true,
-    filterable: false,
-  },
-  {
     field: 'jumlah',
     headerName: 'Jumlah',
     type: 'number',
@@ -100,7 +92,7 @@ const columns = [
   {
     field: 'keterangan',
     headerName: 'Keterangan',
-    width: 150,
+    width: 350,
     editable: true,
   },
   {
@@ -221,7 +213,6 @@ const UserDataGrid = () => {
     id: row.id_request,
     tanggaljam: row.tanggaljam,
     nama_user: row.nama_user,
-    id_karyawan: row.id_karyawan,
     jumlah: row.jumlah,
     metode: row.metode,
     keterangan: row.keterangan,
