@@ -22,19 +22,6 @@ const RoundedRectangleButton = styled(Button)`
     border-radius: 32px
   }`
 
-// SSR Biar bisa ambil data waktu production build
-export async function getServerSideProps() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`)
-  const data = await response.json()
-
-  return {
-    props: {
-      data,
-    },
-    revalidate: 5, // ambil setiap X detik
-  }
-}
-
 const useStyles = makeStyles((theme) => ({
   // warna warning/kuning
   warningCell: {
@@ -88,14 +75,6 @@ const columns = [
     editable: true,
   },
   {
-    field: 'id_karyawan',
-    headerName: '',
-    width: 80,
-    editable: false,
-    disableSorting: true,
-    filterable: false,
-  },
-  {
     field: 'jumlah',
     headerName: 'Jumlah',
     type: 'number',
@@ -113,7 +92,7 @@ const columns = [
   {
     field: 'keterangan',
     headerName: 'Keterangan',
-    width: 150,
+    width: 350,
     editable: true,
   },
   {
@@ -179,36 +158,29 @@ const columns = [
       return <Chip label={chipLabel} color={chipColor} variant="contained" />
     },
   },
-  {
-    field: 'nama_admin',
-    headerName: 'Petugas',
-    width: 180,
-    editable: true,
-  },
 ]
 
-const AdminDataGrid = () => {
+const UserDataGrid = () => {
   const [data, setData] = useState([])
 
   useEffect(() => {
+
     const fetchData = async () => {
+
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`)
+        const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-karyawan/${id_akun}`)
         if (response.ok) {
           const result = await response.json()
           setData(result)
-        } else if (response.status === 403) {
-          const router = useRouter()
-          router.push('/401')
-        }
-        else {
-          console.error('Error mengambil dashboard admin.')
+        } else {
+          console.error('Error fetching dashboard user data.')
         }
       } catch (error) {
         console.error('Error:', error)
       }
     }
-
     fetchData()
   }, [])
 
@@ -241,13 +213,11 @@ const AdminDataGrid = () => {
     id: row.id_request,
     tanggaljam: row.tanggaljam,
     nama_user: row.nama_user,
-    id_karyawan: row.id_karyawan,
     jumlah: row.jumlah,
     metode: row.metode,
     keterangan: row.keterangan,
     status_request: row.status_request,
     status_b: row.status_b,
-    nama_admin: row.nama_admin,
   }));
 
   return (
@@ -274,4 +244,31 @@ const AdminDataGrid = () => {
   )
 }
 
-export default AdminDataGrid
+export async function getServerSideProps(req) {
+  try {
+    const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
+    if (response.ok) {
+      const data = await response.json();
+      return {
+        props: {
+          data,
+        },
+        revalidate: 5, // ambil data dan refresh setiap x detik
+      };
+    } else {
+      console.error('Error fetching dashboard user data.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+
+  return {
+    props: {
+      data: [],
+    },
+  };
+}
+
+export default UserDataGrid

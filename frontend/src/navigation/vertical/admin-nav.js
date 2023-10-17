@@ -28,7 +28,13 @@ const AdminNavigation = () => {
       path: '/bayar-kasbon'
     },
     {
-      sectionTitle: 'Admin'
+      title: 'Download Data',
+      icon: FileDownloadOutlinedIcon,
+      path: '/download',
+      openInNewTab: false
+    },
+    {
+      sectionTitle: 'Lainnya'
     },
     {
       title: 'Web Status',
@@ -48,15 +54,9 @@ const AdminNavigation = () => {
       openInNewTab: false
     },
     {
-      title: 'Download Data',
-      icon: FileDownloadOutlinedIcon,
-      path: '/download',
-      openInNewTab: false
-    },
-    {
-      title: 'Dashboard Test',
+      title: 'Request Test',
       icon: SearchOutlinedIcon,
-      path: '/dashboard-admin-test',
+      path: '/RequestPage',
       openInNewTab: false
     }
   ]

@@ -240,9 +240,9 @@ const TableBayarDownload = () => {
     setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
   }
 
-  const DownloadLunas = async (id_request, nama_user, jumlah, metode, keterangan, tanggaljam) => {
+  const DownloadLunas = async (id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b) => {
     const DownloadData = {
-      id_request, nama_user, jumlah, metode, keterangan, tanggaljam
+      id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b
     }
 
     try {
@@ -254,18 +254,14 @@ const TableBayarDownload = () => {
       if (response.ok) {
         // Convert the response to a Blob
         const blob = await response.blob()
-
         // Create a URL for the Blob
         const url = window.URL.createObjectURL(blob)
-
         // Create an anchor element to trigger the download
         const a = document.createElement('a')
         a.href = url
-        a.download = `kasbon-${nama_user}-${id_request}.docx` // Modify the file name as needed
-
+        a.download = `kasbon-lunas-${nama_user}-${id_request}.docx` // Modify the file name as needed
         // Trigger the click event to download the file
         a.click()
-
         // Clean up resources
         window.URL.revokeObjectURL(url)
       } else {
@@ -381,7 +377,8 @@ const TableBayarDownload = () => {
                               row.jumlah,
                               row.metode,
                               row.keterangan,
-                              row.tanggaljam
+                              row.tanggaljam,
+                              row.status_b
                             )}
                             style={{ color: 'white' }}>
                             Download
