@@ -761,59 +761,6 @@ app.post('/api/download-lunas', async (req, res) => {
   }
 })
 
-app.post('/api/pdf-lunas', async (req, res) => {
-  const { id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b } = req.body
-  const DateTime = new Date()
-
-  const formatTanggaljam = (tanggaljam) => {
-    const jakartaTimezone = 'Asia/Jakarta'
-    const utcDate = new Date(tanggaljam)
-    const options = { timeZone: jakartaTimezone, hour12: false }
-
-    return utcDate.toLocaleString('id-ID', options)
-  }
-
-  try {
-    const docDefinition = {
-      content: [
-        '-------------BUKTI PEMBAYRAN KASBON------------',
-        `ID Kasbon    : ${id_request}`,
-        `Nama Karyawan: ${nama_user}`,
-        `Jumlah       : ${jumlah}`,
-        `Metode       : ${metode}`,
-        `Keterangan   : ${keterangan}`,
-        `Tanggal/Jam  : ${tanggaljam}`,
-        { text: `Status: Lunas`, color: 'red' },
-        `TANGGAL CETAK: ${formatTanggaljam(DateTime)}`,
-        '------------------------------------------------',
-        '-------------BUKTI PEMBAYRAN KASBON------------',
-        `ID Kasbon    : ${id_request}`,
-        `Nama Karyawan: ${nama_user}`,
-        `Jumlah       : ${jumlah}`,
-        `Metode       : ${metode}`,
-        `Keterangan   : ${keterangan}`,
-        `Tanggal/Jam  : ${tanggaljam}`,
-        { text: `Status: Lunas`, color: 'red' },
-        `TANGGAL CETAK: ${formatTanggaljam(DateTime)}`,
-        '------------------------------------------------',
-      ],
-    }
-
-    const pdfDoc = pdfMake.createPdf(docDefinition)
-    pdfDoc.getBuffer((buffer) => {
-      res.setHeader('Content-Disposition', `attachment filename=kasbon-${nama_user}-${id_request}.pdf`)
-      res.setHeader('Content-Type', 'application/pdf')
-      res.setHeader('Content-Length', buffer.length)
-      res.send(buffer)
-      console.log('Sukses membuat PDF Bukti Lunas')
-    })
-  } catch (error) {
-    res.status(500).send('Cannot make PDF')
-  }
-})
-
-
-
 // Set Port buat server
 const port = process.env.PORT || 3001
 server.listen(port, '0.0.0.0', async () => {
