@@ -18,6 +18,10 @@ import TableRow from '@mui/material/TableRow'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
+import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
 
 dayjs.locale(id);
 
@@ -271,7 +275,7 @@ const RequestDataGrid = () => {
     {
       field: 'status_request',
       headerName: 'Req',
-      width: 90,
+      width: 115,
       valueGetter: (params) => {
         const row = params.row
         if (row.status_request === 'wait') {
@@ -287,19 +291,29 @@ const RequestDataGrid = () => {
         const statusRequest = params.value
         let chipColor = 'default'
         let chipLabel = statusRequest
+        let icon = null
 
         if (statusRequest === 'wait') {
           chipColor = 'default'
           chipLabel = 'Wait'
+          icon = <SyncOutlinedIcon style={{ color: 'grey' }} />
         } else if (statusRequest === 'sukses') {
           chipColor = 'success'
           chipLabel = 'Sukses'
+          icon = <DoneOutlinedIcon style={{ color: 'green' }} />
+
         } else if (statusRequest === 'tolak') {
           chipColor = 'error'
           chipLabel = 'Tolak'
+          icon = <CloseOutlinedIcon style={{ color: 'red' }} />
         }
 
-        return <Chip label={chipLabel} color={chipColor} variant="contained" />
+        return <Chip
+          label={chipLabel}
+          color={chipColor}
+          variant="outlined"
+          avatar={icon} // This adds the icon to the left of the label
+        />
       },
     },
     {
@@ -318,7 +332,7 @@ const RequestDataGrid = () => {
 
   return (
     <div>
-      <Box sx={{ height: 350, width: '100%' }}>
+      <Box sx={{ height: 600, width: '100%' }}>
         {errorMessage && (
           <Alert severity="error">{errorMessage}</Alert>
         )}
