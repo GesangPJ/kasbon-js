@@ -191,31 +191,38 @@ const RequestDataGrid = () => {
     status_request: row.status_request,
   }));
 
-  const StatusBCellRenderer = ({ value, row, onRadioChange }) => (
-    <TableCell align="left">
-      <FormControl>
-        <RadioGroup
-          row
-          name={`row-radio-buttons-group-${row.id}`} // Unique name based on id_request
-          value={value}
-          onChange={(event) => onRadioChange(event, row.id_request)}
-        >
-          <FormControlLabel
-            value="sukses"
-            control={<Radio />}
-            checked={selectedRows[row.id_request] === "sukses"}
-            label="Setuju"
-          />
-          <FormControlLabel
-            value="tolak"
-            control={<Radio />}
-            checked={selectedRows[row.id_request] === "tolak"}
-            label="Tolak"
-          />
-        </RadioGroup>
-      </FormControl>
-    </TableCell>
-  )
+  const StatusBCellRenderer = ({ value, row }) => {
+    const [radioValue, setRadioValue] = useState(value);
+
+    const handleRadioChange = (event) => {
+      setRadioValue(event.target.value);
+      setSelectedRows({
+        ...selectedRows,
+        [row.id]: event.target.value,
+      });
+    };
+
+    return (
+      <TableRow key={row.id}>
+        <TableCell align="left">
+          <FormControl>
+            <RadioGroup row value={radioValue} onChange={handleRadioChange}>
+              <FormControlLabel
+                value="sukses"
+                control={<Radio />}
+                label="Setuju"
+              />
+              <FormControlLabel
+                value="tolak"
+                control={<Radio />}
+                label="Tolak"
+              />
+            </RadioGroup>
+          </FormControl>
+        </TableCell>
+      </TableRow>
+    );
+  };
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
@@ -300,11 +307,7 @@ const RequestDataGrid = () => {
       headerName: 'Setuju?',
       width: 150,
       renderCell: (params) => (
-        <StatusBCellRenderer
-          value={selectedRows[params.row.id_request]} // Ensure you're passing the correct value
-          row={params.row}
-          onRadioChange={handleRadioChange}
-        />
+        <StatusBCellRenderer value={selectedRows[params.row.id]} row={params.row} />
       ),
     },
   ]
@@ -325,6 +328,9 @@ const RequestDataGrid = () => {
         <DataGrid
           rows={rows}
           columns={columns}
+          slots={{
+            toolbar: GridToolbar,
+          }}
           getRowHeight={() => 80}
           initialState={{
             pagination: {
