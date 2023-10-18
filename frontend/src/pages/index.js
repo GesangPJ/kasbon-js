@@ -275,7 +275,7 @@ const SignPage = () => {
 
         </CardContent><br></br><br></br>
         <Typography variant='caption'>
-          {`© 2023 - ${new Date().getFullYear()} GESANG TECHNOLOGY`}
+        {themeConfig.buildVersion}
         </Typography>
       </Card>
       <FooterIllustrationsV1 />
