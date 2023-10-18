@@ -30,6 +30,14 @@ const RoundedRectangleButton = styled(Button)`
     border-radius: 32px
   }`
 
+// Format mata uang ke rupiah
+const formatCurrencyIDR = (jumlah) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+  }).format(jumlah)
+}
+
 // SSR Biar bisa ambil data waktu production build
 export async function getServerSideProps() {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`)
@@ -173,12 +181,22 @@ const RequestDataGrid = () => {
     }
   }
 
+  const rows = data.map((row, index) => ({
+    id: row.id_request,
+    tanggaljam: row.tanggaljam,
+    nama_user: row.nama_user,
+    jumlah: formatCurrencyIDR(row.jumlah),
+    metode: row.metode,
+    keterangan: row.keterangan,
+    status_request: row.status_request,
+  }));
+
   const StatusBCellRenderer = ({ value, row, onRadioChange }) => (
     <TableCell align="left">
       <FormControl>
         <RadioGroup
           row
-          name={`row-radio-buttons-group-${row.id_request}`} // Unique name
+          name={`row-radio-buttons-group-${row.id}`} // Unique name based on id_request
           value={value}
           onChange={(event) => onRadioChange(event, row.id_request)}
         >
@@ -200,7 +218,7 @@ const RequestDataGrid = () => {
   )
 
   const columns = [
-    { field: 'id_request', headerName: 'ID', width: 70 },
+    { field: 'id', headerName: 'ID', width: 70 },
     {
       field: 'tanggaljam',
       headerName: 'Tanggal Jam',
@@ -291,23 +309,9 @@ const RequestDataGrid = () => {
     },
   ]
 
-  // Format mata uang ke rupiah
-  const formatCurrencyIDR = (jumlah) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-    }).format(jumlah)
-  }
 
-  const rows = data.map((row, index) => ({
-    id: row.id_request,
-    tanggaljam: row.tanggaljam,
-    nama_user: row.nama_user,
-    jumlah: formatCurrencyIDR(row.jumlah),
-    metode: row.metode,
-    keterangan: row.keterangan,
-    status_request: row.status_request,
-  }));
+
+
 
   return (
     <div>
