@@ -272,10 +272,12 @@ const SignPage = () => {
               Masuk
             </RoundedRectangleButton>
           </form>
-
         </CardContent><br></br><br></br>
         <Typography variant='caption'>
         {themeConfig.buildVersion}
+        </Typography>
+        <Typography variant='caption'>
+          {themeConfig.backVersion}
         </Typography>
       </Card>
       <FooterIllustrationsV1 />

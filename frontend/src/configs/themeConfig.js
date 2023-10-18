@@ -1,6 +1,7 @@
 const themeConfig = {
   templateName: 'KASBON WEB',
-  buildVersion: 'v1.2.0-Build',
+  buildVersion: 'v1.2.0-Build-Frontend',
+  backVersion: 'v1.1.5-Backend',
   layout: 'vertical',
   mode: 'light',
   direction: 'ltr',
