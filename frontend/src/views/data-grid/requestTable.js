@@ -23,8 +23,6 @@ dayjs.locale(id);
 
 require('dotenv').config()
 
-
-
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
   position: sticky;
@@ -83,8 +81,6 @@ const formatTanggaljam = (tanggaljam) => {
   return utcDate.toLocaleString('id-ID', options)
 }
 
-
-
 const RequestDataGrid = () => {
   const [data, setData] = useState([])
   const [sessionData, setSessionData] = useState(null)
@@ -93,36 +89,48 @@ const RequestDataGrid = () => {
   const [selectedRows, setSelectedRows] = useState({})
   const classes = useStyles()
 
-  const StatusBCellRenderer = ({ value, row, onRadioChange }) => (
-    <TableCell align="left">
-      <FormControl>
-        <RadioGroup
-          row
-          name={`row-radio-buttons-group-${row.id_request}-${value}`} // Unique name
-          value={value}
-          onChange={(event) => onRadioChange(event, row.id_request)}
-        >
-          <FormControlLabel
-            value="sukses"
-            control={<Radio />}
-            label="Setuju"
-          />
-          <FormControlLabel
-            value="tolak"
-            control={<Radio />}
-            label="Tolak"
-          />
-        </RadioGroup>
-      </FormControl>
-    </TableCell>
-  )
-
   const handleRadioChange = (event, requestId) => {
     setSelectedRows({
       ...selectedRows,
       [requestId]: event.target.value,
     })
   }
+
+  useEffect(() => {
+    const fetchSessionData = async () => {
+      // Ambil SessionData dari Session Storage
+      const sessionDataStr = sessionStorage.getItem('sessionData')
+      if (sessionDataStr) {
+        const sessionData = JSON.parse(sessionDataStr)
+        setSessionData(sessionData)
+      }
+    }
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-request-kasbon`)
+        if (response.ok) {
+          const result = await response.json()
+          setData(result)
+        } else if (response.status === 404) {
+          console.error('Data tidak ditemukan')
+          setErrorMessage(`Tidak ada request saat ini`)
+          setTimeout(() => {
+            setErrorMessage('')
+          }, 3000)
+
+        } else {
+          console.error('Error:', response.status, response.statusText)
+        }
+      } catch (error) {
+        console.error('Error:', error)
+      }
+    }
+
+    fetchData()
+    fetchSessionData()
+  }, [])
+
   const handleBatchUpdate = async () => {
     const id_akun = sessionData.id_akun;
     const updatePromises = [];
@@ -138,32 +146,58 @@ const RequestDataGrid = () => {
           },
           body: JSON.stringify({ status_request, id_petugas: id_akun }),
         })
-      );
+      )
     }
 
     try {
-      const responses = await Promise.all(updatePromises);
-      const isSuccess = responses.every((response) => response.ok);
+      const responses = await Promise.all(updatePromises)
+      const isSuccess = responses.every((response) => response.ok)
 
       if (isSuccess) {
-        setSuccessMessage(`Data request berhasil diupdate.`);
+        setSuccessMessage(`Data request berhasil diupdate.`)
         setTimeout(() => {
-          setSuccessMessage('');
-        }, 5000);
-        console.log('Data request berhasil diupdate');
-        window.location.reload();
+          setSuccessMessage('')
+        }, 5000)
+        console.log('Data request berhasil diupdate')
+        window.location.reload()
       } else {
-        setErrorMessage(`Gagal mengirim update data request`);
+        setErrorMessage(`Gagal mengirim update data request`)
         setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+          setErrorMessage('')
+        }, 3000)
 
-        console.error('Error update data request');
+        console.error('Error update data request')
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     }
-  };
+  }
+
+  const StatusBCellRenderer = ({ value, row, onRadioChange }) => (
+    <TableCell align="left">
+      <FormControl>
+        <RadioGroup
+          row
+          name={`row-radio-buttons-group-${row.id_request}`} // Unique name
+          value={value}
+          onChange={(event) => onRadioChange(event, row.id_request)}
+        >
+          <FormControlLabel
+            value="sukses"
+            control={<Radio />}
+            checked={selectedRows[row.id_request] === "sukses"}
+            label="Setuju"
+          />
+          <FormControlLabel
+            value="tolak"
+            control={<Radio />}
+            checked={selectedRows[row.id_request] === "tolak"}
+            label="Tolak"
+          />
+        </RadioGroup>
+      </FormControl>
+    </TableCell>
+  )
 
   const columns = [
     { field: 'id_request', headerName: 'ID', width: 70 },
@@ -256,40 +290,6 @@ const RequestDataGrid = () => {
       ),
     },
   ]
-  useEffect(() => {
-    const fetchSessionData = async () => {
-      // Ambil SessionData dari Session Storage
-      const sessionDataStr = sessionStorage.getItem('sessionData')
-      if (sessionDataStr) {
-        const sessionData = JSON.parse(sessionDataStr)
-        setSessionData(sessionData)
-      }
-    }
-
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-request-kasbon`)
-        if (response.ok) {
-          const result = await response.json()
-          setData(result)
-        } else if (response.status === 404) {
-          console.error('Data tidak ditemukan')
-          setErrorMessage(`Tidak ada request saat ini`)
-          setTimeout(() => {
-            setErrorMessage('')
-          }, 3000)
-
-        } else {
-          console.error('Error:', response.status, response.statusText)
-        }
-      } catch (error) {
-        console.error('Error:', error)
-      }
-    }
-
-    fetchData()
-    fetchSessionData()
-  }, [])
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
@@ -298,23 +298,6 @@ const RequestDataGrid = () => {
       currency: 'IDR',
     }).format(jumlah)
   }
-
-  const customMonthYearFilterOperator = {
-    // Custom filter operator for month and year
-    'month-year': (filterValue, rowValue) => {
-      // Parse the filter value as a date
-      const filterDate = new Date(filterValue);
-
-      // Parse the row value as a date
-      const rowDate = new Date(rowValue);
-
-      // Compare the month and year of the filter value and row value
-      return (
-        filterDate.getMonth() === rowDate.getMonth() &&
-        filterDate.getFullYear() === rowDate.getFullYear()
-      );
-    },
-  };
 
   const rows = data.map((row, index) => ({
     id: row.id_request,
@@ -325,8 +308,6 @@ const RequestDataGrid = () => {
     keterangan: row.keterangan,
     status_request: row.status_request,
   }));
-
-
 
   return (
     <div>
