@@ -20,7 +20,7 @@ const AdminNavigation = () => {
     {
       title: 'Request',
       icon: RequestQuoteOutlinedIcon,
-      path: '/request-kasbon'
+      path: '/RequestPage'
     },
     {
       title: 'Bayar',
@@ -51,12 +51,6 @@ const AdminNavigation = () => {
       title: 'Tambah Admin',
       icon: AddCircle,
       path: '/register-admin',
-      openInNewTab: false
-    },
-    {
-      title: 'Request Test',
-      icon: SearchOutlinedIcon,
-      path: '/RequestPage',
       openInNewTab: false
     }
   ]
