@@ -27,8 +27,8 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 ### v1.2.0-BUILD
 
 - Backend version update v1.1.5
-- Replace Admin Dashboard with MUI X Datagrid table
-- Replace Karyawan Dashboard with MUI X Datagrid table
+- Replace Admin Dashboard with MUI X Data Grid table
+- Replace Karyawan Dashboard with MUI X Data Grid table
 - Update template request DOCX
 - Update template lunas DOCX
 - Increase backend request handle so it won't hang easily
