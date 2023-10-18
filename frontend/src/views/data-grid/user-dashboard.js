@@ -92,13 +92,13 @@ const columns = [
   {
     field: 'keterangan',
     headerName: 'Keterangan',
-    width: 350,
+    width: 270,
     editable: true,
   },
   {
     field: 'status_request',
     headerName: 'Req',
-    width: 90,
+    width: 115,
     valueGetter: (params) => {
       const row = params.row
       if (row.status_request === 'wait') {
@@ -132,7 +132,7 @@ const columns = [
   {
     field: 'status_b',
     headerName: 'Bayar',
-    width: 90,
+    width: 115,
     valueGetter: (params) => {
       const row = params.row
       if (row.status_b === 'lunas') {
