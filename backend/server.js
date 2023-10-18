@@ -651,7 +651,7 @@ app.put('/api/edit-bayar-batch', async (req, res) => {
 })
 
 // Download Request Kasbon
-app.post('/api/download-kasbon', async (req, res) => {
+app.post('/api/download-request', async (req, res) => {
   const { id_request, nama_user, jumlah, metode, tanggaljam, keterangan } = req.body
 
   const DateTime = new Date()
@@ -682,6 +682,7 @@ app.post('/api/download-kasbon', async (req, res) => {
       metode: metode,
       keterangan: keterangan,
       tanggaljam: tanggaljam,
+      status_q: 'Sukses',
       current_datetime: formatTanggaljam(DateTime)
     })
 
