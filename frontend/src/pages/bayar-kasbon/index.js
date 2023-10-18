@@ -386,7 +386,7 @@ const FormBayarKasbon = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Tabel Bayar Kasbon' titleTypographyProps={{ variant: 'h6' }} />
+          <CardHeader title='' titleTypographyProps={{ variant: 'h6' }} />
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -487,6 +487,11 @@ const FormBayarKasbon = () => {
         >
         </Box>
       </Grid>
+      <Grid item xs={12}>
+        <Typography variant="caption">
+          Harap mengisi semua pilihan pada setiap baris sebelum tekan tombol simpan semua
+        </Typography>
+      </Grid><br></br>
       {errorMessage && (
         <Alert severity="error">{errorMessage}</Alert>
       )}
@@ -498,11 +503,7 @@ const FormBayarKasbon = () => {
           Simpan Semua
         </RoundedRectangleButton>
       </Grid>
-      <Grid item xs={12}>
-        <Typography variant="caption">
-          Harap mengisi semua konfirmasi "sudah lunas?" sebelum tekan tombol simpan semua
-        </Typography>
-      </Grid>
+
     </Grid>
   )
 }
