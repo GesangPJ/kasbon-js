@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
@@ -103,14 +102,11 @@ const TableRequestDownload = () => {
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const router = useRouter()
   const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const [sessionData, setSessionData] = useState(null)
   const [data, setData] = useState([])
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
-  const [updatedData, setUpdatedData] = useState([])
   const [selectedRows, setSelectedRows] = useState({})
 
   const handleidkaryawanChange = (e) => {
@@ -250,7 +246,7 @@ const TableRequestDownload = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/download-kasbon`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/download-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(DownloadData),
@@ -265,7 +261,7 @@ const TableRequestDownload = () => {
         // Create an anchor element to trigger the download
         const a = document.createElement('a')
         a.href = url
-        a.download = `kasbon-${nama_user}-${id_request}.docx` // Modify the file name as needed
+        a.download = `kasbon-request-${nama_user}-${id_request}.docx` // Modify the file name as needed
 
         // Trigger the click event to download the file
         a.click()
@@ -274,7 +270,10 @@ const TableRequestDownload = () => {
         window.URL.revokeObjectURL(url)
       } else {
         console.error('Error downloading the DOCX file')
-        // Handle the error
+        setErrorMessage('Tidak bisa download Docx')
+        setTimeout(() => {
+          setErrorMessage('')
+        }, 5000)
       }
     }
     catch (error) {
@@ -390,7 +389,7 @@ const TableRequestDownload = () => {
                           </RoundedRectangleButton>
                         ) : column.id === 'status_request' ? (
                           row.status_request === 'wait' ? (
-                            <Chip label="Wait" className={classes.warningCell} color="secondary" variant="outlined" style={{ color: 'black' }} />
+                            <Chip label="Wait" className={classes.warningCell} color="default" variant="outlined" style={{ color: 'black' }} />
                           ) : row.status_request === 'sukses' ? (
                             <Chip label="Sukses" className={classes.successCell} color="primary" variant="outlined" style={{ color: 'white' }} />
                           ) : row.status_request === 'tolak' ? (
