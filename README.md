@@ -1,6 +1,10 @@
 # KASBON WEBSITE
 
-<img src="https://github.com/GesangPJ/kasbon-js/blob/main/frontend/public/images/ss/desktop-dashboard-admin.png" width = "600" height = "300" >
+
+
+
+https://github.com/GesangPJ/kasbon-js/assets/26625652/a2f6697b-7a4f-4486-a67a-8734ebf0ed18
+
 
 Website berbasis NodeJS bertujuan untuk mengelola Kasbon, menggunakan NextJS untuk frontend(client-side), dan ExpressJS untuk backend(server-side),data kasbon dan akun dimasukkan dan dikelola dengan database PostgreSQL v15. Mulai dari versi 1.0.7-Preview tersedia
 versi docker container untuk website ini, versi docker container 1.0.7 mungkin masih memiliki beberapa masalah seperti tidak terkoneksi
@@ -23,6 +27,14 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 
 - _Build means it's safe to build the project_
 - _Preview means the build version still have bugs_
+
+### v1.3.5-BUILD
+
+- Replace Request page table with MUI X Data Grid
+- Fix Bayar page sorting error
+- Backend version 1.2.1
+- Backend hang fix (by adding some client.release()) [i hope it's work and no more hang]
+- Update admin sidebar
 
 ### v1.2.0-BUILD
 
