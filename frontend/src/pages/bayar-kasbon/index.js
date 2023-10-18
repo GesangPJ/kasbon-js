@@ -29,6 +29,10 @@ import Chip from '@mui/material/Chip'
 import styled from '@emotion/styled'
 import Divider from '@mui/material/Divider'
 import { useRouter } from 'next/router'
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
+import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
 
 require('dotenv').config()
 
@@ -39,23 +43,6 @@ const RoundedRectangleButton = styled(Button)`
   &:disabled {
     border-radius: 32px;
   }`
-
-const useStyles = makeStyles((theme) => ({
-  // warna warning/kuning
-  warningCell: {
-    backgroundColor: 'yellow',
-  },
-
-  // warna success/hijau
-  successCell: {
-    backgroundColor: 'green',
-  },
-
-  // warna error/merah
-  errorCell: {
-    backgroundColor: 'red',
-  },
-}))
 
 const columns = [
   { id: 'tanggaljam', label: 'Tanggal Jam', minWidth: 10, sortable: true },
@@ -107,22 +94,24 @@ const FormBayarKasbon = () => {
   const [data, setData] = useState([])
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
   const [radioButtonValues, setRadioButtonValues] = useState({})
-  const classes = useStyles()
   const [updatedData, setUpdatedData] = useState([])
   const [selectedRows, setSelectedRows] = useState({})
   const router = useRouter()
   const [isAuthorized, setIsAuthorized] = useState(true)
 
-
+  const handleSort = (columnId) => {
+    const isAsc = sorting.column === columnId && sorting.direction === 'asc'
+    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
+  }
 
   const getStatusChips = (status) => {
     if (status === 'belum') {
       return (
         <Chip
           label="Belum"
-          className={classes.warningCell}
-          color="primary"
+          color="default"
           variant="outlined"
+          icon={<PauseCircleOutlineOutlinedIcon style={{ color: 'grey' }} />}
           style={{ color: 'black' }}
         />
       )
@@ -130,10 +119,10 @@ const FormBayarKasbon = () => {
       return (
         <Chip
           label="Lunas"
-          className={classes.successCell}
-          color="secondary"
+          color="success"
+          icon={<DoneOutlinedIcon style={{ color: 'green' }} />}
           variant="outlined"
-          style={{ color: 'white' }}
+          style={{ color: 'green' }}
         />
       )
 
