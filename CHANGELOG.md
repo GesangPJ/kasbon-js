@@ -1,3 +1,11 @@
+### v1.3.5-BUILD
+
+- Replace Request page table with MUI X Data Grid
+- Fix Bayar page sorting error
+- Backend version 1.2.1
+- Backend hang fix (by adding some client.release()) [i hope it's work and no more hang]
+- Update admin sidebar
+
 ### v1.2.0-BUILD
 
 - Backend version update v1.1.5
