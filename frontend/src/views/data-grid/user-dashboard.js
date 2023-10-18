@@ -8,8 +8,12 @@ import Chip from '@mui/material/Chip'
 import { useRouter } from 'next/router'
 import styled from '@emotion/styled'
 import Button from '@mui/material/Button'
-import dayjs from 'dayjs';
-import id from 'dayjs/locale/id';
+import dayjs from 'dayjs'
+import id from 'dayjs/locale/id'
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
+import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
 
 dayjs.locale(id);
 
@@ -114,19 +118,29 @@ const columns = [
       const statusRequest = params.value
       let chipColor = 'default'
       let chipLabel = statusRequest
+      let icon = null
 
       if (statusRequest === 'wait') {
         chipColor = 'default'
         chipLabel = 'Wait'
+        icon = <SyncOutlinedIcon style={{ color: 'grey' }} />
       } else if (statusRequest === 'sukses') {
         chipColor = 'success'
         chipLabel = 'Sukses'
+        icon = <DoneOutlinedIcon style={{ color: 'green' }} />
+
       } else if (statusRequest === 'tolak') {
         chipColor = 'error'
         chipLabel = 'Tolak'
+        icon = <CloseOutlinedIcon style={{ color: 'red' }} />
       }
 
-      return <Chip label={chipLabel} color={chipColor} variant="contained" />
+      return <Chip
+        label={chipLabel}
+        color={chipColor}
+        variant="outlined"
+        avatar={icon} // This adds the icon to the left of the label
+      />
     },
   },
   {
@@ -146,16 +160,24 @@ const columns = [
       const statusB = params.value
       let chipColor = 'default'
       let chipLabel = statusB
+      let icon = null
 
       if (statusB === 'lunas') {
         chipColor = 'success'
         chipLabel = 'Lunas'
+        icon = <DoneOutlinedIcon style={{ color: 'green' }} />
       } else if (statusB === 'belum') {
-        chipColor = 'secondary'
+        chipColor = 'default'
         chipLabel = 'Belum'
+        icon = <PauseCircleOutlineOutlinedIcon style={{ color: 'grey' }} />
       }
 
-      return <Chip label={chipLabel} color={chipColor} variant="contained" />
+      return <Chip
+        label={chipLabel}
+        color={chipColor}
+        variant="outlined"
+        avatar={icon} // This adds the icon to the left of the label
+      />
     },
   },
 ]
