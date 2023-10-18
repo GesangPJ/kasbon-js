@@ -12,9 +12,6 @@ const fs = require('fs')
 const path = require('path')
 const { v4: uuidv4 } = require('uuid')
 const http = require('http')
-const pdfMake = require('pdfmake/build/pdfmake.js')
-const pdfFonts = require('pdfmake/build/vfs_fonts.js')
-pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 const allowedOrigins = process.env.CORS_ORIGINS.split(',')
 const PREFLIGHT = process.env.PREFLIGHT
