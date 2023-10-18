@@ -21,6 +21,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useTheme } from '@mui/material/styles'
 import styled from '@emotion/styled'
+import Typography from '@mui/material/Typography'
 
 require('dotenv').config()
 
@@ -342,7 +343,12 @@ const TableEditRequest = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      </Paper>
+      </Paper><br></br>
+      <div>
+        <Typography variant="caption">
+          Harap mengisi semua pilihan pada setiap baris sebelum tekan tombol simpan
+        </Typography>
+      </div>
       <div className={classes.buttonContainer}>
         <RoundedRectangleButton
           variant="contained"
