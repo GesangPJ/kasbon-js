@@ -277,7 +277,7 @@ const SignPage = () => {
         {themeConfig.buildVersion}
         </Typography>
         <Typography variant='caption'>
-          {themeConfig.backVersion}
+          --{themeConfig.backVersion}
         </Typography>
       </Card>
       <FooterIllustrationsV1 />
