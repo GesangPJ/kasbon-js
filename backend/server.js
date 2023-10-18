@@ -397,6 +397,8 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
     const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'wait\''
     const selectResult = await client.query(selectQuery)
 
+    client.release()
+
     // Jika ada hasil, maka kirim responnya hasil query
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
@@ -586,6 +588,8 @@ app.put('/api/edit-bayar/:id_request', async (req, res) => {
     const updateQuery = 'UPDATE request SET status_b = $1, id_petugas = $2, tanggaljam=NOW() WHERE id_request = $3'
     const updateValues = [status_b, id_petugas, requestId]
     const updateResult = await client.query(updateQuery, updateValues)
+
+    client.release()
 
     if (updateResult.rowCount === 1) {
       res.status(200).json({ message: 'Pembayaran berhasil diubah' })
