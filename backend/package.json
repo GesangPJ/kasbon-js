@@ -1,6 +1,6 @@
 {
   "name": "kasbon-server",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "ExpressJS Website manajemen kasbon",
   "main": "server.js",
   "scripts": {

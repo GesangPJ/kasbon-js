@@ -22,6 +22,7 @@ import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
 
 dayjs.locale(id);
 
@@ -306,6 +307,10 @@ const RequestDataGrid = () => {
           chipColor = 'error'
           chipLabel = 'Tolak'
           icon = <CloseOutlinedIcon style={{ color: 'red' }} />
+        } else {
+          chipColor = 'error'
+          chipLabel = 'No Data'
+          icon = <ErrorOutlineOutlinedIcon style={{ color: 'red' }} />
         }
 
         return <Chip
@@ -325,10 +330,6 @@ const RequestDataGrid = () => {
       ),
     },
   ]
-
-
-
-
 
   return (
     <div>

@@ -381,6 +381,7 @@ app.get('/api/ambil-dashboard-karyawan/:id_akun', async (req, res) => {
 
       // Jika tidak ada data
       res.status(404).json({ message: 'Data tidak ada' })
+
     }
   } catch (error) {
     console.error('Error:', error)
