@@ -123,6 +123,38 @@ If you want to build the project, you can us `yarn build` or `next build` or `np
 It use Minify SWC for compiler, you can change it in `next.config.js`
 By using SWC, the build output perform more than good, also it reduce the production build from `~700MB` to `~80MB` in .next directory itself.
 
+## Create Backend Service In Windows
+
+1. In terminal at root directory (/kasbon-js) use command '.\nssm install <service name> or kasbon-backend
+2. GUI will open, specify Path to /backend/server.js
+3. Click Install button
+4. Makesure popup complete appear
+5. check service in windwos services-> makesure there's service called 'kasbon-backend' or the service name specified by yourself
+6. Makesure that the service start as windows start by right clicking the service name-> properties and startup type to 'Automatic'
+
+## Create Services in Ubuntu
+
+1. For backend : create file in /etc/sytemd/system 'kasbon-backend.service'
+2. Put this inside :
+```
+[Unit]
+Description=ExpressJS Kasbon Backend Service
+
+[Service]
+WorkingDirectory=/home/g_paudra/kasbon-js/backend
+ExecStart=/usr/bin/node /home/g_paudra/kasbon-js/backend/server.js
+Restart=always
+User=g_paudra
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+
+
+
+
 ## C. Modules
 
 - React NextJS
