@@ -28,6 +28,16 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 - _Build means it's safe to build the project_
 - _Preview means the build version still have bugs_
 
+### v1.4.0-BUILD
+
+- Upgrade and tested in NodeJS v21.0.0
+- Upgrade and tested in PostgreSQL 16.0
+- Working create services in Windows
+- Working create services in Ubuntu
+- Remove unnecessary files
+- Cleanup some codes
+- Version upgrade to 1.4.0 both backend and frontend
+
 ### v1.3.5-BUILD
 
 - Replace Request page table with MUI X Data Grid
