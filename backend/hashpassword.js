@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 
 // Passwordnya
-const password = '12345678'
+const password = ''
 
 // Hash the password
 bcrypt.genSalt(10, (err, salt) => {
