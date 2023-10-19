@@ -28,6 +28,12 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 - _Build means it's safe to build the project_
 - _Preview means the build version still have bugs_
 
+### v1.4.4-PREVIEW
+
+- Fix error when there are data in request table (empty)
+- Fix error when there are no data in view dashboard
+- Prepare database for production
+
 ### v1.4.0-BUILD
 
 - Upgrade and tested in NodeJS v21.0.0
