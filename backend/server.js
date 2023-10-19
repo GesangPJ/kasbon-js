@@ -79,20 +79,7 @@ app.get('/api/clear-sessions', async (req, res) => {
   }
 })
 
-// Logout
-app.get('/api/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error('Error during logout:', err)
-      res.status(500).json({ error: 'Internal Server Error' })
-    } else {
-      // Redirect to the login page after successful logout
-      res.status(200).json({ message: 'Logged out successfully' })
-      console.log('Berhasil Log Out')
-    }
-  })
-})
-
+//Bcrypt cek password
 const checkPassword = async (plainPassword, hashedPassword) => {
   return await bcrypt.compare(plainPassword, hashedPassword)
 }
@@ -220,6 +207,23 @@ app.post('/api/masuk', async (req, res) => {
     console.error('Login error:', error)
     res.status(500).json({ error: 'Internal Server Error' })
   }
+})
+
+//API Keluar (Logout)
+app.post('/api/keluar', async (req, res) => {
+
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error during logout:', err)
+      res.status(500).json({ error: 'Internal Server Error' })
+    } else {
+      const id_akun = req.body.id_akun
+      // Redirect to the login page after successful logout
+      res.status(200).json({ message: `Akun ${id_akun} Berhasil Log Out` })
+      console.log(`Akun ${id_akun} Berhasil Log Out`)
+    }
+  })
+
 })
 
 // API Ambil session
