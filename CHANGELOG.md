@@ -1,3 +1,10 @@
+### v1.4.7-BUILD
+
+- Add data grid view of karyawan account
+- Add data grid view of admin account
+- Admin ability to change admin password with old password verification
+- Cleanup backend code
+
 ### v1.4.4-PREVIEW
 
 - Fix error when there are no data in request table (empty)
