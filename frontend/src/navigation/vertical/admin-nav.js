@@ -1,13 +1,13 @@
 // ** Icon imports
 import { MonitorHeart } from '@mui/icons-material'
-import { AddCircle } from '@mui/icons-material'
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
 import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined'
-import PaidIcon from '@mui/icons-material/Paid'
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined'
 import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined'
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined'
+import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined'
+import PaidOutlinedIcon from '@mui/icons-material/PaidOutlined'
 
 const AdminNavigation = () => {
   return [
@@ -17,17 +17,20 @@ const AdminNavigation = () => {
     {
       title: 'Dashboard',
       icon: SpaceDashboardOutlinedIcon,
-      path: '/dashboard-admin'
+      path: '/dashboard-admin',
+      openInNewTab: false,
     },
     {
       title: 'Request',
       icon: RequestQuoteOutlinedIcon,
-      path: '/RequestPage'
+      path: '/RequestPage',
+      openInNewTab: false,
     },
     {
       title: 'Bayar',
-      icon: PaidIcon,
-      path: '/bayar-kasbon'
+      icon: PaidOutlinedIcon,
+      path: '/bayar-kasbon',
+      openInNewTab: false
     },
     {
       title: 'Download Data',
@@ -45,13 +48,13 @@ const AdminNavigation = () => {
     },
     {
       title: 'Tambah User',
-      icon: AddCircle,
+      icon: GroupAddOutlinedIcon,
       path: '/register-user',
       openInNewTab: false
     },
     {
       title: 'Tambah Admin',
-      icon: AddCircle,
+      icon: PersonAddAltOutlinedIcon,
       path: '/register-admin',
       openInNewTab: false
     },
