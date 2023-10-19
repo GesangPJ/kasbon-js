@@ -1,9 +1,5 @@
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
-
-// ** Demo Components Imports
-import TypographyTexts from 'src/views/typography/TypographyTexts'
-import TypographyHeadings from 'src/views/typography/TypographyHeadings'
 import TextDokumen from './TextDokumentasi'
 
 const Dokumentasi = () => {
