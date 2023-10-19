@@ -45,29 +45,6 @@ const UserDropdown = () => {
     setAnchorEl(null)
   }
 
-  // Fungsi Tombol Logout
-  const handleLogout = async () => {
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
-        method: 'GET',
-        //credentials: 'include',
-      })
-
-      // hapus session storage saat logout
-      sessionStorage.clear()
-
-      // Arahkan ke login
-      router.push('/')
-    } catch (error) {
-      console.error('Error during logout:', error)
-
-
-    }
-
-    setAnchorEl(null) // tutup dropdown
-  }
-
-
   const styles = {
     py: 2,
     px: 4,
@@ -85,13 +62,44 @@ const UserDropdown = () => {
   const [sessionData, setSessionData] = useState(null)
 
   useEffect(() => {
-    // Ambil Data session dari session storage
-    const sessionDataStr = sessionStorage.getItem('sessionData')
-    if (sessionDataStr) {
-      const sessionData = JSON.parse(sessionDataStr)
-      setSessionData(sessionData)
+    const fetchSessionData = async () => {
+      // Ambil SessionData dari Session Storage
+      const sessionDataStr = sessionStorage.getItem('sessionData')
+      if (sessionDataStr) {
+        const sessionData = JSON.parse(sessionDataStr)
+        setSessionData(sessionData)
+      }
     }
+    fetchSessionData()
   }, [])
+
+
+
+  // Fungsi Tombol Logout
+  const handleLogout = async () => {
+    const id_akun = sessionData.id_akun
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/keluar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id_akun }) // Pass id_akun as an object
+      })
+      if (response.ok) {
+        // hapus session storage saat logout
+        sessionStorage.clear()
+        // Arahkan ke login
+        router.push('/')
+        console.log(`Akun ${id_akun} Berhasil keluar`)
+      } else {
+        console.log(`Error Keluar, cek server`)
+      }
+    } catch (error) {
+      console.error('Error during logout:', error)
+    }
+    setAnchorEl(null); // tutup dropdown
+  }
 
   return (
     <Fragment>
