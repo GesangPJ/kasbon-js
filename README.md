@@ -30,7 +30,7 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 
 ### v1.4.4-PREVIEW
 
-- Fix error when there are data in request table (empty)
+- Fix error when there are no data in request table (empty)
 - Fix error when there are no data in view dashboard
 - Prepare database for production
 
