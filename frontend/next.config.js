@@ -3,6 +3,7 @@ const path = require('path')
 module.exports = {
   trailingSlash: true,
   reactStrictMode: false,
+  distDir: 'build',
   compiler: {
     swcMinify: true
   },
