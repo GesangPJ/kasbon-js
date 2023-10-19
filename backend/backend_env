@@ -1,6 +1,6 @@
-DB_USER=gesangpg
+DB_USER=postgres
 DB_HOST=localhost
-DB_DATABASE=kasbon
+DB_DATABASE=kasbondev
 DB_PASSWORD=gesangpj01
 DB_PORT=5432
 PORT =3001
