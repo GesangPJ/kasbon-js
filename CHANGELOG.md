@@ -1,6 +1,6 @@
 ### v1.4.4-PREVIEW
 
-- Fix error when there are data in request table (empty)
+- Fix error when there are no data in request table (empty)
 - Fix error when there are no data in view dashboard
 - Prepare database for production
 
