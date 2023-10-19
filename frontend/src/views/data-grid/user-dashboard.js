@@ -14,6 +14,7 @@ import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
 
 dayjs.locale(id);
 
@@ -133,6 +134,10 @@ const columns = [
         chipColor = 'error'
         chipLabel = 'Tolak'
         icon = <CloseOutlinedIcon style={{ color: 'red' }} />
+      } else {
+        chipColor = 'error'
+        chipLabel = 'No Data'
+        icon = <ErrorOutlineOutlinedIcon style={{ color: 'red' }} />
       }
 
       return <Chip
@@ -170,6 +175,10 @@ const columns = [
         chipColor = 'default'
         chipLabel = 'Belum'
         icon = <PauseCircleOutlineOutlinedIcon style={{ color: 'grey' }} />
+      } else {
+        chipColor = 'error'
+        chipLabel = 'No Data'
+        icon = <ErrorOutlineOutlinedIcon style={{ color: 'red' }} />
       }
 
       return <Chip
@@ -184,27 +193,40 @@ const columns = [
 
 const UserDataGrid = () => {
   const [data, setData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
 
   useEffect(() => {
-
     const fetchData = async () => {
-
       try {
-        const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun
+        const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-karyawan/${id_akun}`)
         if (response.ok) {
-          const result = await response.json()
-          setData(result)
+          const result = await response.json();
+          setData(result);
+        } else if (response.status === 404) {
+          setHasError(true);
         } else {
-          console.error('Error fetching dashboard user data.')
+          console.error('Error fetching dashboard user data.');
         }
       } catch (error) {
-        console.error('Error:', error)
+        console.error('Error:', error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    fetchData()
-  }, [])
+    };
+
+    fetchData();
+  }, []);
+
+  if (hasError) {
+    return <Alert severity="info">No data available.</Alert>;
+  }
+
+  if (data.length === 0) {
+    return <Alert severity="info">No data available.</Alert>;
+  }
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
@@ -218,21 +240,21 @@ const UserDataGrid = () => {
     // Custom filter operator for month and year
     'month-year': (filterValue, rowValue) => {
       // Parse the filter value as a date
-      const filterDate = new Date(filterValue);
+      const filterDate = new Date(filterValue)
 
       // Parse the row value as a date
-      const rowDate = new Date(rowValue);
+      const rowDate = new Date(rowValue)
 
       // Compare the month and year of the filter value and row value
       return (
         filterDate.getMonth() === rowDate.getMonth() &&
         filterDate.getFullYear() === rowDate.getFullYear()
-      );
+      )
     },
-  };
+  }
 
   const rows = data.map((row, index) => ({
-    id: row.id_request,
+    id: row.id_request || `row-${index}`,
     tanggaljam: row.tanggaljam,
     nama_user: row.nama_user,
     jumlah: row.jumlah,
@@ -240,7 +262,7 @@ const UserDataGrid = () => {
     keterangan: row.keterangan,
     status_request: row.status_request,
     status_b: row.status_b,
-  }));
+  }))
 
   return (
     <Box sx={{ height: 600, width: '100%' }}>

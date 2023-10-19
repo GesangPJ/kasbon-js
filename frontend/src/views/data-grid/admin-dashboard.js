@@ -14,6 +14,7 @@ import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
 
 dayjs.locale(id);
 
@@ -123,7 +124,7 @@ const columns = [
   {
     field: 'status_request',
     headerName: 'Req',
-    width: 115,
+    width: 125,
     valueGetter: (params) => {
       const row = params.row
       if (row.status_request === 'wait') {
@@ -154,7 +155,13 @@ const columns = [
         chipColor = 'error'
         chipLabel = 'Tolak'
         icon = <CloseOutlinedIcon style={{ color: 'red' }} />
+
+      } else {
+        chipColor = 'error'
+        chipLabel = 'No Data'
+        icon = <ErrorOutlineOutlinedIcon style={{ color: 'red' }} />
       }
+
 
       return <Chip
         label={chipLabel}
@@ -167,7 +174,7 @@ const columns = [
   {
     field: 'status_b',
     headerName: 'Bayar',
-    width: 115,
+    width: 125,
     valueGetter: (params) => {
       const row = params.row
       if (row.status_b === 'lunas') {
@@ -191,6 +198,10 @@ const columns = [
         chipColor = 'default'
         chipLabel = 'Belum'
         icon = <PauseCircleOutlineOutlinedIcon style={{ color: 'grey' }} />
+      } else {
+        chipColor = 'error'
+        chipLabel = 'No Data'
+        icon = <ErrorOutlineOutlinedIcon style={{ color: 'red' }} />
       }
 
       return <Chip
@@ -211,28 +222,30 @@ const columns = [
 
 const AdminDataGrid = () => {
   const [data, setData] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`);
         if (response.ok) {
-          const result = await response.json()
-          setData(result)
+          const result = await response.json();
+          setData(result);
         } else if (response.status === 403) {
-          const router = useRouter()
-          router.push('/401')
-        }
-        else {
-          console.error('Error mengambil dashboard admin.')
+          const router = useRouter();
+          router.push('/401');
+        } else {
+          console.error('Error mengambil dashboard admin.');
         }
       } catch (error) {
-        console.error('Error:', error)
+        console.error('Error:', error);
+      } finally {
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
@@ -246,21 +259,31 @@ const AdminDataGrid = () => {
     // Custom filter operator for month and year
     'month-year': (filterValue, rowValue) => {
       // Parse the filter value as a date
-      const filterDate = new Date(filterValue);
+      const filterDate = new Date(filterValue)
 
       // Parse the row value as a date
-      const rowDate = new Date(rowValue);
+      const rowDate = new Date(rowValue)
 
       // Compare the month and year of the filter value and row value
       return (
         filterDate.getMonth() === rowDate.getMonth() &&
         filterDate.getFullYear() === rowDate.getFullYear()
-      );
+      )
     },
-  };
+  }
+
+  if (isLoading) {
+
+    return <div>Loading...</div>;
+  }
+
+  if (data.length === 0) {
+    // Handle the case when there are no data
+    return <Alert severity="info">No data available.</Alert>
+  }
 
   const rows = data.map((row, index) => ({
-    id: row.id_request,
+    id: row.id_request || `row-${index}`,
     tanggaljam: row.tanggaljam,
     nama_user: row.nama_user,
     id_karyawan: row.id_karyawan,
@@ -270,7 +293,7 @@ const AdminDataGrid = () => {
     status_request: row.status_request,
     status_b: row.status_b,
     nama_admin: row.nama_admin,
-  }));
+  }))
 
   return (
     <Box sx={{ height: 600, width: '100%' }}>
