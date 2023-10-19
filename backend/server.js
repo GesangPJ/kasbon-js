@@ -764,6 +764,93 @@ app.post('/api/download-lunas', async (req, res) => {
   }
 })
 
+// API Ambil data akun karyawan
+app.get('/api/ambil-akun-karyawan', async (req, res) => {
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM user_kasbon'
+    const selectResult = await client.query(selectQuery)
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data, harap hubungi admin' })
+    }
+  }
+  catch (error) {
+    console.error('Error ambil data karyawan :', error)
+    console.log('Error ambil data karyawan')
+  }
+
+})
+
+// API Ambil data akun Admin
+app.get('/api/ambil-akun-admin', async (req, res) => {
+  try {
+    const client = await pool.connect()
+
+    const selectQuery = 'SELECT * FROM admin_kasbon'
+    const selectResult = await client.query(selectQuery)
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: 'Tidak ada data, harap hubungi admin' })
+    }
+  }
+  catch (error) {
+    console.error('Error ambil data Admin :', error)
+    console.log('Error ambil data Admin')
+  }
+
+})
+
+// Ganti Password Admin
+app.post('/api/ganti-password-admin', async (req, res) => {
+  const { password_check, password, id_petugas } = req.body
+
+  try {
+    const client = await pool.connect()
+
+    // Ambil password dari DB
+    const selectQuery = 'SELECT password_admin FROM "admin_kasbon" WHERE id_petugas = $1'
+    const selectResult = await client.query(selectQuery, [id_petugas])
+
+    if (selectResult.rows.length === 0) {
+      client.release()
+      return res.status(400).json({ error: `Admin with ID ${id_petugas} not found.` })
+    }
+
+    const hashedPassword = selectResult.rows[0].password_admin
+
+    // Komparasi password lama
+    const passwordMatch = await bcrypt.compare(password_check, hashedPassword)
+
+    // Jika password tidak sama maka respon 400
+    if (!passwordMatch) {
+      client.release()
+      return res.status(400).json({ error: 'Incorrect old password.' })
+    }
+
+    // Jika password lama sama, maka lanjut update
+    const newHashedPassword = await bcrypt.hash(password, 10)
+    const updateQuery = 'UPDATE "admin_kasbon" SET password_admin = $1 WHERE id_petugas = $2'
+    await client.query(updateQuery, [newHashedPassword, id_petugas])
+
+    client.release()
+    res.status(200).json({ message: `Admin ID ${id_petugas} password berhasil dirubah.` })
+    console.log(`Admin ID ${id_petugas} password berhasil dirubah`)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'An error occurred while changing the password.' })
+  }
+})
+
 // Set Port buat server
 const port = process.env.PORT || 3001
 server.listen(port, '0.0.0.0', async () => {
