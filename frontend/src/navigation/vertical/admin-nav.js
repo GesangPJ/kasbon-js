@@ -6,6 +6,8 @@ import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined'
 import PaidIcon from '@mui/icons-material/Paid'
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined'
+import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccountOutlined'
 
 const AdminNavigation = () => {
   return [
@@ -51,6 +53,18 @@ const AdminNavigation = () => {
       title: 'Tambah Admin',
       icon: AddCircle,
       path: '/register-admin',
+      openInNewTab: false
+    },
+    {
+      title: 'Daftar Admin',
+      icon: SupervisorAccountOutlinedIcon,
+      path: '/DaftarAdmin',
+      openInNewTab: false
+    },
+    {
+      title: 'Daftar Karyawan',
+      icon: PeopleOutlinedIcon,
+      path: '/DaftarKaryawan',
       openInNewTab: false
     }
   ]
