@@ -1,3 +1,9 @@
+### v1.4.4-PREVIEW
+
+- Fix error when there are data in request table (empty)
+- Fix error when there are no data in view dashboard
+- Prepare database for production
+
 ### v1.4.0-BUILD
 
 - Upgrade and tested in NodeJS v21.0.0
