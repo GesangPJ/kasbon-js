@@ -141,14 +141,19 @@ By using SWC, the build output perform more than good, also it reduce the produc
 Description=ExpressJS Kasbon Backend Service
 
 [Service]
-WorkingDirectory=/home/g_paudra/kasbon-js/backend
-ExecStart=/usr/bin/node /home/g_paudra/kasbon-js/backend/server.js
+WorkingDirectory=<your project directory>
+ExecStart=sudo /usr/bin/node <path to project directory>/kasbon-js/backend/server.js
 Restart=always
-User=g_paudra
+User=<your username>
 
 [Install]
 WantedBy=multi-user.target
 ```
+3. Save
+
+4. For Frontend : same as before, but ExecStart is ``` ExecStart=/usr/bin/npm run start ```
+5. Save
+6. To start at startup ``` sudo systemctl enable kasbon-frontend ``` & ``` sudo systemctl enable kasbon-backend ```
 
 
 
