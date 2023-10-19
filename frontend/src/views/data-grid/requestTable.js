@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Box from '@mui/material/Box'
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { useState, useEffect } from 'react'
 import Alert from '@mui/material/Alert'
 import { makeStyles } from '@mui/styles'
@@ -24,7 +24,7 @@ import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
 
-dayjs.locale(id);
+dayjs.locale(id)
 
 require('dotenv').config()
 
@@ -145,12 +145,12 @@ const RequestDataGrid = () => {
   }, [])
 
   const handleBatchUpdate = async () => {
-    const id_akun = sessionData.id_akun;
-    const updatePromises = [];
+    const id_akun = sessionData.id_akun
+    const updatePromises = []
 
     // Iterate through selected rows and create update promises
     for (const requestId in selectedRows) {
-      const status_request = selectedRows[requestId];
+      const status_request = selectedRows[requestId]
       updatePromises.push(
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/update-request/${requestId}`, {
           method: 'PUT',
@@ -194,18 +194,18 @@ const RequestDataGrid = () => {
     metode: row.metode,
     keterangan: row.keterangan,
     status_request: row.status_request,
-  }));
+  }))
 
   const StatusBCellRenderer = ({ value, row }) => {
-    const [radioValue, setRadioValue] = useState(value);
+    const [radioValue, setRadioValue] = useState(value)
 
     const handleRadioChange = (event) => {
-      setRadioValue(event.target.value);
+      setRadioValue(event.target.value)
       setSelectedRows({
         ...selectedRows,
         [row.id]: event.target.value,
-      });
-    };
+      })
+    }
 
     return (
       <TableRow key={row.id}>
@@ -226,8 +226,8 @@ const RequestDataGrid = () => {
           </FormControl>
         </TableCell>
       </TableRow>
-    );
-  };
+    )
+  }
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
@@ -238,15 +238,15 @@ const RequestDataGrid = () => {
       editable: true,
       type: 'date',
       valueFormatter: (params) => {
-        const formattedDate = formatTanggaljam(params.value);
-        return formattedDate;
+        const formattedDate = formatTanggaljam(params.value)
+        return formattedDate
       },
       sortComparator: (v1, v2) => {
         // Parse the dates and compare them for sorting
-        const date1 = new Date(v1);
-        const date2 = new Date(v2);
+        const date1 = new Date(v1)
+        const date2 = new Date(v2)
 
-        return date1 - date2;
+        return date1 - date2
       },
     },
     {
