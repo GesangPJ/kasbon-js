@@ -184,8 +184,8 @@ const FormAdmin = () => {
                 <TextField
                   label='Password'
                   name='password'
-                  placeholder='Password User'
-                  helperText='Masukkan Password User'
+                  placeholder='Password Admin'
+                  helperText='Masukkan Password Admin'
                   value={password}
                   onChange={handlepasswordChange}
                   type={showPassword ? 'text' : 'password'}
