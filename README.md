@@ -22,11 +22,21 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 - Set Bayar
 - Additional 2 VIEW tables
 - Download Data Page
+- Unauthorized Access Protection
+- Password change for admin
+- Password hashing using bcrypt with iteration 10-16
 
 ## Changelog
 
 - _Build means it's tested and safe to build the project_
 - _Preview means this version has not been built yet_
+
+### v1.4.7-BUILD
+
+- Add data grid view of karyawan account
+- Add data grid view of admin account
+- Admin ability to change admin password with old password verification
+- Cleanup backend code
 
 ### v1.4.4-PREVIEW
 
