@@ -26,7 +26,7 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 ## Changelog
 
 - _Build means it's safe to build the project_
-- _Preview means the build version still have bugs_
+- _Preview means this version has not been built yet_
 
 ### v1.4.4-PREVIEW
 
