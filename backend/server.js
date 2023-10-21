@@ -224,6 +224,7 @@ app.post('/api/masuk', async (req, res) => {
       } else {
         // Password does not match
         client.release()
+        console.log(`Password atau ID Salah`)
         res.status(401).json({ error: 'Invalid credentials' })
       }
       return
@@ -279,6 +280,7 @@ app.post('/api/masuk', async (req, res) => {
       } else {
         // Password does not match
         client.release()
+        console.log(`Password atau ID Salah`)
         res.status(401).json({ error: 'Invalid credentials' })
         console.log(`Invalid credentials`)
       }
@@ -401,8 +403,9 @@ app.post('/api/tambah-user', async (req, res) => {
     if (checkResult.rows[0].count > 0) {
       // user dengan nama yang sama sudah ada
       client.release()
-
+      console.log(`Sudah ada akun karyawan dengan ID yang sama`)
       return res.status(400).json({ error: `Id ${id_karyawan} - ${nama} sudah ada` })
+
     }
 
     // Jika tidak ada maka lanjut masukkan data
@@ -413,9 +416,11 @@ app.post('/api/tambah-user', async (req, res) => {
 
     if (insertResult.rowCount === 1) {
       res.status(201).json({ message: `User: ${nama} Id: ${id_karyawan} berhasil ditambahkan.` })
+      console.log(`Akun ${id_karyawan} berhasil dibuat`)
 
     } else {
       res.status(500).json({ error: 'Gagal menambahkan akun user' })
+      console.log(`Gagal membuat akun ${id_karyawan}`)
 
     }
   } catch (error) {
@@ -442,7 +447,7 @@ app.post('/api/input-kasbon', async (req, res) => {
 
     if (insertResult.rowCount === 1) {
       res.status(201).json({ message: `Kasbon Akun Id: ${id_akun} berhasil dimasukkan ` })
-      console.log('Berhasil mengirim Request Akun', id_akun)
+      console.log('Berhasil mmembuat request kasbon :', id_akun)
 
     }
     else {
@@ -475,6 +480,7 @@ app.get('/api/ambil-dashboard-karyawan/:id_akun', async (req, res) => {
 
       // Jika tidak ada data
       res.status(404).json({ message: 'Data tidak ada' })
+      console.log(`Tidak ditemukan data akun ${id_akun} di dashboard karyawan`)
 
     }
   } catch (error) {
@@ -501,11 +507,13 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
 
     } else {
       res.status(404).json({ message: 'Tidak ada request menunggu konfirmasi' })
+      console.log(`Tidak ada request kasbon menunggu`)
 
     }
   } catch (error) {
     console.error('Error:', error)
     res.status(500).json({ message: 'Internal Server Error' })
+    console.log(`Error mengambil request kasbon`)
 
   }
 })
@@ -575,11 +583,13 @@ app.post('/api/update-requests/:id_request', async (req, res) => {
     client.release()
 
     res.status(200).json({ message: 'Requests updated successfully' })
+    console.log(`Berhasil update status request bersamaan`)
 
 
   } catch (error) {
     console.error('Error updating requests:', error)
     res.status(500).json({ error: 'Internal Server Error' })
+    console.log(`Gagal update status request bersamaan`)
 
   }
 })
@@ -602,6 +612,7 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
 
     } else {
       res.status(404).json({ message: 'Tidak ada data bayar menunggu konfirmasi' })
+      console.log(`Tidak ditemukan data kasbon untuk bayar`)
     }
   }
   catch (error) {
@@ -628,6 +639,7 @@ app.post('/api/ambil-request-download', async (req, res) => {
 
     } else {
       res.status(404).json({ message: 'Tidak ada data request' })
+      console.log(`Tidak ditemukan data request kasbon`)
 
     }
   }
@@ -762,6 +774,7 @@ app.put('/api/edit-bayar-batch', async (req, res) => {
     } else {
       // Saat update sukses
       res.status(200).json({ message: 'Batch update data bayar berhasil' })
+      console.log(`Berhasil update status bayar bersamaan`)
 
 
     }
@@ -822,10 +835,12 @@ app.post('/api/download-request', async (req, res) => {
 
     } else {
       res.status(500).send('Internal Server Error')
+      console.log(`Gagal membuat Docx Bukti Kasbon`)
     }
   }
   catch (error) {
     res.status(500).send('Cannot make Docx')
+    console.error(`Gagal membuat Docx Bukti Kasbon`, error)
   }
 })
 
@@ -879,10 +894,13 @@ app.post('/api/download-lunas', async (req, res) => {
 
     } else {
       res.status(500).send('Internal Server Error')
+      console.log(`Gagal membuat Docx Bukti Lunas`)
+      console.error(`Gagal membuat Docx Bukti Lunas`)
     }
   }
   catch (error) {
     res.status(500).send('Cannot make Docx')
+    console.error(`Gagal membuat Docx Bukti Lunas`, error)
   }
 })
 
@@ -898,10 +916,12 @@ app.get('/api/ambil-akun-karyawan', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+      console.log(`Berhasil mengirim data akun karyawan`)
 
 
     } else {
       res.status(404).json({ message: 'Tidak ada data, cek pgAdmin' })
+      console.log(`Tidak ada data akun karyawan, cek pgAdmin`)
 
     }
   }
@@ -924,8 +944,10 @@ app.get('/api/ambil-akun-admin', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+      console.log(`Berhasil mengirim data akun admin`)
     } else {
       res.status(404).json({ message: 'Tidak ada data, cek pgAdmin' })
+      console.log(` Tidak ada data akun admin, cek pgAdmin`)
 
     }
   }
@@ -949,7 +971,9 @@ app.post('/api/ganti-password-admin', async (req, res) => {
 
     if (selectResult.rows.length === 0) {
       client.release()
+      console.log(`Tidak ditemukan ID Admin untuk dirubah password`)
       return res.status(400).json({ error: `Admin with ID ${id_petugas} not found.` })
+
     }
 
     const hashedPassword = selectResult.rows[0].password_admin
@@ -960,7 +984,9 @@ app.post('/api/ganti-password-admin', async (req, res) => {
     // Jika password tidak sama maka respon 400
     if (!passwordMatch) {
       client.release()
+      console.log(`Password lama salah`)
       return res.status(400).json({ error: 'Incorrect old password.' })
+
     }
 
     // Jika password lama sama, maka lanjut update
@@ -997,6 +1023,7 @@ app.post('/api/ambil-laporan-karyawan', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+      console.log(`Berhasil kirim laporan kasbon ${id_karyawan}`)
 
 
     } else {
@@ -1028,6 +1055,7 @@ app.post('/api/semua-laporan-karyawan', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+      console.log(`Berhasil kirim Laporan semua karyawan`)
 
     } else {
       res.status(404).json({ message: `Tidak ada data kasbon pada Bulan ${selectedMonth} Tahun ${selectedYear} ` })
