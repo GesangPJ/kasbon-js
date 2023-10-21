@@ -855,6 +855,61 @@ app.post('/api/ganti-password-admin', async (req, res) => {
   }
 })
 
+//API Ambil Laporan Karyawan Berdasarkan ID Dan Bulan-Tahun
+app.post('/api/ambil-laporan-karyawan', async (req, res) => {
+  const id_karyawan = req.body.id_karyawan
+  const selectedDate = req.body.selectedDate // Formatted date 'MM/yyyy'
+
+  try {
+    // Parse the formatted date to extract the month and year
+    const [selectedMonth, selectedYear] = selectedDate.split('/').map(Number)
+
+    const client = await pool.connect()
+
+    // Modify the SQL query to filter by both ID and the extracted month and year
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND id_karyawan = $1 AND EXTRACT(MONTH FROM tanggaljam) = $2 AND EXTRACT(YEAR FROM tanggaljam) = $3'
+    const selectResult = await client.query(selectQuery, [id_karyawan, selectedMonth, selectedYear])
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: `ID: ${id_karyawan} tidak ada data kasbon disetujui ` })
+      console.log(`ID: ${id_karyawan} tidak ditemukan kasbon disetujui`)
+    }
+  } catch (error) {
+    console.error('Error:', error)
+  }
+})
+
+//API Ambil Seluruh Laporan Karyawan Berdasarkan Bulan-Tahun
+app.post('/api/semua-laporan-karyawan', async (req, res) => {
+  const selectedDate = req.body.selectedDate 
+
+  try {
+    // Parsing format tanggal ke standar ISO UTC
+    const [selectedMonth, selectedYear] = selectedDate.split('/').map(Number)
+
+    const client = await pool.connect()
+
+    // Modify the SQL query to filter by both ID and the extracted month and year
+    const selectQuery = 'SELECT * FROM dashboard_komplit WHERE status_request = \'sukses\' AND EXTRACT(MONTH FROM tanggaljam) = $1 AND EXTRACT(YEAR FROM tanggaljam) = $2'
+    const selectResult = await client.query(selectQuery, [selectedMonth, selectedYear])
+
+    client.release()
+
+    if (selectResult.rows.length > 0) {
+      res.status(200).json(selectResult.rows)
+    } else {
+      res.status(404).json({ message: `Tidak ada data kasbon pada Bulan ${selectedMonth} Tahun ${selectedYear} ` })
+      console.log(`ID: ${id_karyawan} tidak ditemukan kasbon disetujui`)
+    }
+  } catch (error) {
+    console.error('Error:', error)
+  }
+})
+
 // Set Port buat server
 const port = process.env.PORT || 3001
 server.listen(port, '0.0.0.0', async () => {
