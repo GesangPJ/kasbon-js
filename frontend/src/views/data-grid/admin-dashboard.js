@@ -223,6 +223,8 @@ const columns = [
 const AdminDataGrid = () => {
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [totalJumlah, setTotalJumlah] = useState(0)
+  const [filteredData, setFilteredData] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -246,6 +248,16 @@ const AdminDataGrid = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    // Recalculate the total value whenever the filtered data changes
+    const calculateTotalJumlah = () => {
+      const total = filteredData.reduce((total, row) => total + (parseFloat(row.jumlah) || 0), 0);
+      setTotalJumlah(total);
+    };
+
+    calculateTotalJumlah();
+  }, [filteredData]);
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
@@ -287,7 +299,7 @@ const AdminDataGrid = () => {
     tanggaljam: row.tanggaljam,
     nama_user: row.nama_user,
     id_karyawan: row.id_karyawan,
-    jumlah: row.jumlah,
+    jumlah: parseFloat(row.jumlah),
     metode: row.metode,
     keterangan: row.keterangan,
     status_request: row.status_request,
@@ -296,13 +308,15 @@ const AdminDataGrid = () => {
   }))
 
   return (
-    <Box sx={{ height: 600, width: '100%' }}>
+    <div>
+      <Box sx={{ height: 660, width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}
         slots={{
           toolbar: GridToolbar,
         }}
+
         initialState={{
           pagination: {
             paginationModel: {
@@ -315,6 +329,7 @@ const AdminDataGrid = () => {
         disableRowSelectionOnClick
       />
     </Box>
+    </div>
 
   )
 }
