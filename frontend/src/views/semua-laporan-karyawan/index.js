@@ -17,20 +17,18 @@ import styled from '@emotion/styled'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
 import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
 import TableFooter from '@mui/material/TableFooter'
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
 import * as React from 'react'
 import dayjs from 'dayjs'
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
+import * as XLSX from 'xlsx'
 
 require('dotenv').config()
 
@@ -115,7 +113,7 @@ const TableSeluruhLaporanKasbon = () => {
 
   // ** States
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [rowsPerPage, setRowsPerPage] = useState(50)
   const router = useRouter()
   const [id_karyawan, setidkaryawan] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
@@ -278,6 +276,39 @@ const TableSeluruhLaporanKasbon = () => {
 
   const totalJumlah = totalLunas + totalSisaKasbon
 
+  // Ekspor ke Excel
+
+  const exportToExcel = () => {
+    // Create a new workbook and add a worksheet
+    const wb = XLSX.utils.book_new()
+    const ws = XLSX.utils.aoa_to_sheet([
+      // This array represents the table header
+      ['ID', 'Tanggal Waktu', 'Nama Karyawan', 'Jumlah', 'Metode', 'Keterangan', 'Status Bayar', 'Petugas'],
+      ...sortedData.map(row => [
+        row.id_request,
+        row.tanggaljam,
+        row.nama_user,
+        row.jumlah,
+        row.metode,
+        row.keterangan,
+        row.status_b,
+        row.nama_admin,
+      ]),
+      [], // Add an empty row
+      ['Laporan Kasbon'], // Add the title "Laporan Kasbon"
+      ['Jumlah Total', formatCurrencyIDR(totalJumlah)],
+      ['Total Lunas', formatCurrencyIDR(totalLunas)],
+      ['Sisa Kasbon', formatCurrencyIDR(totalSisaKasbon)],
+    ])
+
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Laporan Kasbon')
+
+    // Export the workbook to an XLSX file
+    XLSX.writeFile(wb, 'laporan_kasbon.xlsx')
+  }
+
+
   return (
     <div>
       <Grid container spacing={6}>
@@ -413,7 +444,7 @@ const TableSeluruhLaporanKasbon = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[100, 150, 200]}
+          rowsPerPageOptions={[50, 100, 150, 200]}
           component="div"
           count={data.length}
           rowsPerPage={rowsPerPage}
@@ -422,6 +453,17 @@ const TableSeluruhLaporanKasbon = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <br></br>
+
+      <RoundedRectangleButton
+        variant="outlined"
+        size="large"
+        startIcon={<DescriptionOutlinedIcon />}
+        onClick={exportToExcel}
+        color="primary"
+      >
+        Export ke Excel
+      </RoundedRectangleButton>
     </div>
   )
 }
