@@ -345,7 +345,7 @@ const TableBayarDownload = () => {
 
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: 700 }}>
-          <Table stickyHeader stickyFooter aria-label="sticky table">
+          <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
                 {columns.map((column) => (
