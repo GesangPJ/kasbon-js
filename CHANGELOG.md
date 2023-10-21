@@ -1,3 +1,10 @@
+### v1.5.0-BUILD
+
+- Add Laporan Page for Each Karyawan
+- Add Row Jumlah Total, Total Kasbon, Sisa Kasbon for Table Laporan Kasbon Karyawan
+- Add Laporan Page for All Karyawan
+- Add Excel export function for both
+
 ### v1.4.7-BUILD
 
 - Add data grid view of karyawan account
