@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Divider from '@mui/material/Divider'
 import TableLaporanKaryawan from 'src/views/laporan-karyawan'
+import TableSeluruhLaporanKasbon from 'src/views/semua-laporan-karyawan'
 
 const DownloadKasbonPage = () => {
   const router = useRouter()
@@ -30,14 +31,29 @@ const DownloadKasbonPage = () => {
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Typography variant='h5'>
-          <Link href=''>
-            DOWNLOAD LAPORAN KASBON
+          <Link>
+            LAPORAN KASBON KARYAWAN
           </Link>
         </Typography>
       </Grid>
 
       <Grid item xs={12}>
         <TableLaporanKaryawan />
+      </Grid>
+      <Grid item xs={12}>
+        <Divider sx={{ borderBottomWidth: 4 }} />
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant='h5'>
+          <Link>
+            LAPORAN SEMUA KASBON KARYAWAN
+          </Link>
+        </Typography>
+      </Grid>
+
+      <Grid item xs={12}>
+        <TableSeluruhLaporanKasbon />
       </Grid>
       <Grid item xs={12}>
         <Divider sx={{ borderBottomWidth: 4 }} />
