@@ -3,7 +3,11 @@
 
 
 
-https://github.com/GesangPJ/kasbon-js/assets/26625652/a2f6697b-7a4f-4486-a67a-8734ebf0ed18
+
+
+https://github.com/GesangPJ/kasbon-js/assets/26625652/997ef354-64e4-42e2-862a-6f397a680bc0
+
+
 
 
 Website berbasis NodeJS bertujuan untuk mengelola Kasbon, menggunakan NextJS untuk frontend(client-side), dan ExpressJS untuk backend(server-side),data kasbon dan akun dimasukkan dan dikelola dengan database PostgreSQL v15. Mulai dari versi 1.0.7-Preview tersedia
