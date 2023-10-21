@@ -113,9 +113,6 @@ const TableBayarDownload = () => {
   const classes = useStyles()
   const [selectedDate, setSelectedDate] = React.useState(null)
 
-
-
-
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -144,12 +141,24 @@ const TableBayarDownload = () => {
   }
 
   const handleSubmitID = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!id_karyawan) {
       // Display Error jika ada yang tidak diisi
-      setErrorMessage('ID Karyawan harus diinput terlebih dahulu');
-      return;
+      setErrorMessage('ID Karyawan harus diinput terlebih dahulu')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+      return
+    }
+
+    if (!selectedDate) {
+      // Display Error if selectedDate (month and year) is empty
+      setErrorMessage('Pilih Bulan Dan Tahun terlebih dahulu')
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+      return
     }
 
     // Format the selected date as 'MM/yyyy'
@@ -159,7 +168,7 @@ const TableBayarDownload = () => {
       const requestData = {
         id_karyawan,
         selectedDate: formattedDate, // Include the formatted date in the request
-      };
+      }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-laporan-karyawan`, {
         method: 'POST',
@@ -167,39 +176,39 @@ const TableBayarDownload = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestData), // Send the ID and selectedDate
-      });
+      })
 
       if (response.ok) {
-        setSuccessMessage('Permintaan data berhasil dikirim.');
-        setidkaryawan('');
-        setSelectedDate(null); // Reset the selected date
+        setSuccessMessage('Permintaan data berhasil dikirim.')
+        setidkaryawan('')
+        setSelectedDate(null) // Reset the selected date
         setTimeout(() => {
-          setSuccessMessage('');
-        }, 5000);
+          setSuccessMessage('')
+        }, 5000)
 
-        const result = await response.json();
-        setData(result);
+        const result = await response.json()
+        setData(result)
       } else if (response.status === 404) {
-        console.error('Data kasbon tidak ditemukan');
-        setErrorMessage(`Data ID: ${id_karyawan} Tidak ada Kasbon disetujui`);
+        console.error('Data kasbon tidak ditemukan')
+        setErrorMessage(`Data ID: ${id_karyawan} tidak ada Kasbon ditemukan`)
         setTimeout(() => {
-          setErrorMessage('');
-        }, 5000);
+          setErrorMessage('')
+        }, 5000)
       } else {
-        console.error('Error mengirim permintaan data.');
-        setErrorMessage('Gagal mengirim permintaan data');
+        console.error('Error mengirim permintaan data.')
+        setErrorMessage('Gagal mengirim permintaan data')
         setTimeout(() => {
-          setErrorMessage('');
-        }, 5000);
+          setErrorMessage('')
+        }, 5000)
       }
     } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('Internal Server Error');
+      console.error('Error:', error)
+      setErrorMessage('Internal Server Error')
       setTimeout(() => {
-        setErrorMessage('');
-      }, 5000);
+        setErrorMessage('')
+      }, 5000)
     }
-  };
+  }
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
