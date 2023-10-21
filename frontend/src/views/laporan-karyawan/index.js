@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import * as React from 'react'
 import Paper from '@mui/material/Paper'
-import Table from '@mui/joy/Table'
-import Typography from '@mui/joy/Typography'
-import Sheet from '@mui/joy/Sheet'
+import Table from '@mui/material/Table'
+import TableRow from '@mui/material/TableRow'
+import TableHead from '@mui/material/TableHead'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TablePagination from '@mui/material/TablePagination'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
@@ -12,8 +17,19 @@ import styled from '@emotion/styled'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
+import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
 import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
+import TableFooter from '@mui/material/TableFooter'
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
+import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
+import * as React from 'react'
 import dayjs from 'dayjs'
 
 require('dotenv').config()
@@ -47,32 +63,58 @@ const useStyles = makeStyles((theme) => ({
   downloadButton: {
     alignContent: "center",
   },
+
 }))
 
+const columns = [
+  { id: 'id_request', label: 'ID', minWidth: 10, sortable: true },
+  { id: 'tanggaljam', label: 'Tanggal Waktu', minWidth: 10, sortable: true },
+  { id: 'nama_user', label: 'Nama Karyawan', minWidth: 10, sortable: true },
+  { id: 'jumlah', label: 'Jumlah', minWidth: 10, sortable: false },
+  { id: 'metode', label: 'Metode', minWidth: 10, sortable: true },
+  { id: 'keterangan', label: 'Keterangan', minWidth: 10, align: 'left', sortable: false },
+  { id: 'status_b', label: 'Status Bayar', minWidth: 10, align: 'left', sortable: false },
+  { id: 'nama_admin', label: 'Petugas', minWidth: 10, align: 'left', sortable: true },
+]
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-const rows = [
-  createData('1', 159, 6.0, 24, 4.0),
-  createData('2', 237, 9.0, 37, 4.3),
-  createData('3', 262, 16.0, 24, 6.0),
-  createData('4', 305, 3.7, 67, 4.3),
-  createData('5', 356, 16.0, 49, 3.9),
-  createData('6', 159, 6.0, 24, 4.0),
-  createData('7', 237, 9.0, 37, 4.3),
-  createData('8', 262, 16.0, 24, 6.0),
-  createData('9', 305, 3.7, 67, 4.3),
-  createData('10', 356, 16.0, 49, 3.9),
-];
-
-function sum(column) {
-  return rows.reduce((acc, row) => acc + row[column], 0);
+function createData(id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, nama_admin) {
+  return { id_request, tanggaljam, nama_user, jumlah, metode, keterangan, status_b, nama_admin }
 }
 
+// Komparasi sortir
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy)
+}
 
-const TableLaporanKaryawan = () => {
+// Komparasi sortir descending
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) return -1
+  if (b[orderBy] > a[orderBy]) return 1
+
+  return 0
+}
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index])
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0])
+    if (order !== 0) return order
+
+    return a[1] - b[1]
+  })
+
+  return stabilizedThis.map((el) => el[0])
+}
+
+
+const TableBayarDownload = () => {
   const classes = useStyles()
+  const [selectedDate, setSelectedDate] = React.useState(null)
+
+
+
 
   // ** States
   const [page, setPage] = useState(0)
@@ -86,10 +128,6 @@ const TableLaporanKaryawan = () => {
   const [sorting, setSorting] = useState({ column: 'tanggaljam', direction: 'asc' })
   const [updatedData, setUpdatedData] = useState([])
   const [selectedRows, setSelectedRows] = useState({})
-  const [value, setValue] = React.useState([
-    dayjs('2022-04-17'),
-    dayjs('2022-04-21'),
-  ])
 
   const handleidkaryawanChange = (e) => {
     const inputValue = e.target.value
@@ -106,60 +144,62 @@ const TableLaporanKaryawan = () => {
   }
 
   const handleSubmitID = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!id_karyawan) {
       // Display Error jika ada yang tidak diisi
-      setErrorMessage('ID Karyawan harus diinput terlebih dahulu')
-      setTimeout(() => {
-        setErrorMessage('')
-      }, 3000)
-
-      return
+      setErrorMessage('ID Karyawan harus diinput terlebih dahulu');
+      return;
     }
 
+    // Format the selected date as 'MM/yyyy'
+    const formattedDate = selectedDate ? dayjs(selectedDate).format('MM/YYYY') : null
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-bayar-download`, {
+      const requestData = {
+        id_karyawan,
+        selectedDate: formattedDate, // Include the formatted date in the request
+      };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-laporan-karyawan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id_karyawan }),
-      })
+        body: JSON.stringify(requestData), // Send the ID and selectedDate
+      });
 
       if (response.ok) {
-        setSuccessMessage('Permintaan data berhasil dikirim.')
-        setidkaryawan('')
+        setSuccessMessage('Permintaan data berhasil dikirim.');
+        setidkaryawan('');
+        setSelectedDate(null); // Reset the selected date
         setTimeout(() => {
-          setSuccessMessage('')
-        }, 5000)
+          setSuccessMessage('');
+        }, 5000);
 
-        const result = await response.json()
-        setData(result)
-
-        // Jika data tidak ditemukan (Error 404)
+        const result = await response.json();
+        setData(result);
       } else if (response.status === 404) {
-        console.error('Data lunas tidak ditemukan')
-        setErrorMessage(`Data ID : ${id_karyawan} Belum ada yang lunas`)
+        console.error('Data kasbon tidak ditemukan');
+        setErrorMessage(`Data ID: ${id_karyawan} Tidak ada Kasbon disetujui`);
         setTimeout(() => {
-          setErrorMessage('')
-        }, 5000)
-
+          setErrorMessage('');
+        }, 5000);
       } else {
-        console.error('Error mengirim permintaan data.')
-        setErrorMessage('Gagal mengirim permintaan data')
+        console.error('Error mengirim permintaan data.');
+        setErrorMessage('Gagal mengirim permintaan data');
         setTimeout(() => {
-          setErrorMessage('')
-        }, 5000)
+          setErrorMessage('');
+        }, 5000);
       }
     } catch (error) {
-      console.error('Error:', error)
-      setErrorMessage('Internal Server Error')
+      console.error('Error:', error);
+      setErrorMessage('Internal Server Error');
       setTimeout(() => {
-        setErrorMessage('')
-      }, 5000)
+        setErrorMessage('');
+      }, 5000);
     }
-  }
+  };
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
@@ -177,31 +217,31 @@ const TableLaporanKaryawan = () => {
 
     return utcDate.toLocaleString('id-ID', options)
   }
-  /*
-    const rows = data.map((row) => {
-      const {
-        id_request,
-        tanggaljam,
-        nama_user,
-        jumlah,
-        metode,
-        keterangan,
-        status_b,
-        nama_admin,
-      } = row
 
-      return createData(
-        id_request,
-        formatTanggaljam(tanggaljam),
-        nama_user,
-        formatCurrencyIDR(jumlah),
-        metode,
-        keterangan,
-        status_b,
-        nama_admin,
-      )
-    })
-  */
+  const rows = data.map((row) => {
+    const {
+      id_request,
+      tanggaljam,
+      nama_user,
+      jumlah,
+      metode,
+      keterangan,
+      status_b,
+      nama_admin,
+    } = row
+
+    return createData(
+      id_request,
+      formatTanggaljam(tanggaljam),
+      nama_user,
+      parseFloat(jumlah),
+      metode,
+      keterangan,
+      status_b,
+      nama_admin,
+    )
+  })
+
   // Untuk fungsi page berikutnya pada tabel sticky header
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -213,39 +253,37 @@ const TableLaporanKaryawan = () => {
     setPage(0)
   }
 
-  const DownloadLunas = async (id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b) => {
-    const DownloadData = {
-      id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b
-    }
+  // Sorting function
+  const sortedData = stableSort(rows, getComparator(sorting.direction, sorting.column))
 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/download-kasbon`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(DownloadData),
-      })
-      if (response.ok) {
-
-      } else {
-        console.error('Error downloading the DOCX file')
-        // Handle the error
-      }
-    }
-    catch (error) {
-      console.error('Error :', error)
-    }
+  const handleSort = (columnId) => {
+    const isAsc = sorting.column === columnId && sorting.direction === 'asc'
+    setSorting({ column: columnId, direction: isAsc ? 'desc' : 'asc' })
   }
 
 
+
+  const totalLunas = data.reduce((total, row) => {
+    if (row.status_b === 'lunas') {
+      return total + parseFloat(row.jumlah)
+    }
+    return total
+  }, 0)
+
+  const totalSisaKasbon = data.reduce((total, row) => {
+    if (row.status_b !== 'lunas') {
+      return total + parseFloat(row.jumlah)
+    }
+    return total
+  }, 0)
+
+  const totalJumlah = totalLunas + totalSisaKasbon
 
   return (
     <div>
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <form onSubmit={handleSubmitID}>
-            <Grid item xs={4}>
-
-            </Grid>
             <Grid item xs={4}>
               <Box
                 sx={{
@@ -265,10 +303,22 @@ const TableLaporanKaryawan = () => {
                 />
               </Box>
             </Grid><br></br>
-
+            <Grid item xs={4}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DesktopDatePicker
+                  views={['year', 'month']}
+                  label="Pilih Bulan Dan Tahun"
+                  value={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
+                  inputFormat={'MM/yyyy'} // You can customize the format
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </Grid>
+            <br></br>
             <Grid item xs={7}>
               <RoundedRectangleButton type="button" variant="contained" size="large" onClick={handleSubmitID} color="primary">
-                Lihat Data Kasbon
+                Lihat Data Bayar
               </RoundedRectangleButton>
             </Grid>
           </form><br></br>
@@ -285,56 +335,114 @@ const TableLaporanKaryawan = () => {
       </Grid>
 
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <Typography level="body-sm" textAlign="center" sx={{ mb: 2 }}>
-          The table body is scrollable.
-        </Typography>
-        <Sheet sx={{ height: 300, overflow: 'auto' }}>
-          <Table
-            aria-label="table with sticky header"
-            stickyHeader
-            stickyFooter
-            stripe="odd"
-            hoverRow
-          >
-            <thead>
-              <tr>
-                <th>Row</th>
-                <th>Calories</th>
-                <th>Fat&nbsp;(g)</th>
-                <th>Carbs&nbsp;(g)</th>
-                <th>Protein&nbsp;(g)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.name}>
-                  <td>{row.name}</td>
-                  <td>{row.calories}</td>
-                  <td>{row.fat}</td>
-                  <td>{row.carbs}</td>
-                  <td>{row.protein}</td>
-                </tr>
+        <TableContainer sx={{ maxHeight: 700 }}>
+          <Table stickyHeader stickyFooter aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    sx={{ minWidth: column.minWidth }}
+                  >
+                    <div
+                      style={{ display: 'flex', alignItems: 'center' }}
+                      onClick={() => column.sortable && handleSort(column.id)}
+                    >
+                      {column.label}
+                      {column.sortable && (
+                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '4px' }}>
+                          {column.sortable && (
+                            <div style={{ height: '24px' }}>
+                              {sorting.column === column.id && sorting.direction === 'asc' && (
+                                <ArrowUpwardIcon fontSize="small" />
+                              )}
+                              {sorting.column === column.id && sorting.direction === 'desc' && (
+                                <ArrowDownwardIcon fontSize="small" />
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id_request}>
+                  {columns.map((column) => {
+                    const value = row[column.id]
+                    if (column.id === 'aksi') {
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                        </TableCell>
+                      )
+                    }
+
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.id === 'status_b' ? (
+                          row.status_b === 'lunas' ? (
+                            <Chip label="Lunas" color="success" variant="outlined" style={{ color: 'green' }} icon={<DoneOutlinedIcon style={{ color: 'green' }} />} />
+                          ) : row.status_b === 'belum' ? (
+                            <Chip label="Belum" color="default" variant="outlined" style={{ color: 'default' }} icon={<PauseCircleOutlineOutlinedIcon style={{ color: 'grey' }} />} />
+                          ) : (
+                            row.status_b
+                          )
+                        ) : column.format && typeof row[column.id] === 'number' ? (
+                          column.format(row[column.id])
+                        ) : (
+                          row[column.id]
+                        )}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
               ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <th scope="row">Totals</th>
-                <td>{sum('calories').toFixed(2)}</td>
-                <td>{sum('fat').toFixed(2)}</td>
-                <td>{sum('carbs').toFixed(2)}</td>
-                <td>{sum('protein').toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td colSpan={5} style={{ textAlign: 'center' }}>
-                  {sum('calories') + sum('fat') + sum('carbs') + sum('protein')} Kcal
-                </td>
-              </tr>
-            </tfoot>
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={3}>
+                  Jumlah Total :  {/* Display your total jumlah here */}
+                </TableCell>
+                <TableCell colSpan={3}>
+                  {formatCurrencyIDR(totalJumlah)}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={3} align="left">
+                  Total Lunas :  {/* Display your total lunas here */}
+                </TableCell>
+                <TableCell colSpan={3}>
+                  {formatCurrencyIDR(totalLunas)}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={3} align="left">
+                  Sisa Kasbon :  {/* Display your sisa kasbon here */}
+                </TableCell>
+                <TableCell colSpan={3}>
+                  {formatCurrencyIDR(totalSisaKasbon)}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
           </Table>
-        </Sheet>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Paper>
     </div>
   )
 }
 
-export default TableLaporanKaryawan
+export default TableBayarDownload
