@@ -31,6 +31,8 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
 import * as React from 'react'
 import dayjs from 'dayjs'
+import * as XLSX from 'xlsx'
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 
 require('dotenv').config()
 
@@ -288,6 +290,43 @@ const TableBayarDownload = () => {
 
   const totalJumlah = totalLunas + totalSisaKasbon
 
+  // Ekspor ke Excel
+
+  const exportToExcel = () => {
+    // Membuat sheet baru
+    const wb = XLSX.utils.book_new()
+    const ws = XLSX.utils.aoa_to_sheet([
+      // Inisialisasi konten tabel ke excel
+      ['ID', 'Tanggal Waktu', 'Nama Karyawan', 'Jumlah', 'Metode', 'Keterangan', 'Status Bayar', 'Petugas'],
+      ...sortedData.map(row => [
+        row.id_request,
+        row.tanggaljam,
+        row.nama_user,
+        row.jumlah,
+        row.metode,
+        row.keterangan,
+        row.status_b,
+        row.nama_admin,
+      ]),
+      [], // Row kosong
+      ['Laporan Kasbon'], // Title Laporan Kasbon
+      ['Jumlah Total', formatCurrencyIDR(totalJumlah)],
+      ['Total Lunas', formatCurrencyIDR(totalLunas)],
+      ['Sisa Kasbon', formatCurrencyIDR(totalSisaKasbon)],
+    ])
+
+    // Masukkan ke sheet
+    XLSX.utils.book_append_sheet(wb, ws, 'Laporan Kasbon-Karyawan')
+
+    const firstRow = sortedData[0]
+
+    // Mengambil nama user
+    const namaUser = firstRow ? firstRow.nama_user : 'NoNamaUser'
+
+    // Ekspor ke excel dengan nama
+    XLSX.writeFile(wb, `laporan_kasbon_${namaUser}.xlsx`)
+  }
+
   return (
     <div>
       <Grid container spacing={6}>
@@ -441,15 +480,26 @@ const TableBayarDownload = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[50, 100, 150, 200]}
           component="div"
           count={data.length}
-          rowsPerPage={rowsPerPage}
+          rowsPerPage={50}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <br></br>
+
+      <RoundedRectangleButton
+        variant="outlined"
+        size="large"
+        startIcon={<DescriptionOutlinedIcon />}
+        onClick={exportToExcel}
+        color="primary"
+      >
+        Export ke Excel
+      </RoundedRectangleButton>
     </div>
   )
 }
