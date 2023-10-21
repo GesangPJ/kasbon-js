@@ -31,6 +31,13 @@ Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar fro
 - _Build means it's tested and safe to build the project_
 - _Preview means this version has not been built yet_
 
+### v1.5.0-BUILD
+
+- Add Laporan Page for Each Karyawan
+- Add Row Jumlah Total, Total Kasbon, Sisa Kasbon for Table Laporan Kasbon Karyawan
+- Add Laporan Page for All Karyawan
+- Add Excel export function for both
+
 ### v1.4.7-BUILD
 
 - Add data grid view of karyawan account
