@@ -12,9 +12,17 @@ const fs = require('fs')
 const path = require('path')
 const { v4: uuidv4 } = require('uuid')
 const http = require('http')
+const logDirectory = 'logs'
+const winston = require('winston')
+const expressWinston = require('express-winston')
+const dayjs = require('dayjs')
 
 const allowedOrigins = process.env.CORS_ORIGINS.split(',')
 const PREFLIGHT = process.env.PREFLIGHT
+
+const logFilePath = path.join(logDirectory, `kasbon-backend-${new Date().toISOString().replace(/[:.]/g, '-')}.log`)
+
+
 
 
 const app = express()
@@ -43,6 +51,76 @@ app.use(
     },
   })
 )
+
+const logsDirectory = path.join(__dirname, 'logs')
+if (!fs.existsSync(logsDirectory)) {
+  fs.mkdirSync(logsDirectory)
+}
+
+// Create a custom timestamp format for log filenames
+const timestamp = dayjs().format('YYYY-MM-DD_HH-mm-ss')
+
+// Create a log file with a dynamic filename
+const logFileName = path.join(logsDirectory, `Kasbon-backend-${timestamp}.log`)
+
+// Create a custom Winston format that includes the timestamp
+const customFormat = winston.format.printf(({ timestamp, level, message }) => {
+  return `${timestamp} [${level}]: ${message}`
+})
+
+// Configure Winston to write logs to the file
+winston.configure({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    customFormat
+  ),
+  transports: [
+    new winston.transports.File({ filename: logFileName }),
+  ],
+})
+
+// Set up a console transport for Winston to log to the terminal
+winston.add(
+  new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.colorize(),
+      customFormat
+    ),
+  })
+)
+
+// Set up logging for Express.js requests and errors
+app.use(expressWinston.logger({
+  winstonInstance: winston,
+  msg: 'HTTP {{req.method}} {{req.url}}',
+  expressFormat: true,
+  colorize: false,
+}))
+
+// Your routes and other middleware
+
+// Set up error logging
+app.use(expressWinston.errorLogger({
+  winstonInstance: winston,
+}))
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  // Handle errors and log them as needed
+  winston.error(err.message, err)
+
+  // Send an error response to the client
+  res.status(500).json({ error: 'Internal Server Error' })
+})
+
+// Override console.log to log to both the file and the terminal
+const logFileStream = fs.createWriteStream(logFileName, { flags: 'a' })
+console.log = function (message) {
+  const logMessage = `${dayjs().format()} [info]: ${message}`
+  logFileStream.write(logMessage + '\n')
+  winston.info(message) // Log it using Winston
+}
 
 // Menentukan izin akses ke server API
 const corsOptions = {
@@ -142,6 +220,7 @@ app.post('/api/masuk', async (req, res) => {
         })
         console.log('Session User Data:', req.session.user)
         console.log('Password Match!')
+
       } else {
         // Password does not match
         client.release()
@@ -196,10 +275,12 @@ app.post('/api/masuk', async (req, res) => {
 
         console.log('Session Admin Data:', req.session.admin)
         console.log('Password Match!')
+
       } else {
         // Password does not match
         client.release()
         res.status(401).json({ error: 'Invalid credentials' })
+        console.log(`Invalid credentials`)
       }
       return
     }
@@ -221,6 +302,7 @@ app.post('/api/keluar', async (req, res) => {
       // Redirect to the login page after successful logout
       res.status(200).json({ message: `Akun ${id_akun} Berhasil Log Out` })
       console.log(`Akun ${id_akun} Berhasil Log Out`)
+
     }
   })
 
@@ -290,13 +372,16 @@ app.post('/api/tambah-admin', async (req, res) => {
 
     if (insertResult.rowCount === 1) {
       res.status(201).json({ message: `Admin ${nama} ID : ${id_petugas} berhasil ditambahkan.` })
+
     } else {
       res.status(500).json({ error: 'Gagal menambahkan akun admin.' })
       console.log('Gagal menambahkan Akun Admin')
+
     }
   } catch (error) {
     console.error('Error menambahkan admin:', error)
     res.status(500).json({ error: 'Internal Server Error' })
+
   }
 })
 
@@ -328,12 +413,15 @@ app.post('/api/tambah-user', async (req, res) => {
 
     if (insertResult.rowCount === 1) {
       res.status(201).json({ message: `User: ${nama} Id: ${id_karyawan} berhasil ditambahkan.` })
+
     } else {
       res.status(500).json({ error: 'Gagal menambahkan akun user' })
+
     }
   } catch (error) {
     console.error('Error menambahkan user:', error)
     res.status(500).json({ error: 'Internal Server Error' })
+
   }
 })
 
@@ -355,9 +443,11 @@ app.post('/api/input-kasbon', async (req, res) => {
     if (insertResult.rowCount === 1) {
       res.status(201).json({ message: `Kasbon Akun Id: ${id_akun} berhasil dimasukkan ` })
       console.log('Berhasil mengirim Request Akun', id_akun)
+
     }
     else {
       res.status(500).json({ error: `Error memasukkan kasbon ${id_akun} ` })
+
     }
   }
   catch (error) {
@@ -390,6 +480,7 @@ app.get('/api/ambil-dashboard-karyawan/:id_akun', async (req, res) => {
   } catch (error) {
     console.error('Error:', error)
     res.status(500).json({ message: 'Internal Server Error' })
+
   }
 })
 
@@ -407,12 +498,15 @@ app.get('/api/ambil-request-kasbon', async (req, res) => {
     // Jika ada hasil, maka kirim responnya hasil query
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+
     } else {
       res.status(404).json({ message: 'Tidak ada request menunggu konfirmasi' })
+
     }
   } catch (error) {
     console.error('Error:', error)
     res.status(500).json({ message: 'Internal Server Error' })
+
   }
 })
 
@@ -436,6 +530,7 @@ app.put('/api/update-request/:id_request', async (req, res) => {
       // Jika sukses
       res.status(200).json({ message: 'Request berhasil diupdate' })
       console.log(`Update request ${requestId}  berhasil`)
+
     } else {
       // Jika tidak menemukan data yang tepat
       res.status(404).json({ error: 'Request tidak ditemukan' })
@@ -469,9 +564,11 @@ app.post('/api/update-requests/:id_request', async (req, res) => {
       if (updateResult.rowCount === 1) {
         // Jika sukses
         console.log(`Request with ID ${requestId} updated successfully`)
+
       } else {
         // Jika tidak menemukan data yang tepat
         console.log(`Request with ID ${requestId} not found`)
+
       }
     }
 
@@ -479,9 +576,11 @@ app.post('/api/update-requests/:id_request', async (req, res) => {
 
     res.status(200).json({ message: 'Requests updated successfully' })
 
+
   } catch (error) {
     console.error('Error updating requests:', error)
     res.status(500).json({ error: 'Internal Server Error' })
+
   }
 })
 
@@ -500,12 +599,14 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+
     } else {
       res.status(404).json({ message: 'Tidak ada data bayar menunggu konfirmasi' })
     }
   }
   catch (error) {
     console.error('Error :', error)
+
   }
 
 })
@@ -524,12 +625,15 @@ app.post('/api/ambil-request-download', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+
     } else {
       res.status(404).json({ message: 'Tidak ada data request' })
+
     }
   }
   catch (error) {
     console.error('Error :', error)
+
   }
 
 })
@@ -548,13 +652,16 @@ app.post('/api/ambil-bayar-download', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+
     } else {
       res.status(404).json({ message: `ID : ${id_karyawan} tidak ada kasbon yang lunas ` })
       console.log(`ID : ${id_karyawan} tidak ditemukan kasbon sudah lunas`)
+
     }
   }
   catch (error) {
     console.error('Error :', error)
+
   }
 
 })
@@ -572,12 +679,15 @@ app.get('/api/ambil-dashboard-komplit', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+
     } else {
       res.status(404).json({ message: 'Tidak ada data, harap hubungi admin' })
+
     }
   }
   catch (error) {
     console.error('Error Ambil dashboard_komplit :', error)
+
   }
 })
 
@@ -599,15 +709,18 @@ app.put('/api/edit-bayar/:id_request', async (req, res) => {
     if (updateResult.rowCount === 1) {
       res.status(200).json({ message: 'Pembayaran berhasil diubah' })
       console.log('Update bayar berhasil')
+
     } else {
       res.status(404).json({ error: 'Request tidak ditemukan' })
       console.log('Update bayar tidak ditemukan data')
+
     }
   }
   catch (error) {
     console.error('Error update bayar :', error)
     res.status(500).json({ error: 'Internal Server Error' })
     console.log('Update bayar tidak berhasil')
+
   }
 })
 
@@ -649,10 +762,13 @@ app.put('/api/edit-bayar-batch', async (req, res) => {
     } else {
       // Saat update sukses
       res.status(200).json({ message: 'Batch update data bayar berhasil' })
+
+
     }
   } catch (error) {
     console.error('Error batch update bayar :', error)
     res.status(500).json({ error: 'Internal Server Error' })
+
   }
 })
 
@@ -702,7 +818,8 @@ app.post('/api/download-request', async (req, res) => {
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       res.setHeader('Content-Length', buffer.length)
       res.send(buffer)
-      console.log('Sukses membuat Docx Request Kasbon')
+      console.log(`Sukses membuat Docx Request Kasbon ${id_request}`)
+
     } else {
       res.status(500).send('Internal Server Error')
     }
@@ -758,7 +875,8 @@ app.post('/api/download-lunas', async (req, res) => {
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       res.setHeader('Content-Length', buffer.length)
       res.send(buffer)
-      console.log('Sukses membuat Docx Bukti Lunas')
+      console.log(`Sukses membuat Docx Bukti Lunas ${id_request}`)
+
     } else {
       res.status(500).send('Internal Server Error')
     }
@@ -780,8 +898,11 @@ app.get('/api/ambil-akun-karyawan', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+
+
     } else {
-      res.status(404).json({ message: 'Tidak ada data, harap hubungi admin' })
+      res.status(404).json({ message: 'Tidak ada data, cek pgAdmin' })
+
     }
   }
   catch (error) {
@@ -804,7 +925,8 @@ app.get('/api/ambil-akun-admin', async (req, res) => {
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
     } else {
-      res.status(404).json({ message: 'Tidak ada data, harap hubungi admin' })
+      res.status(404).json({ message: 'Tidak ada data, cek pgAdmin' })
+
     }
   }
   catch (error) {
@@ -849,6 +971,7 @@ app.post('/api/ganti-password-admin', async (req, res) => {
     client.release()
     res.status(200).json({ message: `Admin ID ${id_petugas} password berhasil dirubah.` })
     console.log(`Admin ID ${id_petugas} password berhasil dirubah`)
+
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: 'An error occurred while changing the password.' })
@@ -874,12 +997,16 @@ app.post('/api/ambil-laporan-karyawan', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+
+
     } else {
       res.status(404).json({ message: `ID: ${id_karyawan} tidak ada data kasbon disetujui ` })
       console.log(`ID: ${id_karyawan} tidak ditemukan kasbon disetujui`)
+
     }
   } catch (error) {
     console.error('Error:', error)
+
   }
 })
 
@@ -901,12 +1028,15 @@ app.post('/api/semua-laporan-karyawan', async (req, res) => {
 
     if (selectResult.rows.length > 0) {
       res.status(200).json(selectResult.rows)
+
     } else {
       res.status(404).json({ message: `Tidak ada data kasbon pada Bulan ${selectedMonth} Tahun ${selectedYear} ` })
       console.log(`ID: ${id_karyawan} tidak ditemukan kasbon disetujui`)
+
     }
   } catch (error) {
     console.error('Error:', error)
+
   }
 })
 
