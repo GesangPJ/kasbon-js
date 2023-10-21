@@ -8,6 +8,7 @@ import SupervisorAccountOutlinedIcon from '@mui/icons-material/SupervisorAccount
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined'
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined'
 import PaidOutlinedIcon from '@mui/icons-material/PaidOutlined'
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 
 const AdminNavigation = () => {
   return [
@@ -33,9 +34,15 @@ const AdminNavigation = () => {
       openInNewTab: false
     },
     {
-      title: 'Download Data',
+      title: 'Download Bukti',
       icon: FileDownloadOutlinedIcon,
       path: '/download',
+      openInNewTab: false
+    },
+    {
+      title: 'Download Laporan',
+      icon: FileDownloadOutlinedIcon,
+      path: '/kasbon-download',
       openInNewTab: false
     },
     {
