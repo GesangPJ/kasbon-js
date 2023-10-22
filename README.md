@@ -18,7 +18,7 @@ Website berbasis NodeJS bertujuan untuk mengelola Kasbon, menggunakan NextJS unt
 versi docker container untuk website ini, versi docker container 1.0.7 mungkin masih memiliki beberapa masalah seperti tidak terkoneksi
 antara container frontend dan backend (API ERROR NOT FOUND/ API ERROR CONNECTION TIME OUT).
 
-Mulai versi 1.0.8 tidak ada versi Docker Container dikarenakan koneksi antar frontend (NextJS) container dan backend (ExpressJS) tidak dapat terhubung sama sekali pada webpage NextJS, namun bisa jika melalui container console pada kedua container.
+Mulai versi 1.5.0, untuk docker kembali rebuild dan re-test, problem sebelumnya kenapa frontend contaienr tidak bisa connect ke backend dikarenakan backend hanya listen ke IPv6
 
 ## Features
 
