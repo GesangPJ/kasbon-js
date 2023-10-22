@@ -330,7 +330,7 @@ const TableSeluruhLaporanKasbon = () => {
             <br></br>
             <Grid item xs={7}>
               <RoundedRectangleButton type="button" variant="contained" size="large" onClick={handleSubmitID} color="primary">
-                Lihat Data Bayar
+                Lihat Laporan Kasbon
               </RoundedRectangleButton>
             </Grid>
           </form><br></br>
@@ -460,7 +460,7 @@ const TableSeluruhLaporanKasbon = () => {
         size="large"
         startIcon={<DescriptionOutlinedIcon />}
         onClick={exportToExcel}
-        color="primary"
+        color="success"
       >
         Export ke Excel
       </RoundedRectangleButton>
