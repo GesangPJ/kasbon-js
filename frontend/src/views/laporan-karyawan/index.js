@@ -163,24 +163,7 @@ const TableBayarDownload = () => {
       return
     }
 
-    // Check if the selectedDate matches the MM/YYYY format
-    const datePattern = /^(0[1-9]|1[0-2])\/\d{4}$/;
-    if (!datePattern.test(selectedDate)) {
-      setErrorMessage('Bulan dan Tahun harus dalam format MM/YYYY');
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 5000);
-      return;
-    }
-
-    const formattedDate = dayjs(selectedDate, 'MM/YYYY', true); // Parse the date
-    if (!formattedDate.isValid()) {
-      setErrorMessage('Bulan dan Tahun tidak valid');
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 5000);
-      return;
-    }
+    const formattedDate = selectedDate ? dayjs(selectedDate).format('MM/YYYY') : null
 
     try {
       const requestData = {
