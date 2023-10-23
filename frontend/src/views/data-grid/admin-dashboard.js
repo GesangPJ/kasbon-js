@@ -16,9 +16,12 @@ import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
 
-dayjs.locale(id);
+dayjs.locale(id)
 
 require('dotenv').config()
+
+const AksesKunci = process.env.NEXT_PUBLIC_SECRET_API_KEY
+const headers = { 'Key-Api': process.env.NEXT_PUBLIC_SECRET_API_KEY, }
 
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
@@ -29,7 +32,9 @@ const RoundedRectangleButton = styled(Button)`
 
 // SSR Biar bisa ambil data waktu production build
 export async function getServerSideProps() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`)
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`, {
+    headers: headers,
+  })
   const data = await response.json()
 
   return {
@@ -75,15 +80,15 @@ const columns = [
     editable: true,
     type: 'date',
     valueFormatter: (params) => {
-      const formattedDate = formatTanggaljam(params.value);
-      return formattedDate;
+      const formattedDate = formatTanggaljam(params.value)
+      return formattedDate
     },
     sortComparator: (v1, v2) => {
       // Parse the dates and compare them for sorting
-      const date1 = new Date(v1);
-      const date2 = new Date(v2);
+      const date1 = new Date(v1)
+      const date2 = new Date(v2)
 
-      return date1 - date2;
+      return date1 - date2
     },
   },
   {
@@ -229,35 +234,37 @@ const AdminDataGrid = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-komplit`, {
+          headers: headers,
+        })
         if (response.ok) {
-          const result = await response.json();
-          setData(result);
+          const result = await response.json()
+          setData(result)
         } else if (response.status === 403) {
-          const router = useRouter();
-          router.push('/401');
+          const router = useRouter()
+          router.push('/401')
         } else {
-          console.error('Error mengambil dashboard admin.');
+          console.error('Error mengambil dashboard admin.')
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   useEffect(() => {
     // Recalculate the total value whenever the filtered data changes
     const calculateTotalJumlah = () => {
-      const total = filteredData.reduce((total, row) => total + (parseFloat(row.jumlah) || 0), 0);
-      setTotalJumlah(total);
-    };
+      const total = filteredData.reduce((total, row) => total + (parseFloat(row.jumlah) || 0), 0)
+      setTotalJumlah(total)
+    }
 
-    calculateTotalJumlah();
-  }, [filteredData]);
+    calculateTotalJumlah()
+  }, [filteredData])
 
   // Format mata uang ke rupiah
   const formatCurrencyIDR = (jumlah) => {
@@ -286,7 +293,7 @@ const AdminDataGrid = () => {
 
   if (isLoading) {
 
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   if (data.length === 0) {
