@@ -6,3 +6,4 @@ DB_PORT=5432
 PORT =3001
 CORS_ORIGINS=http://frontend:3000,http://localhost:3000,http://kasbon-nextjs:3000
 PREFLIGHT=true
+API_ACCESS_KEY=
