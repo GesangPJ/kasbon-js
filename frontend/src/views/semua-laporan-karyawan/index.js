@@ -32,6 +32,8 @@ import * as XLSX from 'xlsx'
 
 require('dotenv').config()
 
+const AksesKunci = process.env.NEXT_PUBLIC_SECRET_API_KEY
+
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
   position: sticky;
@@ -162,6 +164,7 @@ const TableSeluruhLaporanKasbon = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Key-Api': AksesKunci,
         },
         body: JSON.stringify(requestData), // Send the ID and selectedDate
       })
