@@ -21,6 +21,8 @@ import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined'
 import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
 
+const AksesKunci = process.env.NEXT_PUBLIC_SECRET_API_KEY
+
 require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
@@ -142,6 +144,7 @@ const TableBayarDownload = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Key-Api': AksesKunci,
         },
         body: JSON.stringify({ id_karyawan }),
       })
@@ -248,7 +251,7 @@ const TableBayarDownload = () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/download-lunas`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Key-Api': AksesKunci, },
         body: JSON.stringify(DownloadData),
       })
       if (response.ok) {

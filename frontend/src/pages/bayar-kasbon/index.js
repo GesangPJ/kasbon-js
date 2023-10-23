@@ -34,6 +34,8 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
 import PauseCircleOutlineOutlinedIcon from '@mui/icons-material/PauseCircleOutlineOutlined'
 
+const AksesKunci = process.env.NEXT_PUBLIC_SECRET_API_KEY
+
 require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
@@ -185,6 +187,7 @@ const FormBayarKasbon = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Key-Api': AksesKunci,
         },
         body: JSON.stringify({ id_karyawan }),
       })
@@ -287,6 +290,7 @@ const FormBayarKasbon = () => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Key-Api': AksesKunci,
           },
           body: JSON.stringify({ requests: updates }),
         })

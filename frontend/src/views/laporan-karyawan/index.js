@@ -34,6 +34,8 @@ import dayjs from 'dayjs'
 import * as XLSX from 'xlsx'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 
+const AksesKunci = process.env.NEXT_PUBLIC_SECRET_API_KEY
+
 require('dotenv').config()
 
 const RoundedRectangleButton = styled(Button)`
@@ -175,6 +177,7 @@ const TableBayarDownload = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Key-Api': AksesKunci,
         },
         body: JSON.stringify(requestData), // Send the ID and selectedDate
       })

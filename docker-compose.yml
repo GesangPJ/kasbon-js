@@ -1,0 +1,48 @@
+version: '3.7'
+
+networks:
+  my-network:
+
+services:
+  kasbon-backend:
+    image: kasbon-express:1.5.0
+    container_name: kasbon-backend
+    networks: 
+      - my-network
+    ports:
+      - '4001:3001'
+    depends_on:
+      - postgres
+    environment:
+      DB_USER: postgres
+      DB_HOST: postgres16
+      DB_DATABASE: kasbondev
+      DB_PASSWORD: gesangpj01
+      DB_PORT: 5432
+      PORT: 3001
+      PREFLIGHT: true
+
+  kasbon-frontend:
+    image: kasbon-nextjs:1.5.0
+    container_name: kasbon-frontend
+    networks:
+      - my-network
+    ports:
+      - '4000:3000'
+    depends_on:
+      - kasbon-backend
+      - postgres
+    environment:
+      NEXT_PUBLIC_API_URL: http://kasbon-backend:3001
+
+  postgres16:
+    image: postgres:latest
+    container_name: postgres16
+    networks:
+      - my-network
+    ports:
+      - '5452:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: gesangpj01
+      POSTGRES_DB: postgres

@@ -144,7 +144,7 @@ app.get('/api/server-status', (req, res) => {
 })
 
 // Hapus semua session data di table session postgres
-app.get('/api/clear-sessions', async (req, res) => {
+app.get('/api/clear-sessions', CekAPIKey, async (req, res) => {
   try {
     const client = await pool.connect()
     const clearSessionsQuery = 'DELETE FROM sessions'
@@ -157,13 +157,33 @@ app.get('/api/clear-sessions', async (req, res) => {
   }
 })
 
+// API Auth pakai API KEY
+function CekAPIKey(req, res, next) {
+  const apiKey = req.header('Key-Api')
+
+  if (!apiKey) {
+    return res.status(401).json({ error: 'Access Denied' })
+  }
+
+  // Cek apakah API Dari frontend sama 
+  const validApiKey = process.env.API_ACCESS_KEY // Ambil API KEY Dari ENV
+
+  // Jika Key tidak sama, larang akses
+  if (apiKey !== validApiKey) {
+    return res.status(403).json({ error: 'Access Denied' })
+  }
+
+  // Jika valid, lanjut
+  next()
+}
+
 //Bcrypt cek password
 const checkPassword = async (plainPassword, hashedPassword) => {
   return await bcrypt.compare(plainPassword, hashedPassword)
 }
 
 // API Masuk
-app.post('/api/masuk', async (req, res) => {
+app.post('/api/masuk', CekAPIKey, async (req, res) => {
   const { idakun, password } = req.body
   const jakartaTimezone = 'Asia/Jakarta'
 
@@ -596,7 +616,7 @@ app.post('/api/update-requests/:id_request', async (req, res) => {
 
 
 // API Ambil data untuk halaman Bayar
-app.post('/api/ambil-data-bayar', async (req, res) => {
+app.post('/api/ambil-data-bayar', CekAPIKey, async (req, res) => {
   const id_karyawan = req.body.id_karyawan
 
   try {
@@ -623,7 +643,7 @@ app.post('/api/ambil-data-bayar', async (req, res) => {
 })
 
 // API Ambil data request untuk di download
-app.post('/api/ambil-request-download', async (req, res) => {
+app.post('/api/ambil-request-download', CekAPIKey, async (req, res) => {
   const id_karyawan = req.body.id_karyawan
 
   try {
@@ -651,7 +671,7 @@ app.post('/api/ambil-request-download', async (req, res) => {
 })
 
 // API Ambil data request untuk di download
-app.post('/api/ambil-bayar-download', async (req, res) => {
+app.post('/api/ambil-bayar-download', CekAPIKey, async (req, res) => {
   const id_karyawan = req.body.id_karyawan
 
   try {
@@ -679,7 +699,7 @@ app.post('/api/ambil-bayar-download', async (req, res) => {
 })
 
 // API Dashboard Admin (Menggunakan VIEW dashboard_komplit)
-app.get('/api/ambil-dashboard-komplit', async (req, res) => {
+app.get('/api/ambil-dashboard-komplit', CekAPIKey, async (req, res) => {
 
   try {
     const client = await pool.connect()
@@ -737,7 +757,7 @@ app.put('/api/edit-bayar/:id_request', async (req, res) => {
 })
 
 // API update data bayar sekaligus
-app.put('/api/edit-bayar-batch', async (req, res) => {
+app.put('/api/edit-bayar-batch', CekAPIKey, async (req, res) => {
   const updates = req.body.requests // Array update dari frontend
 
   try {
@@ -786,7 +806,7 @@ app.put('/api/edit-bayar-batch', async (req, res) => {
 })
 
 // Download Request Kasbon
-app.post('/api/download-request', async (req, res) => {
+app.post('/api/download-request', CekAPIKey, async (req, res) => {
   const { id_request, nama_user, jumlah, metode, tanggaljam, keterangan } = req.body
 
   const DateTime = new Date()
@@ -845,7 +865,7 @@ app.post('/api/download-request', async (req, res) => {
 })
 
 // Download Bukti Lunas
-app.post('/api/download-lunas', async (req, res) => {
+app.post('/api/download-lunas', CekAPIKey, async (req, res) => {
   const { id_request, nama_user, jumlah, metode, keterangan, tanggaljam, status_b } = req.body
 
   const DateTime = new Date()
@@ -1005,7 +1025,7 @@ app.post('/api/ganti-password-admin', async (req, res) => {
 })
 
 //API Ambil Laporan Karyawan Berdasarkan ID Dan Bulan-Tahun
-app.post('/api/ambil-laporan-karyawan', async (req, res) => {
+app.post('/api/ambil-laporan-karyawan', CekAPIKey, async (req, res) => {
   const id_karyawan = req.body.id_karyawan
   const selectedDate = req.body.selectedDate // Formatted date 'MM/yyyy'
 
@@ -1038,7 +1058,7 @@ app.post('/api/ambil-laporan-karyawan', async (req, res) => {
 })
 
 //API Ambil Seluruh Laporan Karyawan Berdasarkan Bulan-Tahun
-app.post('/api/semua-laporan-karyawan', async (req, res) => {
+app.post('/api/semua-laporan-karyawan', CekAPIKey, async (req, res) => {
   const selectedDate = req.body.selectedDate 
 
   try {
