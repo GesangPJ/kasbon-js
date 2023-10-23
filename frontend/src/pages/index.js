@@ -27,6 +27,8 @@ import { makeStyles } from '@mui/styles'
 
 require('dotenv').config()
 
+
+
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
   position: sticky;
@@ -87,10 +89,12 @@ const SignPage = () => {
       return
     }
     try {
+      const AksesKunci = process.env.NEXT_PUBLIC_SECRET_API_KEY
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/masuk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Key-Api': process.env.NEXT_PUBLIC_SECRET_API_KEY,
         },
         body: JSON.stringify(values),
       })
