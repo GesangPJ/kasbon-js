@@ -173,6 +173,16 @@ If you want to build the project, you can us `yarn build` or `next build` or `np
 It use Minify SWC for compiler, you can change it in `next.config.js`
 By using SWC, the build output perform more than good, also it reduce the production build from `~700MB` to `~80MB` in .next directory itself.
 
+### POSTGRES SETUP
+
+1. Access to your postgres using postgres account
+2. Create new database named `kasbondev` for using development test data
+3. Create new database named `kasbon_production` for production empty kasbon data
+4. Click right to database namem click restore
+5. Navigate to project dir/data/sql/kasbondev.sql to get development and test data, in option enable Do Not Save Owner
+6. For kasbon_production same as kasbondev
+7. If error occured, refresh database, and check if the table admin_kasbon, user_kasbon is exist, if it's exist, it's safe 
+
 ## C. Create Backend Service In Windows
 
 1. In terminal at root directory (/kasbon-js) use command '.\nssm install <service name> or kasbon-backend
