@@ -1,3 +1,12 @@
+### v1.7.0-BUILD
+
+- Add API Authorization function
+- Rebuild Docker image
+- Rebuild Docker compose
+- Cleanup backend code
+- Rebuild frontend ENV
+- Rebuild backend ENV
+
 ### v1.5.0-BUILD
 
 - Add Laporan Page for Each Karyawan
