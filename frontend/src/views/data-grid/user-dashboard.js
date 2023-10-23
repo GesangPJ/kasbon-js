@@ -20,6 +20,8 @@ dayjs.locale(id);
 
 require('dotenv').config()
 
+const headers = { 'Key-Api': process.env.NEXT_PUBLIC_SECRET_API_KEY, }
+
 const RoundedRectangleButton = styled(Button)`
   border-radius: 32px;
   position: sticky;
@@ -200,7 +202,9 @@ const UserDataGrid = () => {
     const fetchData = async () => {
       try {
         const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-karyawan/${id_akun}`, {
+          headers: headers,
+        });
 
         if (response.ok) {
           const result = await response.json();
@@ -292,7 +296,9 @@ export async function getServerSideProps(req) {
   try {
     const id_akun = JSON.parse(sessionStorage.getItem('sessionData')).id_akun;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-karyawan/${id_akun}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/ambil-dashboard-karyawan/${id_akun}`, {
+      headers: headers,
+    });
     if (response.ok) {
       const data = await response.json();
       return {
