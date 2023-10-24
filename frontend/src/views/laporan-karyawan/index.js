@@ -33,6 +33,7 @@ import * as React from 'react'
 import dayjs from 'dayjs'
 import * as XLSX from 'xlsx'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
+import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined'
 
 const AksesKunci = process.env.NEXT_PUBLIC_SECRET_API_KEY
 
@@ -66,6 +67,20 @@ const useStyles = makeStyles((theme) => ({
 
   downloadButton: {
     alignContent: "center",
+  },
+
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '20px', // Adjust the margin as needed
+  },
+
+  exportButton: {
+    flex: 1, // This will make the button take up all available space on the left
+  },
+
+  printButton: {
+    marginLeft: '10px', // Add some margin to separate the buttons
   },
 
 }))
@@ -329,6 +344,77 @@ const TableBayarDownload = () => {
     XLSX.writeFile(wb, `laporan_kasbon_${namaUser}.xlsx`)
   }
 
+  const handlePrint = () => {
+    // Open a new window for printing
+    const printWindow = window.open('', '', 'width=600,height=600')
+
+    // Write the print content to the new window
+    printWindow.document.open()
+    printWindow.document.write(`
+    <html>
+    <head>
+      <title>Print View</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        th, td {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        th {
+          background-color: #f2f2f2;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Laporan Kasbon</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tanggal Waktu</th>
+            <th>Nama Karyawan</th>
+            <th>Jumlah</th>
+            <th>Metode</th>
+            <th>Keterangan</th>
+            <th>Status Bayar</th>
+            <th>Petugas</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sortedData.map(row => `
+            <tr>
+              <td>${row.id_request}</td>
+              <td>${row.tanggaljam}</td>
+              <td>${row.nama_user}</td>
+              <td>${row.jumlah}</td>
+              <td>${row.metode}</td>
+              <td>${row.keterangan}</td>
+              <td>${row.status_b}</td>
+              <td>${row.nama_admin}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <h4>Total Jumlah: ${formatCurrencyIDR(totalJumlah)}</h4>
+      <h4>Total Lunas: ${formatCurrencyIDR(totalLunas)}</h4>
+      <h4>Sisa Kasbon: ${formatCurrencyIDR(totalSisaKasbon)}</h4>
+    </body>
+    </html>
+    `)
+    printWindow.document.close()
+
+    // Trigger the print dialog
+    printWindow.print()
+    printWindow.close()
+  }
+
   return (
     <div>
       <Grid container spacing={6}>
@@ -498,9 +584,21 @@ const TableBayarDownload = () => {
         size="large"
         startIcon={<DescriptionOutlinedIcon />}
         onClick={exportToExcel}
+        className={classes.exportButton}
         color="success"
       >
         Export ke Excel
+      </RoundedRectangleButton>
+
+      <RoundedRectangleButton
+        variant="outlined"
+        size="large"
+        startIcon={<PrintOutlinedIcon />}  // Add the icon for printing
+        onClick={handlePrint}
+        className={classes.printButton}
+        color="primary"
+      >
+        Print
       </RoundedRectangleButton>
     </div>
   )
