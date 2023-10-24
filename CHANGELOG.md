@@ -1,3 +1,12 @@
+### v1.7.5-BUILD
+
+- Add print function for Laporan Kasbon Karyawan
+- Add print function for Laporan Kasbon Seluruh Karyawan
+- Move Jumlah total, total kasbon, sisa kasbon outside table
+- Cleanup backend
+- Re-test API Key
+- Re-test backend from process hang [No hang, all request complete]
+
 ### v1.7.0-BUILD
 
 - Add API Authorization function
