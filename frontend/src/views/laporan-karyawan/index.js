@@ -34,6 +34,7 @@ import dayjs from 'dayjs'
 import * as XLSX from 'xlsx'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined'
+import Typography from '@mui/material/Typography'
 
 const AksesKunci = process.env.NEXT_PUBLIC_SECRET_API_KEY
 
@@ -540,9 +541,9 @@ const TableBayarDownload = () => {
               ))}
             </TableBody>
             <TableFooter>
-              <TableRow>
+              <TableRow>{/*}
                 <TableCell colSpan={3}>
-                  Jumlah Total :  {/* Display your total jumlah here */}
+                  Jumlah Total :
                 </TableCell>
                 <TableCell colSpan={3}>
                   {formatCurrencyIDR(totalJumlah)}
@@ -550,7 +551,7 @@ const TableBayarDownload = () => {
               </TableRow>
               <TableRow>
                 <TableCell colSpan={3} align="left">
-                  Total Lunas :  {/* Display your total lunas here */}
+                  Total Lunas :
                 </TableCell>
                 <TableCell colSpan={3}>
                   {formatCurrencyIDR(totalLunas)}
@@ -558,11 +559,11 @@ const TableBayarDownload = () => {
               </TableRow>
               <TableRow>
                 <TableCell colSpan={3} align="left">
-                  Sisa Kasbon :  {/* Display your sisa kasbon here */}
+                  Sisa Kasbon :
                 </TableCell>
                 <TableCell colSpan={3}>
                   {formatCurrencyIDR(totalSisaKasbon)}
-                </TableCell>
+                </TableCell>{*/}
               </TableRow>
             </TableFooter>
           </Table>
@@ -578,6 +579,15 @@ const TableBayarDownload = () => {
         />
       </Paper>
       <br></br>
+      <Typography variant='body1'>
+        Jumlah : {formatCurrencyIDR(totalJumlah)}
+      </Typography><br></br>
+      <Typography variant='body1'>
+        Total Lunas : {formatCurrencyIDR(totalLunas)}
+      </Typography><br></br>
+      <Typography variant='body1'>
+        Sisa Kasbon : {formatCurrencyIDR(totalSisaKasbon)}
+      </Typography><br></br>
 
       <RoundedRectangleButton
         variant="outlined"
