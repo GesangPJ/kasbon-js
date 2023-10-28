@@ -14,25 +14,36 @@ https://github.com/GesangPJ/kasbon-js/assets/26625652/8bb10cce-d277-4b27-99b2-d8
 
 
 
-Website berbasis NodeJS bertujuan untuk mengelola Kasbon, menggunakan NextJS untuk frontend(client-side), dan ExpressJS untuk backend(server-side),data kasbon dan akun dimasukkan dan dikelola dengan database PostgreSQL v15. Mulai dari versi 1.0.7-Preview tersedia
-versi docker container untuk website ini, versi docker container 1.0.7 mungkin masih memiliki beberapa masalah seperti tidak terkoneksi
-antara container frontend dan backend (API ERROR NOT FOUND/ API ERROR CONNECTION TIME OUT).
+Website berbasis NodeJS bertujuan untuk mengelola Kasbon, menggunakan NextJS untuk frontend (client-side), dan ExpressJS untuk backend (server-side),data kasbon dan akun dimasukkan dan dikelola dengan database PostgreSQL v16. 
 
-Mulai versi 1.5.0, untuk docker kembali rebuild dan re-test, problem sebelumnya kenapa frontend contaienr tidak bisa connect ke backend dikarenakan backend hanya listen ke IPv6
+**Ingin menggunakan aplikasi ini pada usaha anda ? dan/ source code aplikasi untuk tujuan komersial? Buka issue baru-> feature request-> masukkan detail permintaan**
 
-## Features
+**Want to use this application and or the source code for commercial purposes? open new issue->feature request-> input your request details**
 
-- Account auth using express-session
-- Session storage
-- Add Kasbon
-- Edit Kasbon
-- Set Request
-- Set Bayar
-- Additional 2 VIEW tables
-- Download Data Page
-- Unauthorized Access Protection
-- Password change for admin
-- Password hashing using bcrypt with iteration 10-16
+## Daftar halaman pada aplikasi
+#### A. Halaman Karyawan
+1. Halaman Dashboard Karyawan
+2. Halaman Input Kasbon oleh Karyawan
+
+#### B. Halaman Admin:
+1. Halaman Dashboard Admin
+2. Halaman Request (Persetujuan Kasbon)
+3. Halaman Bayar (Konfirmasi Bayar/Lunas)
+4. Halaman Download Bukti Kasbon (Download ke Docx)
+5. Halaman Laporan Kasbon (Bisa langsung print)
+6. Halaman tambah akun admin
+7. Halaman tambah akun karyawan
+8. Halaman daftar admin (beserta fitur ganti password)
+9. Halaman daftar karyawan
+
+## Web Features
+1. Backend session using express-session
+2. Password Hashing using bcrypt
+3. API Key
+4. Cookies
+5. CORS
+6. Docx download
+7. Print report
 
 ## Changelog
 
